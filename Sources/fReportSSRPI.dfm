@@ -4,7 +4,7 @@ object FormReportSSRPI: TFormReportSSRPI
   Caption = 
     #1057#1088#1077#1076#1089#1090#1074#1072', '#1091#1095#1080#1090#1099#1074#1072#1102#1097#1080#1077' '#1087#1088#1080#1084#1077#1085#1077#1085#1080#1077' '#1087#1088#1086#1075#1085#1086#1079#1085#1099#1093' '#1080#1085#1076#1077#1082#1089#1086#1074' '#1094#1077#1085' '#1074' '#1089#1090#1088#1086#1080 +
     #1090#1077#1083#1100#1089#1090#1074#1077
-  ClientHeight = 512
+  ClientHeight = 515
   ClientWidth = 818
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -186,8 +186,10 @@ object FormReportSSRPI: TFormReportSSRPI
       Top = 94
       Width = 121
       Height = 21
+      Color = clBtnFace
       DataField = 'NoIndex'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 6
       OnKeyDown = edtKeyDown
     end
@@ -229,14 +231,14 @@ object FormReportSSRPI: TFormReportSSRPI
     Left = 0
     Top = 177
     Width = 818
-    Height = 280
+    Height = 262
     Align = alClient
     TabOrder = 1
     object grTab: TJvDBGrid
       Left = 1
       Top = 1
       Width = 816
-      Height = 278
+      Height = 260
       Align = alClient
       DataSource = dsTab
       DrawingStyle = gdsClassic
@@ -278,9 +280,9 @@ object FormReportSSRPI: TFormReportSSRPI
   end
   object pnlBottom: TPanel
     Left = 0
-    Top = 457
+    Top = 439
     Width = 818
-    Height = 55
+    Height = 76
     Align = alBottom
     TabOrder = 2
     object Label12: TLabel
@@ -301,6 +303,13 @@ object FormReportSSRPI: TFormReportSSRPI
         #1048#1090#1086#1075#1086' '#1089#1088#1077#1076#1089#1090#1074#1072', '#1091#1095#1080#1090#1099#1074#1072#1102#1097#1080#1077' '#1087#1088#1077#1084#1077#1085#1077#1085#1080#1077' '#1087#1088#1086#1075#1085#1086#1079#1085#1099#1093' '#1080#1085#1076#1077#1082#1089#1086#1074' '#1094#1077#1085' '#1074 +
         ' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072', '#1088#1091#1073
     end
+    object Label18: TLabel
+      Left = 493
+      Top = 53
+      Width = 152
+      Height = 13
+      Caption = #1042' '#1090'.'#1095'. '#1074#1086#1079#1074#1088#1072#1090#1085#1099#1077' '#1089#1091#1084#1084#1099', '#1088#1091#1073
+    end
     object edtIndex1: TDBEdit
       Left = 650
       Top = 6
@@ -320,6 +329,16 @@ object FormReportSSRPI: TFormReportSSRPI
       DataField = 'Index2'
       DataSource = dsLine
       TabOrder = 1
+    end
+    object edtIndex3: TDBEdit
+      Left = 650
+      Top = 50
+      Width = 121
+      Height = 21
+      Color = clBtnFace
+      DataField = 'Index3'
+      DataSource = dsLine
+      TabOrder = 2
     end
   end
   object pnlNoIndex: TPanel
@@ -533,6 +552,9 @@ object FormReportSSRPI: TFormReportSSRPI
     end
     object mtLineTotal: TFloatField
       FieldName = 'Total'
+    end
+    object mtLineIndex3: TFloatField
+      FieldName = 'Index3'
     end
   end
 end

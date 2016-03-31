@@ -78,7 +78,7 @@ object FormReportSSR: TFormReportSSR
           FieldName = 'Percent'
           Title.Alignment = taCenter
           Title.Caption = '%'
-          Width = 30
+          Width = 41
           Visible = True
         end
         item
@@ -452,7 +452,7 @@ object FormReportSSR: TFormReportSSR
     Connection = DM.Connect
     SQL.Strings = (
       'SELECT '
-      '    obj_id, '
+      '    objcards.obj_id, '
       '    num, '
       '    num_dog, '
       '    date_dog, '
@@ -477,11 +477,15 @@ object FormReportSSR: TFormReportSSR
         'stroj)) as KZIM,'
       
         '    FN_getParamValue("SOC_STRAH", MONTH(beg_stroj), YEAR(beg_str' +
-        'oj)) as KSOCSTRAX'
+        'oj)) as KSOCSTRAX,'
+      '    Fl_NAL_USN'
       'FROM objcards '
-      'WHERE (DEL_FLAG=0) AND'
-      '      ((:USER_ID=1) OR '
-      '       (objcards.USER_ID=:USER_ID) OR '
+      
+        'LEFT JOIN calc_setup ON ((objcards.obj_id = calc_setup.OBJ_ID) A' +
+        'ND (calc_setup.SM_ID is NULL)) '
+      
+        'WHERE (DEL_FLAG = 0) AND ((:USER_ID=1) OR (objcards.USER_ID=:USE' +
+        'R_ID) OR '
       
         '       EXISTS(SELECT USER_ID FROM user_access WHERE DOC_TYPE_ID=' +
         '2 AND MASTER_ID=objcards.obj_id AND ((USER_ID=0) OR (USER_ID=:US' +

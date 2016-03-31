@@ -170,8 +170,8 @@ begin
   if FIdObject > 0 then
   begin
     // «аносим значени€ в пол€ редактировани€
-    EditNumberObject.Text := qrMain.FieldByName('num').AsVariant;
-    EditCodeObject.Text := qrMain.FieldByName('encrypt').AsVariant;
+    EditNumberObject.Text := qrMain.FieldByName('num').AsString;
+    EditCodeObject.Text := qrMain.FieldByName('encrypt').AsString;
     EditNumberContract.Text := qrMain.FieldByName('num_dog').AsString;
     DateTimePickerDataCreateContract.Date := qrMain.FieldByName('date_dog').AsVariant;
 

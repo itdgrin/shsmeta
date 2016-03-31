@@ -2,7 +2,7 @@ object FormCopyEstimRow: TFormCopyEstimRow
   Left = 0
   Top = 0
   Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1080#1077' '#1089#1090#1088#1086#1082' '#1089#1084#1077#1090#1099
-  ClientHeight = 504
+  ClientHeight = 512
   ClientWidth = 776
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,17 +17,18 @@ object FormCopyEstimRow: TFormCopyEstimRow
   object Splitter1: TSplitter
     Left = 409
     Top = 0
-    Height = 504
+    Height = 512
+    ExplicitHeight = 504
   end
   object pnlLeft: TPanel
     Left = 0
     Top = 0
     Width = 409
-    Height = 504
+    Height = 512
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 496
+    ExplicitHeight = 447
     object SplitterCenter: TSplitter
       Left = 0
       Top = 183
@@ -45,9 +46,6 @@ object FormCopyEstimRow: TFormCopyEstimRow
       Align = alTop
       Caption = ' '#1054#1073#1098#1077#1082#1090#1099' '
       TabOrder = 0
-      ExplicitLeft = 1
-      ExplicitTop = 1
-      ExplicitWidth = 400
       object dbgrdObjects: TJvDBGrid
         Left = 2
         Top = 15
@@ -109,19 +107,16 @@ object FormCopyEstimRow: TFormCopyEstimRow
       Left = 0
       Top = 186
       Width = 409
-      Height = 318
+      Height = 326
       Align = alClient
       Caption = ' '#1057#1084#1077#1090#1099' '
       TabOrder = 1
-      ExplicitLeft = 25
-      ExplicitTop = 236
-      ExplicitWidth = 271
-      ExplicitHeight = 179
+      ExplicitHeight = 318
       object tvEstimates: TJvDBTreeView
         Left = 2
         Top = 15
         Width = 405
-        Height = 301
+        Height = 309
         DataSource = dsTreeData
         MasterField = 'SM_ID'
         DetailField = 'PARENT'
@@ -143,10 +138,7 @@ object FormCopyEstimRow: TFormCopyEstimRow
         ParentFont = False
         RowSelect = True
         Mirror = False
-        ExplicitLeft = 3
-        ExplicitTop = 17
-        ExplicitWidth = 384
-        ExplicitHeight = 166
+        ExplicitHeight = 301
       end
     end
   end
@@ -154,31 +146,25 @@ object FormCopyEstimRow: TFormCopyEstimRow
     Left = 412
     Top = 0
     Width = 364
-    Height = 504
+    Height = 512
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 560
-    ExplicitTop = 328
-    ExplicitWidth = 185
-    ExplicitHeight = 41
+    ExplicitHeight = 449
     object gbRate: TGroupBox
       Left = 0
       Top = 0
       Width = 364
-      Height = 504
+      Height = 512
       Align = alClient
       Caption = ' '#1057#1086#1089#1090#1072#1074' '#1089#1084#1077#1090#1099' '
       TabOrder = 0
-      ExplicitLeft = 19
-      ExplicitTop = 7
-      ExplicitWidth = 349
-      ExplicitHeight = 494
+      ExplicitHeight = 504
       object grRatesEx: TJvDBGrid
         Left = 2
         Top = 15
         Width = 360
-        Height = 487
+        Height = 495
         Align = alClient
         DataSource = dsRatesEx
         Font.Charset = DEFAULT_CHARSET
@@ -188,12 +174,14 @@ object FormCopyEstimRow: TFormCopyEstimRow
         Font.Style = []
         Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleHotTrack]
         ParentFont = False
+        ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = grRatesExDrawColumnCell
         AutoAppend = False
         MultiSelect = True
         AutoSizeColumns = True
@@ -210,15 +198,7 @@ object FormCopyEstimRow: TFormCopyEstimRow
             FieldName = 'ITERATOR'
             Title.Alignment = taCenter
             Title.Caption = #8470' '#1087'/'#1087
-            Width = 30
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'NOM_ROW_MANUAL'
-            Title.Alignment = taCenter
-            Title.Caption = #8470
-            Width = 30
+            Width = 34
             Visible = True
           end
           item
@@ -226,7 +206,7 @@ object FormCopyEstimRow: TFormCopyEstimRow
             FieldName = 'OBJ_CODE'
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1076
-            Width = 135
+            Width = 128
             Visible = True
           end
           item
@@ -234,7 +214,7 @@ object FormCopyEstimRow: TFormCopyEstimRow
             FieldName = 'OBJ_COUNT'
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1083'-'#1074#1086
-            Width = 59
+            Width = 100
             Visible = True
           end
           item
@@ -242,93 +222,14 @@ object FormCopyEstimRow: TFormCopyEstimRow
             FieldName = 'OBJ_UNIT'
             Title.Alignment = taCenter
             Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-            Width = 85
+            Width = 78
             Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'SORT_ID'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'ID_TYPE_DATA'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'DATA_ESTIMATE_OR_ACT_ID'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'ID_TABLES'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'SM_ID'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'WORK_ID'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'ZNORMATIVS_ID'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'APPLY_WINTERPRISE_FLAG'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'ID_RATE'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'SORT_ID2'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'NUM_ROW'
-            Title.Alignment = taCenter
-            Title.Caption = #1055#1086#1088#1103#1076#1082#1086#1074#1099#1081' '#1085#1086#1084#1077#1088
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'ID_REPLACED'
-            Title.Caption = 'ID_REPLACED ('#1048#1044' '#1084#1072#1090#1077#1088#1080#1072#1083#1072', '#1079#1072#1084#1077#1085#1103#1077#1084#1086#1075#1086' '#1076#1072#1085#1085#1099#1084')'
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'ID_ACT'
-            Visible = False
           end>
       end
     end
   end
   object qrObjects: TFDQuery
     BeforeOpen = qrObjectsBeforeOpen
-    AfterOpen = qrObjectsAfterOpen
     AfterScroll = qrObjectsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
@@ -358,8 +259,7 @@ object FormCopyEstimRow: TFormCopyEstimRow
   end
   object qrTreeData: TFDQuery
     BeforeOpen = qrObjectsBeforeOpen
-    MasterSource = dsObjects
-    MasterFields = 'obj_id'
+    AfterScroll = qrTreeDataAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -374,8 +274,7 @@ object FormCopyEstimRow: TFormCopyEstimRow
       'WHERE OBJ_ID=:OBJ_ID'
       '  AND (DELETED=0) '
       '  AND (ACT=0)'
-      '  AND ((:USER_ID=1) OR '
-      '       (USER_ID=:USER_ID) OR '
+      '  AND ((:USER_ID=1) OR (USER_ID=:USER_ID) OR '
       
         '       EXISTS(SELECT USER_ID FROM user_access WHERE DOC_TYPE_ID=' +
         '1 AND MASTER_ID=SM_ID AND ((USER_ID=0) OR (USER_ID=:USER_ID)) LI' +
@@ -399,9 +298,11 @@ object FormCopyEstimRow: TFormCopyEstimRow
   object dsTreeData: TDataSource
     DataSet = qrTreeData
     Left = 32
-    Top = 320
+    Top = 304
   end
   object qrRatesEx: TFDQuery
+    AfterOpen = qrRatesExAfterOpen
+    OnCalcFields = qrRatesExCalcFields
     CachedUpdates = True
     Connection = DM.Connect
     Transaction = DM.Read
@@ -446,16 +347,10 @@ object FormCopyEstimRow: TFormCopyEstimRow
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'CALL `GetRates_ex`(:vIsACT, :EAID);')
+      'CALL `GetSevedRates_ex`(0, :EAID);')
     Left = 688
     Top = 200
     ParamData = <
-      item
-        Name = 'VISACT'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 0
-      end
       item
         Name = 'EAID'
         DataType = ftInteger

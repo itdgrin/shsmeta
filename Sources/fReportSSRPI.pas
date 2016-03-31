@@ -103,6 +103,9 @@ type
     mtLineTotalWithNal: TFloatField;
     mtLineTotal: TFloatField;
     mtTabSumm: TFloatField;
+    Label18: TLabel;
+    edtIndex3: TDBEdit;
+    mtLineIndex3: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure mtTabProcChange(Sender: TField);
@@ -292,7 +295,6 @@ begin
         (1 + G_NDS/100));
       mtLineTotalIndex.Value := SmRound(mtLineTotalWithNal.Value - mtLineNoIndex.Value);
       mtLineTotal.Value := SmRound(mtLineTotalIndex.Value * mtLinePIOnBegin.Value);
-      mtLineIndex1.Value := SmRound(mtLineTotal.Value - mtLineTotalWithNal.Value);
       mtLine.Post;
     finally
       mtLine.EnableControls;
@@ -316,7 +318,7 @@ begin
               mtTab.FieldByName('month' + J.ToString).AsFloat/100;
             TmpSumm := TmpSumm + TmpArray[J - 1][0];
           end;
-          mtTabSumm.Value := TmpSumm * 100;
+          mtTabSumm.Value := 100 - TmpSumm * 100;
           mtTab.Post;
         end;
 
@@ -330,7 +332,7 @@ begin
               mtTab.FieldByName('month' + J.ToString).AsFloat/100;
             TmpSumm := TmpSumm + TmpArray[J - 1][1];
           end;
-          mtTabSumm.Value := TmpSumm * 100;
+          mtTabSumm.Value := 100 - TmpSumm * 100;
           mtTab.Post;
         end;
 
@@ -341,7 +343,8 @@ begin
           for J := 1 to mtLineSrok.Value do
           begin
             TmpArray[J - 1][2] :=
-              SmRound((mtLineTotal.Value - mtLineDevWithNDS.Value * mtLinePIOnBegin.Value) *
+              SmRound((mtLineTotal.Value -
+                (mtLineDevWithNDS.Value - mtLineDevZakNDS.Value) * mtLinePIOnBegin.Value) *
                 TmpArray[J - 1][0]);
             TmpSumm := TmpSumm + TmpArray[J - 1][2];
             mtTab.FieldByName('month' + J.ToString).AsFloat := TmpArray[J - 1][2];
@@ -372,12 +375,17 @@ begin
           for J := 1 to mtLineSrok.Value do
           begin
             TmpArray[J - 1][4] :=
-              SmRound(mtLineDevWithNDS.Value * mtLinePIOnBegin.Value * TmpArray[J - 1][1]);
+              SmRound(mtLineDevWithNDS.Value * TmpArray[J - 1][1] * mtLinePIOnBegin.Value);
             TmpSumm := TmpSumm + TmpArray[J - 1][4];
             mtTab.FieldByName('month' + J.ToString).AsFloat := TmpArray[J - 1][4];
           end;
+          TmpSumm := TmpSumm - mtLineDevZakNDS.Value * mtLinePIOnBegin.Value;
           mtTabSumm.Value := TmpSumm;
           mtTab.Post;
+
+          mtLine.Edit;
+          mtLineIndex2.Value := TmpSumm;
+          mtLine.Post;
         end;
 
         if mtTabLineNum.Value = '6' then
@@ -397,6 +405,10 @@ begin
           end;
           mtTabSumm.Value := TmpSumm;
           mtTab.Post;
+
+          mtLine.Edit;
+          mtLineIndex2.Value := TmpSumm - mtLineTotalIndex.Value + mtLineIndex2.Value;
+          mtLine.Post;
         end;
 
         if mtTabLineNum.Value = '8' then
@@ -411,6 +423,10 @@ begin
           end;
           mtTabSumm.Value := TmpSumm;
           mtTab.Post;
+
+          mtLine.Edit;
+          mtLineIndex3.Value := TmpSumm - mtLineVozvrat.Value;
+          mtLine.Post;
         end;
 
         if mtTabLineNum.Value = '9' then
@@ -441,7 +457,7 @@ begin
           mtTab.Post;
 
           mtLine.Edit;
-          mtLineIndex2.Value := TmpSumm;
+          mtLineIndex1.Value := TmpSumm;
           mtLine.Post;
         end;
 
