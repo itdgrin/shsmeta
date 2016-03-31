@@ -76,11 +76,12 @@ begin
       KeyDll.LoadFromFile(ExtractFilePath(Application.ExeName) + 'SmKey.dll');
 
       SI.UserName := edtUser.Text;
+      SetLength(SI.UserKey, 16);
+      FillChar(SI.UserKey[0], Length(SI.UserKey), 0);
       SI.DateBegin := dateAct.Date;
       SI.DateEnd := dateEnd.Date;
       SI.LocalID := StrToInt64Def(edtLocalID.Text,0);
-      SetLength(SI.UserKey, 16);
-      FillChar(SI.UserKey[0], Length(SI.UserKey), 0);
+
       LocalData.LoadFromFile(edtLocalDate.Text);
       GetLocalDataFromFile(SN, aa, LocalData);
       GetLocalKey(aa);
