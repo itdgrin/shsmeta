@@ -187,7 +187,6 @@ type
     procedure btnReport1Click(Sender: TObject);
     procedure btnReport2Click(Sender: TObject);
     procedure btnReportC3Click(Sender: TObject);
-    procedure N3Click(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
     HintButton = 'Окно объектов и смет';
@@ -540,17 +539,6 @@ begin
   else
     qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 0;
   CloseOpen(qrTreeData);
-end;
-
-procedure TfObjectsAndEstimates.N3Click(Sender: TObject);
-var FormCopy: TFormCopyEstimRow;
-begin
-  FormCopy := TFormCopyEstimRow.Create(Self);
-  try
-    FormCopy.ShowModal;
-  finally
-    FreeAndNil(FormCopy);
-  end;
 end;
 
 procedure TfObjectsAndEstimates.PMCopySmetaClick(Sender: TObject);

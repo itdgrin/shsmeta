@@ -62,6 +62,7 @@ const
   //Папка с лицензией
   C_LICENSEDIR = 'Lisence\';
   C_LICENSEKEY = 'Lisence';
+  C_LICENSEFILE = 'Lisence.key';
   //Папка с обновлениями
   C_UPDATEDIR = 'Updates\';
   C_UPDMIRRORTMP = 'MirrorTmp\';

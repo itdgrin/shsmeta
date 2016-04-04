@@ -10,7 +10,13 @@ object FormCopyEstimRow: TFormCopyEstimRow
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsMDIChild
   OldCreateOrder = False
+  Visible = True
+  OnActivate = FormActivate
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -28,7 +34,6 @@ object FormCopyEstimRow: TFormCopyEstimRow
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 447
     object SplitterCenter: TSplitter
       Left = 0
       Top = 183
@@ -111,7 +116,6 @@ object FormCopyEstimRow: TFormCopyEstimRow
       Align = alClient
       Caption = ' '#1057#1084#1077#1090#1099' '
       TabOrder = 1
-      ExplicitHeight = 318
       object tvEstimates: TJvDBTreeView
         Left = 2
         Top = 15
@@ -138,7 +142,6 @@ object FormCopyEstimRow: TFormCopyEstimRow
         ParentFont = False
         RowSelect = True
         Mirror = False
-        ExplicitHeight = 301
       end
     end
   end
@@ -150,7 +153,6 @@ object FormCopyEstimRow: TFormCopyEstimRow
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitHeight = 449
     object gbRate: TGroupBox
       Left = 0
       Top = 0
@@ -159,7 +161,6 @@ object FormCopyEstimRow: TFormCopyEstimRow
       Align = alClient
       Caption = ' '#1057#1086#1089#1090#1072#1074' '#1089#1084#1077#1090#1099' '
       TabOrder = 0
-      ExplicitHeight = 504
       object grRatesEx: TJvDBGrid
         Left = 2
         Top = 15
@@ -172,8 +173,9 @@ object FormCopyEstimRow: TFormCopyEstimRow
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleHotTrack]
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleHotTrack]
         ParentFont = False
+        PopupMenu = pmRetesEx
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -480,5 +482,13 @@ object FormCopyEstimRow: TFormCopyEstimRow
     DataSet = qrRatesEx
     Left = 688
     Top = 248
+  end
+  object pmRetesEx: TPopupMenu
+    Left = 684
+    Top = 136
+    object pmCopyRows: TMenuItem
+      Caption = #1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1088#1072#1089#1095#1077#1090
+      OnClick = pmCopyRowsClick
+    end
   end
 end

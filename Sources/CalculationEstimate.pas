@@ -515,6 +515,7 @@ type
     qrDevicesVFTRANSP_NDS: TFMTBCDField;
     pmFindRowInEstim: TMenuItem;
     N15: TMenuItem;
+    pmCopyFromSM: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -718,6 +719,7 @@ type
     procedure PMMatNormPriceClick(Sender: TObject);
     procedure grRatesExEnter(Sender: TObject);
     procedure pmFindRowInEstimClick(Sender: TObject);
+    procedure pmCopyFromSMClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта на доп. работы');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -841,6 +843,11 @@ type
     procedure FillingWinterPrice(const vNumber: string);
     procedure FillingOHROPR(const vNumber: string);
     function GetOHROPRId(const ANumRate: string): Integer;
+
+    //Позицианирует основное окно и окно справочника
+    procedure PozWindow(AForm: TForm);
+    //Копирование строк из другой сметы
+    procedure CopyRowsToSM(ASmClipData: TSmClipData);
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -896,7 +903,9 @@ uses Main, DataModule, SignatureSSR, Waiting,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
   ManualPriceSelect, uSelectColumn, ContractPrice,
   ManualSprItem, SmReportData,
-  fReportSSR;
+  fReportSSR,
+  fCopyEstimRow;
+
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -3970,19 +3979,19 @@ begin
     Exit;
   end;
 
-  if not(qrRatesExID_TYPE_DATA.Value > 0) or Act then
+  if Act then
     Exit;
 
   if grRatesEx.SelectedRows.Count = 0 then
     grRatesEx.SelectedRows.CurrentRowSelected := True;
 
   DataObj := TSmClipData.Create;
+  grRatesEx.DataSource.DataSet.DisableControls;
+  TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
   try
-    grRatesEx.DataSource.DataSet.DisableControls;
     with grRatesEx.SelectedRows do
       if Count <> 0 then
       begin
-        TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
         for i := 0 to Count - 1 do
         begin
           if IndexOf(Items[i]) > -1 then
@@ -4017,13 +4026,57 @@ begin
           end;
         end;
         DataObj.CopyToClipboard;
-        grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
-        grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
       end;
-    grRatesEx.DataSource.DataSet.EnableControls;
   finally
+    grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.EnableControls;
     DataObj.Free;
   end;
+end;
+
+procedure TFormCalculationEstimate.pmCopyFromSMClick(Sender: TObject);
+begin
+  if (Assigned(FormCopyEstimRow)) then
+  begin
+    FormCopyEstimRow.Show;
+    Exit;
+  end;
+
+  DM.FDGUIxWaitCursor1.ScreenCursor := gcrHourGlass;
+  try
+    SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 0, 0);
+    FormCopyEstimRow := TFormCopyEstimRow.Create(Self);
+    FormCopyEstimRow.OnCopyRowsToSM := CopyRowsToSM;
+    FormCopyEstimRow.WindowState := wsNormal;
+
+    PozWindow(FormCopyEstimRow);
+  finally
+    SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 1, 0);
+    RedrawWindow(Application.MainForm.ClientHandle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN or
+      RDW_NOINTERNALPAINT);
+    DM.FDGUIxWaitCursor1.ScreenCursor := gcrDefault;
+  end;
+end;
+
+procedure TFormCalculationEstimate.CopyRowsToSM(ASmClipData: TSmClipData);
+var TmpIterator: Integer;
+begin
+  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or
+         (qrRatesExID_TYPE_DATA.AsInteger = -5) or
+         (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+         (qrRatesExID_TYPE_DATA.AsInteger = -3)) then
+  begin
+    raise Exception.Create('Вставка не может быть выполненена в текущаю строку.');
+  end;
+
+  TmpIterator := qrRatesExITERATOR.Value;
+  if FNewRowIterator > 0 then
+    TmpIterator := FNewRowIterator;
+
+  if PasteSmetaRow(ASmClipData.SmClipArray, qrRatesExSM_ID.Value, TmpIterator,
+    GetSMSubType(qrRatesExSM_ID.Value)) then
+    OutputDataToTable(True);
 end;
 
 procedure TFormCalculationEstimate.PMMatAddToRateClick(Sender: TObject);
@@ -4411,9 +4464,11 @@ begin
     Exit;
   end;
 
-  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) then
-    Exit;
+  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or
+         (qrRatesExID_TYPE_DATA.AsInteger = -5) or
+         (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+         (qrRatesExID_TYPE_DATA.AsInteger = -3)) then
+    raise Exception.Create('Вставка не может быть выполненена в текущаю строку.');
 
   DataObj := TSmClipData.Create;
   try
@@ -6182,6 +6237,7 @@ begin
   PMInsertRow.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0) AND not(Act and (TYPE_ACT = 0));
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
   PMCopy.Visible := not Act;
+  pmCopyFromSM.Visible := not Act;
   PMPaste.Visible := not Act;
   mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3, 4];
 
@@ -7371,8 +7427,6 @@ begin
 end;
 
 procedure TFormCalculationEstimate.ShowFormAdditionData(const vDataBase: Char);
-var
-  { FormTop, } FormLeft, { BorderTop, } BorderLeft: Integer;
 begin
   if (Assigned(FormAdditionData)) then
   begin
@@ -7389,45 +7443,51 @@ begin
     FormAdditionData.FramePriceMechanizm.OnSelect := AddMechanizm;
     FormAdditionData.FrameEquipment.OnSelect := AddDevice;
 
-    // Сворачиваем окно
-    WindowState := wsNormal;
-    // Ставим форму в левый верхний угол
-    Left := 0;
-    Top := 0;
-
-    // Устанавливаем размеры формы
-    Width := FormMain.ClientWidth - 5;
-    Height := FormMain.ClientHeight - (5 + 27); // + 27 - нижняя панель с кнопками
-
-    // Делим левую и правую таблицы в соотношении 1 к 3
-    PanelClientLeft.Width := FormMain.Width div 3;
-
-    with FormAdditionData do
-    begin
-      // Расстояние сверху до формы с данными (внутри формы FormCalculationEstimate)
-      // FormTop := PanelLocalEstimate.Top + PanelTopClient.Height;
-      // Расстояние сверху до начала координат формы FormCalculationEstimate (внутри формы FormMain)
-      // BorderTop := FormCalculationEstimate.Top;
-      Top := FormCalculationEstimate.Top;
-      // Расстояние слева до формы с данными (внутри формы FormCalculationEstimate)
-      FormLeft := SplitterCenter.Left + SplitterCenter.Width;
-      // Расстояние слева до начала координат формы FormCalculationEstimate (внутри формы FormMain)
-      BorderLeft := FormCalculationEstimate.Left +
-        (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
-      // Left := BorderLeft + FormLeft;
-      Width := FormCalculationEstimate.ClientWidth - FormLeft +
-        (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
-      // Шапка + высота клиентской область формы
-      Height := GetSystemMetrics(SM_CYCAPTION) + FormCalculationEstimate.ClientHeight;
-      // Отнимаем высоту нижней панели с кнопками
-      Height := Height - 27;
-      Left := BorderLeft + FormLeft;
-    end;
+    PozWindow(FormAdditionData);
   finally
     SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 1, 0);
     RedrawWindow(Application.MainForm.ClientHandle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN or
       RDW_NOINTERNALPAINT);
     DM.FDGUIxWaitCursor1.ScreenCursor := gcrDefault;
+  end;
+end;
+
+procedure TFormCalculationEstimate.PozWindow(AForm: TForm);
+var FormLeft, BorderLeft: Integer;
+begin
+  // Сворачиваем окно
+  WindowState := wsNormal;
+  // Ставим форму в левый верхний угол
+  Left := 0;
+  Top := 0;
+
+  // Устанавливаем размеры формы
+  Width := FormMain.ClientWidth - 5;
+  Height := FormMain.ClientHeight - (5 + 27); // + 27 - нижняя панель с кнопками
+
+  // Делим левую и правую таблицы в соотношении 1 к 3
+  PanelClientLeft.Width := FormMain.Width div 3;
+
+  with AForm do
+  begin
+    // Расстояние сверху до формы с данными (внутри формы FormCalculationEstimate)
+    // FormTop := PanelLocalEstimate.Top + PanelTopClient.Height;
+    // Расстояние сверху до начала координат формы FormCalculationEstimate (внутри формы FormMain)
+    // BorderTop := FormCalculationEstimate.Top;
+    Top := FormCalculationEstimate.Top;
+    // Расстояние слева до формы с данными (внутри формы FormCalculationEstimate)
+    FormLeft := SplitterCenter.Left + SplitterCenter.Width;
+    // Расстояние слева до начала координат формы FormCalculationEstimate (внутри формы FormMain)
+    BorderLeft := FormCalculationEstimate.Left +
+      (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
+    // Left := BorderLeft + FormLeft;
+    Width := FormCalculationEstimate.ClientWidth - FormLeft +
+      (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
+    // Шапка + высота клиентской область формы
+    Height := GetSystemMetrics(SM_CYCAPTION) + FormCalculationEstimate.ClientHeight;
+    // Отнимаем высоту нижней панели с кнопками
+    Height := Height - 27;
+    Left := BorderLeft + FormLeft;
   end;
 end;
 

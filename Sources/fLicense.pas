@@ -29,7 +29,12 @@ uses
   hwid_impl,
   winioctl,
   System.AnsiStrings,
-  Tools;
+  Tools,
+  IdBaseComponent,
+  IdComponent,
+  IdTCPConnection,
+  IdTCPClient,
+  IdHTTP;
 
 type
   TLicenseForm = class(TSmForm)
@@ -70,6 +75,7 @@ type
     btnDeleteLicense: TButton;
     ActionList: TActionList;
     actDelLicense: TAction;
+    HTTP: TIdHTTP;
     procedure btnNewLicenseDropDownClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure edtSerial1Change(Sender: TObject);
@@ -83,7 +89,7 @@ type
     procedure actDelLicenseExecute(Sender: TObject);
     procedure cbSelectLicenseChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-
+    procedure GetValidName(const APath: string; var AFileName: string);
   private
     FCurLicenseFile: string;
     FLicenseResult: Boolean;
@@ -103,7 +109,10 @@ uses
  System.Win.Registry,
  SerialKeyModule,
  GlobsAndConst,
- uMemoryLoader;
+ uMemoryLoader,
+ EncdDecd,
+ IdCoderMIME,
+ IdGlobal;
 
 {$R *.dfm}
 
@@ -188,12 +197,60 @@ begin
   Result := True;
 end;
 
+procedure TLicenseForm.GetValidName(const APath: string; var AFileName: string);
+var Ind: Integer;
+    TmpName,
+    TmpExt: string;
+begin
+  if TDirectory.Exists(APath) then
+    TDirectory.CreateDirectory(APath);
+
+  if TFile.Exists(APath + AFileName) then
+  begin
+    Ind := 1;
+    TmpName := ChangeFileExt(AFileName, '');
+    TmpExt := ExtractFileExt(AFileName);
+    while TFile.Exists(APath + TmpName + Ind.ToString + TmpExt) do
+      Inc(Ind);
+    AFileName := TmpName + Ind.ToString + TmpExt;
+  end;
+end;
+
 procedure TLicenseForm.pmLoadKeyFromInetClick(Sender: TObject);
 var SNumber: string;
+    MemIn: TMemoryStream;
+    LocalData: TBytes;
+    ResStr: string;
+    Data: TStringList;
+    LicensePath,
+    FileName: string;
 begin
   if not GetSerialNumber(SNumber) then
     Exit;
 
+  MemIn := TMemoryStream.Create;
+  Data := TStringList.Create;
+  try
+    GetLocalData(ExtractFileDrive(Application.ExeName), LocalData);
+    GetLocalDataFile(SNumber, LocalData, MemIn);
+
+    Data.Add('data:' + TIdEncoderMIME.EncodeBytes(TIdBytes(MemIn.Memory)));
+
+    MemIn.Clear;
+    HTTP.Get('http://85.143.218.164:3113/auth_after.dll', MemIn);
+
+    LicensePath := ExtractFilePath(Application.ExeName) + C_LICENSEDIR;
+    FileName := C_LICENSEFILE;
+
+    GetValidName(LicensePath, FileName);
+
+    MemIn.SaveToFile(LicensePath + FileName);
+    SetCurLicenseFile(LicensePath + FileName);
+    UpdateLicenseInfo;
+  finally
+    FreeAndNil(Data);
+    FreeAndNil(MemIn);
+  end;
 end;
 
 function TLicenseForm.GetCurLicenseFile: string;
@@ -245,26 +302,13 @@ end;
 procedure TLicenseForm.pmLoadKeyFromLocalClick(Sender: TObject);
 var LicensePath,
     FileName: string;
-    Ind: Integer;
-    TmpName,
-    TmpExt: string;
 begin
   if OpenDialog.Execute(Self.Handle) then
   begin
     LicensePath := ExtractFilePath(Application.ExeName) + C_LICENSEDIR;
     FileName := ExtractFileName(OpenDialog.FileName);
-    if TDirectory.Exists(LicensePath) then
-      TDirectory.CreateDirectory(LicensePath);
-    //Если файл с таким именем существует, изменяет имя при копировании
-    if TFile.Exists(LicensePath + FileName) then
-    begin
-      Ind := 1;
-      TmpName := ChangeFileExt(FileName, '');
-      TmpExt := ExtractFileExt(FileName);
-      while TFile.Exists(LicensePath + TmpName + Ind.ToString + TmpExt) do
-        Inc(Ind);
-      FileName := TmpName + Ind.ToString + TmpExt;
-    end;
+
+    GetValidName(LicensePath, FileName);
 
     TFile.Copy(OpenDialog.FileName, LicensePath + FileName);
     SetCurLicenseFile(LicensePath + FileName);

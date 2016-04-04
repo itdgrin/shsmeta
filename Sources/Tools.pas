@@ -81,6 +81,8 @@ type
     procedure GetFromClipBoard;
   end;
 
+  TCopyRowsToSMEvent = procedure(ASmClipData: TSmClipData) of object;
+
   // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 // Установка стиля таблицы из формы настроек

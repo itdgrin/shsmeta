@@ -678,7 +678,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     end
     object N3: TMenuItem
       Caption = #1058#1077#1089#1090' '#1082#1086#1087#1080#1088#1072
-      OnClick = N3Click
     end
   end
   object pmEstimates: TPopupMenu

@@ -402,6 +402,8 @@ procedure GetSerialKeyInfo(const AFileName: string; const AKey: TBytes;
 var  RC6Encryptor: TRC6Encryptor;
      TmpStream1, TmpStream2: TMemoryStream;
      TmpBytes: TBytes;
+     TmpStr: string;
+     Y, M, D: Word;
 begin
   TmpStream1 := TMemoryStream.Create;
   TmpStream2 := TMemoryStream.Create;
@@ -409,21 +411,72 @@ begin
   try
     TmpStream1.LoadFromFile(AFileName);
     RC6Encryptor.StreamDecrypt(TmpStream1, TmpStream2, True);
+    TmpStream2.SaveToFile('d:\keykey3.dll');
     TmpStream2.Position := 0;
     //Имя владельца
     SetLength(TmpBytes, 256);
     TmpStream2.Read(TmpBytes, 256);
-    ASerialKeyInfo.UserName := String(PChar(TmpBytes));
+
     //UserKey в данный момент не используется, всегда забит нулями
+    //Первый байт используется для  передачи версии ключа
     SetLength(ASerialKeyInfo.UserKey, 16);
     TmpStream2.Read(ASerialKeyInfo.UserKey, 16);
-    //Период действия лицензии
-    TmpStream2.Read(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
-    TmpStream2.Read(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
 
-    //ID пользователя, для сервака
-    if TmpStream2.Size > 130336 then //Для поддержку устаревшего варианта ключа
-      TmpStream2.Read(ASerialKeyInfo.LocalID, SizeOf(ASerialKeyInfo.LocalID));
+    if ASerialKeyInfo.UserKey[0] = 0 then
+    begin
+      ASerialKeyInfo.UserName := String(PChar(TmpBytes));
+      //Период действия лицензии
+      TmpStream2.Read(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
+      TmpStream2.Read(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+
+      //Ранний случай, когда не было версии ключа, смотрел на размер ключа
+      //ID пользователя, для сервака
+      if TmpStream2.Size > 130336 then //Для поддержку устаревшего варианта ключа
+        TmpStream2.Read(ASerialKeyInfo.LocalID, SizeOf(ASerialKeyInfo.LocalID));
+    end;
+
+    if ASerialKeyInfo.UserKey[0] = 1 then
+    begin
+      ASerialKeyInfo.UserName := UTF8ToString(Utf8String(PAnsiChar(TmpBytes)));
+      ASerialKeyInfo.DateBegin := 0;
+      ASerialKeyInfo.DateEnd := 0;
+      ASerialKeyInfo.LocalID := 0;
+      try
+        SetLength(TmpStr, 8);
+        SetLength(TmpBytes, 0);
+        SetLength(TmpBytes, 9);
+        TmpStream2.Read(TmpBytes, 8);
+        TmpStr := UTF8ToString(Utf8String(PAnsiChar(TmpBytes)));
+        D := StrToInt(Copy(TmpStr, 1, 2));
+        M := StrToInt(Copy(TmpStr, 3, 2));
+        Y := StrToInt(Copy(TmpStr, 5, 4));
+        ASerialKeyInfo.DateBegin := EncodeDate(Y, M, D);
+      except
+      end;
+
+      try
+        SetLength(TmpStr, 8);
+        SetLength(TmpBytes, 0);
+        SetLength(TmpBytes, 9);
+        TmpStream2.Read(TmpBytes, 8);
+        TmpStr := UTF8ToString(Utf8String(PAnsiChar(TmpBytes)));
+        D := StrToInt(Copy(TmpStr, 1, 2));
+        M := StrToInt(Copy(TmpStr, 3, 2));
+        Y := StrToInt(Copy(TmpStr, 5, 4));
+        ASerialKeyInfo.DateEnd := EncodeDate(Y, M, D);
+      except
+      end;
+
+      try
+        SetLength(TmpStr, 8);
+        SetLength(TmpBytes, 0);
+        SetLength(TmpBytes, 9);
+        TmpStream2.Read(TmpBytes, 8);
+        TmpStr := UTF8ToString(Utf8String(PAnsiChar(TmpBytes)));
+        ASerialKeyInfo.LocalID := StrToInt(TmpStr);
+      except
+      end;
+    end;
 
     if Assigned(AKeyDll) then
       AKeyDll.CopyFrom(TmpStream2, TmpStream2.Size - TmpStream2.Position);

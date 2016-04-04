@@ -9,7 +9,7 @@ uses
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Grids, Vcl.DBGrids,
   JvExDBGrids, JvDBGrid, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, JvExComCtrls, JvDBTreeView,
-  Tools;
+  Tools, Vcl.Menus;
 
 type
   TFormCopyEstimRow = class(TSmForm)
@@ -53,6 +53,8 @@ type
     grRatesEx: TJvDBGrid;
     SplitterCenter: TSplitter;
     Splitter1: TSplitter;
+    pmRetesEx: TPopupMenu;
+    pmCopyRows: TMenuItem;
     procedure qrObjectsBeforeOpen(DataSet: TDataSet);
     procedure FormShow(Sender: TObject);
     procedure qrObjectsAfterScroll(DataSet: TDataSet);
@@ -61,18 +63,82 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure qrRatesExAfterOpen(DataSet: TDataSet);
     procedure qrRatesExCalcFields(DataSet: TDataSet);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormActivate(Sender: TObject);
+    procedure pmCopyRowsClick(Sender: TObject);
   private
-    { Private declarations }
+    const
+      CaptionButton = 'Копирование строк смет';
+    const
+      HintButton = 'Окно копирования строк смет';
+  private
+    FOnCopyRowsToSM: TCopyRowsToSMEvent;
+    procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
-    { Public declarations }
+    property OnCopyRowsToSM: TCopyRowsToSMEvent read FOnCopyRowsToSM write FOnCopyRowsToSM;
   end;
 
+var FormCopyEstimRow: TFormCopyEstimRow = nil;
 
 implementation
 
-uses Main, GlobsAndConst, DataModule;
+uses Main, CalculationEstimate, GlobsAndConst, DataModule;
 
 {$R *.dfm}
+
+procedure TFormCopyEstimRow.WMSysCommand(var Msg: TMessage);
+begin
+  // SC_MAXIMIZE - Разворачивание формы во весь экран
+  // SC_RESTORE - Сворачивание формы в окно
+  // SC_MINIMIZE - Сворачивание формы в маленькую панель
+
+  if (Msg.WParam = SC_MAXIMIZE) or (Msg.WParam = SC_RESTORE) then
+  begin
+    FormMain.PanelCover.Visible := True;
+    inherited;
+    FormMain.PanelCover.Visible := False;
+  end
+  else if Msg.WParam = SC_MINIMIZE then
+  begin
+    FormMain.PanelCover.Visible := True;
+    inherited;
+    ShowWindow(Self.Handle, SW_HIDE); // Скрываем панель свёрнутой формы
+    FormMain.PanelCover.Visible := False;
+  end
+  else
+    inherited;
+end;
+
+procedure TFormCopyEstimRow.FormActivate(Sender: TObject);
+begin
+  // Если нажата клавиша Ctrl и выбираем форму, то делаем
+  // каскадирование с переносом этой формы на передний план
+  FormMain.CascadeForActiveWindow;
+
+  // Делаем нажатой кнопку активной формы (на главной форме внизу)
+  FormMain.SelectButtonActiveWindow(CaptionButton);
+end;
+
+procedure TFormCopyEstimRow.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := caFree;
+  FormCalculationEstimate.WindowState := wsMaximized;
+  FormCalculationEstimate.Refresh;
+end;
+
+procedure TFormCopyEstimRow.FormCreate(Sender: TObject);
+begin
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
+end;
+
+procedure TFormCopyEstimRow.FormDestroy(Sender: TObject);
+begin
+  FormCopyEstimRow := nil;
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
+end;
 
 procedure TFormCopyEstimRow.FormShow(Sender: TObject);
 begin
@@ -137,6 +203,67 @@ begin
       Font.Style := Font.Style + [fsItalic];
 
     (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  end;
+end;
+
+procedure TFormCopyEstimRow.pmCopyRowsClick(Sender: TObject);
+var
+  DataObj: TSmClipData;
+  TempBookmark: TBookMark;
+  i, j: Integer;
+begin
+  if grRatesEx.SelectedRows.Count = 0 then
+    grRatesEx.SelectedRows.CurrentRowSelected := True;
+
+  DataObj := TSmClipData.Create;
+  grRatesEx.DataSource.DataSet.DisableControls;
+  TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
+  try
+    with grRatesEx.SelectedRows do
+      if Count <> 0 then
+      begin
+        for i := 0 to Count - 1 do
+        begin
+          if IndexOf(Items[i]) > -1 then
+          begin
+            grRatesEx.DataSource.DataSet.Bookmark := Items[i];
+
+            if qrRatesExID_TYPE_DATA.Value > 0 then
+            begin
+              j := Length(DataObj.SmClipArray);
+              SetLength(DataObj.SmClipArray, j + 1);
+
+              DataObj.SmClipArray[j].ObjID := qrObjects.FieldByName('obj_id').Value;
+              DataObj.SmClipArray[j].SmID := qrRatesExSM_ID.Value;
+              DataObj.SmClipArray[j].DataID := qrRatesExID_TABLES.Value;
+              DataObj.SmClipArray[j].DataType := qrRatesExID_TYPE_DATA.Value;
+              DataObj.SmClipArray[j].RateType := 0;
+              if DataObj.SmClipArray[j].DataType = 1 then
+              begin
+                DM.qrDifferent.Active := False;
+                DM.qrDifferent.SQL.Text := 'Select NORM_TYPE from card_rate_temp ' +
+                 'where ID = ' + DataObj.SmClipArray[j].DataID.ToString;
+                DM.qrDifferent.Active := True;
+                try
+                  if not DM.qrDifferent.Eof then
+                    DataObj.SmClipArray[j].RateType :=
+                      DM.qrDifferent.Fields[0].AsInteger;
+                finally
+                  DM.qrDifferent.Active := False;
+                end;
+              end;
+            end;
+          end;
+        end;
+
+        if Assigned(FOnCopyRowsToSM) then
+          FOnCopyRowsToSM(DataObj);
+      end;
+  finally
+    grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.EnableControls;
+    DataObj.Free;
   end;
 end;
 
