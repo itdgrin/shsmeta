@@ -847,7 +847,7 @@ type
     //ѕозицианирует основное окно и окно справочника
     procedure PozWindow(AForm: TForm);
     // опирование строк из другой сметы
-    procedure CopyRowsToSM(ASmClipData: TSmClipData);
+    procedure CopyRowsToSM(ASmClipData: TSmClipData; AType: Integer);
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -3226,7 +3226,8 @@ end;
 procedure TFormCalculationEstimate.qrRatesExAfterScroll(DataSet: TDataSet);
 begin
   qrCalculationsAfterOpen(qrCalculations);
-  // √асит итератор, все добавл€етс€ в конец сметы(отличаетс€ от 0 только в режиме вставке строки)
+  // √асит итератор, все добавл€етс€ в конец сметы
+  //(отличаетс€ от 0 только в режиме вставке строки)
   FNewRowIterator := 0;
   // √асит собственный номер
   FNewNomManual := 0;
@@ -4059,8 +4060,9 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.CopyRowsToSM(ASmClipData: TSmClipData);
+procedure TFormCalculationEstimate.CopyRowsToSM(ASmClipData: TSmClipData; AType: Integer);
 var TmpIterator: Integer;
+    I: Integer;
 begin
   if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or
          (qrRatesExID_TYPE_DATA.AsInteger = -5) or
@@ -4074,9 +4076,17 @@ begin
   if FNewRowIterator > 0 then
     TmpIterator := FNewRowIterator;
 
+  if AType = 1 then  //¬ставка в конец сметы
+    TmpIterator := 0;
+
   if PasteSmetaRow(ASmClipData.SmClipArray, qrRatesExSM_ID.Value, TmpIterator,
     GetSMSubType(qrRatesExSM_ID.Value)) then
+  begin
     OutputDataToTable(True);
+    for I := Low(ASmClipData.SmClipArray) to High(ASmClipData.SmClipArray) do
+      qrRatesEx.Next
+  end;
+
 end;
 
 procedure TFormCalculationEstimate.PMMatAddToRateClick(Sender: TObject);
@@ -6214,7 +6224,8 @@ var
   i: Integer;
 begin
   // ¬ынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
+  if (grRatesEx.SelectedRows.Count > 0) and
+     not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
   Edt := Editable;

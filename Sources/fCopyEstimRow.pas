@@ -55,6 +55,7 @@ type
     Splitter1: TSplitter;
     pmRetesEx: TPopupMenu;
     pmCopyRows: TMenuItem;
+    N1: TMenuItem;
     procedure qrObjectsBeforeOpen(DataSet: TDataSet);
     procedure FormShow(Sender: TObject);
     procedure qrObjectsAfterScroll(DataSet: TDataSet);
@@ -68,6 +69,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure pmCopyRowsClick(Sender: TObject);
+    procedure pmRetesExPopup(Sender: TObject);
   private
     const
       CaptionButton = 'Копирование строк смет';
@@ -257,13 +259,23 @@ begin
         end;
 
         if Assigned(FOnCopyRowsToSM) then
-          FOnCopyRowsToSM(DataObj);
+          FOnCopyRowsToSM(DataObj, TComponent(Sender).Tag);
       end;
   finally
     grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
     grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
     grRatesEx.DataSource.DataSet.EnableControls;
     DataObj.Free;
+  end;
+end;
+
+procedure TFormCopyEstimRow.pmRetesExPopup(Sender: TObject);
+begin
+  if (grRatesEx.SelectedRows.Count > 0) and
+     not (grRatesEx.SelectedRows.CurrentRowSelected) then
+  begin
+    grRatesEx.SelectedRows.Clear;
+    grRatesEx.SelectedRows.CurrentRowSelected := True;
   end;
 end;
 

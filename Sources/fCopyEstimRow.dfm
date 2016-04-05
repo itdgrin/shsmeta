@@ -484,10 +484,16 @@ object FormCopyEstimRow: TFormCopyEstimRow
     Top = 248
   end
   object pmRetesEx: TPopupMenu
+    OnPopup = pmRetesExPopup
     Left = 684
     Top = 136
+    object N1: TMenuItem
+      Caption = #1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1090#1077#1082#1091#1097#1091#1102' '#1089#1090#1088#1086#1082#1091
+      OnClick = pmCopyRowsClick
+    end
     object pmCopyRows: TMenuItem
-      Caption = #1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1088#1072#1089#1095#1077#1090
+      Tag = 1
+      Caption = #1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1082#1086#1085#1077#1094' '#1088#1072#1089#1095#1077#1090#1072
       OnClick = pmCopyRowsClick
     end
   end
