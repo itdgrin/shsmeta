@@ -28,6 +28,8 @@ type
     btnAddTable: TBitBtn;
     pm1: TPopupMenu;
     mN1: TMenuItem;
+    mmo1: TMemo;
+    btn1: TBitBtn;
     procedure btnRefreshClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -36,6 +38,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure btnAddTableClick(Sender: TObject);
     procedure mN1Click(Sender: TObject);
+    procedure btn1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -48,6 +51,12 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TfDebugTables.btn1Click(Sender: TObject);
+begin
+  qr1.SQL.Text := mmo1.Text;
+  qr1.Active := True;
+end;
 
 procedure TfDebugTables.btnAddTableClick(Sender: TObject);
 begin

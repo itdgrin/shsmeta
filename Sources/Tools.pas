@@ -152,6 +152,10 @@ function GetGlobDef(const AParamName: String; const ADefValue: Variant;
 function GetNewID(ATypeID: Integer): Variant;
 // Округления для расчетов в программе
 function SmRound(AValue: Extended): Extended;
+{
+var
+  qr: TFDQuery;
+}
 
 implementation
 
@@ -558,11 +562,14 @@ end;
 
 function FastSelectSQLOne(const ASelectSQL: string; const AParams: Variant): Variant;
 var
-  qr: TFDQuery;
   i: Integer;
+  qr: TFDQuery;
 begin
   Result := Null;
-  qr := TFDQuery.Create(nil);
+  //if not Assigned(qr) then
+  //begin
+    qr := TFDQuery.Create(nil);
+  //end;
   try
     // Получаем только 1 запись
     qr.FetchOptions.AutoFetchAll := afDisable;

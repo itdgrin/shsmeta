@@ -732,7 +732,7 @@
                 Height = 20
                 Align = alTop
                 BevelOuter = bvNone
-                Caption = #1053#1086#1088#1084#1072' '#1088#1072#1089#1093#1086#1076#1072
+                Caption = #1053#1086#1088#1084#1099' '#1088#1072#1089#1093#1086#1076#1072' '#1088#1077#1089#1091#1088#1089#1086#1074
                 Color = clActiveCaption
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWhite
@@ -1304,7 +1304,7 @@
       'UNION ALL'
       'SELECT "'#1050#1086#1076' '#1088#1072#1089#1094#1077#1085#1082#1080'" AS CODE, :rate AS VALUE, 2 AS CODE1'
       'UNION ALL'
-      'SELECT "'#1053#1072#1079#1074#1072#1085#1080#1077'" AS CODE, :name AS VALUE, 7 AS CODE1'
+      'SELECT "'#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099'" AS CODE, :name AS VALUE, 7 AS CODE1'
       'UNION ALL'
       'SELECT "'#1045#1076'. '#1080#1079#1084'." AS CODE, :unit AS VALUE, 3 AS CODE1'
       'UNION ALL'

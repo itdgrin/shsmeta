@@ -478,8 +478,8 @@ begin
   // -----------------------------------------
   try
     btnSave.Tag := 1;
-
-    qrMain.FieldByName('CHAP_ID').Value := qrSSRSubChap.FieldByName('ID').Value;
+    if TypeEstimate = 2 then
+      qrMain.FieldByName('CHAP_ID').Value := qrSSRSubChap.FieldByName('ID').Value;
     if Editing then
     begin
       if qrMain.State in [dsEdit] then

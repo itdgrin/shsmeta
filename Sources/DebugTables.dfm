@@ -49,7 +49,7 @@ object fDebugTables: TfDebugTables
       Left = 0
       Top = 3
       Width = 562
-      Height = 410
+      Height = 285
       Align = alClient
       DataSource = ds1
       TabOrder = 0
@@ -67,6 +67,17 @@ object fDebugTables: TfDebugTables
       EditControls = <>
       RowsHeight = 17
       TitleRowHeight = 17
+    end
+    object mmo1: TMemo
+      Left = 0
+      Top = 288
+      Width = 562
+      Height = 125
+      Align = alBottom
+      Lines.Strings = (
+        'mmo1')
+      ScrollBars = ssVertical
+      TabOrder = 1
     end
   end
   object pnl1: TPanel
@@ -93,7 +104,7 @@ object fDebugTables: TfDebugTables
       Height = 25
       Anchors = [akTop, akRight]
       Caption = #1054#1073#1085#1086#1074#1080#1090#1100
-      TabOrder = 1
+      TabOrder = 2
       OnClick = btnRefreshClick
     end
     object chkAutoUpdate: TCheckBox
@@ -102,14 +113,14 @@ object fDebugTables: TfDebugTables
       Width = 167
       Height = 17
       Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
-      TabOrder = 3
+      TabOrder = 4
     end
     object edtTableName: TEdit
       Left = 280
       Top = 6
       Width = 121
       Height = 21
-      TabOrder = 2
+      TabOrder = 3
     end
     object btnAddTable: TBitBtn
       Left = 407
@@ -119,6 +130,15 @@ object fDebugTables: TfDebugTables
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       TabOrder = 0
       OnClick = btnAddTableClick
+    end
+    object btn1: TBitBtn
+      Left = 488
+      Top = 4
+      Width = 75
+      Height = 25
+      Caption = 'RunQR'
+      TabOrder = 1
+      OnClick = btn1Click
     end
   end
   object lst: TListBox
@@ -133,8 +153,6 @@ object fDebugTables: TfDebugTables
       'calculation_coef_temp')
     PopupMenu = pm1
     TabOrder = 1
-    ExplicitLeft = -1
-    ExplicitTop = 31
   end
   object ds1: TDataSource
     DataSet = qr1
