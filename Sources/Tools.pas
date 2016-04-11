@@ -105,6 +105,8 @@ function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
 function FastSelectSQLOne(const ASelectSQL: string; const AParams: Variant): Variant;
 // Функция быстрого выполнения запроса, назад ничего не возвращает (Для обновлений и пр.)
 procedure FastExecSQL(const AExecSQL: string; const AParams: Variant);
+// Функция быстрого выполнения запроса с возвратом всего результата в вариантном массиве
+function FastSelectSQL(const ASQL: string; const AParams: Variant): Variant;
 // Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
 procedure CloseOpen(const Query: TFDQuery; ADisableControls: Boolean = True);
 // Функция проверки TDataSet на активность и пустоту
@@ -654,6 +656,66 @@ begin
     end;
     // qr.Params.Items[i].Value := AParams[i];
     qr.ExecSQL;
+  finally
+    FreeAndNil(qr);
+  end;
+end;
+
+function FastSelectSQL(const ASQL: string; const AParams: Variant): Variant;
+var
+  qr: TFDQuery;
+  i, recNum: Integer;
+  res, row: Variant;
+begin
+  Result := Null;
+  qr := TFDQuery.Create(nil);
+  try
+    qr.FetchOptions.AutoFetchAll := afAll;
+    qr.FetchOptions.Mode := fmAll;
+    qr.ResourceOptions.ParamCreate := True;
+    qr.Connection := DM.Connect;
+    qr.UpdateTransaction := DM.Write;
+    qr.Transaction := DM.Read;
+    qr.SQL.Text := ASQL;
+    if VarArrayHighBound(AParams, 1) <> (qr.ParamCount - 1) then
+    begin
+      ShowMessage('Передано неверное число параметров!');
+      Exit;
+    end;
+    // Заполняем запрос параметрами
+    for i := 0 to qr.ParamCount - 1 do
+      case VarType(AParams[i]) of
+        varByte, varSmallint, varInteger, varLongWord:
+          qr.Params.Items[i].AsInteger := AParams[i];
+        varSingle, varDouble:
+          qr.Params.Items[i].AsFloat := AParams[i];
+        varCurrency:
+          qr.Params.Items[i].AsCurrency := AParams[i];
+        varDate:
+          qr.Params.Items[i].AsDateTime := AParams[i];
+        varBoolean:
+          qr.Params.Items[i].AsBoolean := AParams[i];
+        varOleStr, varStrArg, varString:
+          qr.Params.Items[i].AsString := AParams[i];
+      else
+        qr.Params.Items[i].Value := AParams[i];
+      end;
+    // qr.Params.Items[i].Value := AParams[i];
+    qr.Active := True;
+    qr.First;
+    res := VarArrayCreate([0, qr.RecordCount], varVariant);
+    row := VarArrayCreate([0, qr.FieldCount], varVariant);
+    recNum := 0;
+    while not qr.Eof do
+    begin
+      for i := 0 to qr.FieldCount - 1 do
+        row[i] := qr.Fields[i].Value;
+      res[recNum] := row;
+      qr.Next;
+      Inc(recNum);
+    end;
+    qr.Active := False;
+    Result := res;
   finally
     FreeAndNil(qr);
   end;

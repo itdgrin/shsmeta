@@ -81,7 +81,7 @@ implementation
 
 {$R *.dfm}
 
-uses SmReportParamsEdit, SmReportListSQL;
+uses SmReportParamsEdit, SmReportListSQL, SmReportEdit;
 
 procedure TfSmReportMain.btnPreviewClick(Sender: TObject);
 var
@@ -319,7 +319,9 @@ end;
 procedure TfSmReportMain.mReportEditClick(Sender: TObject);
 begin
   // Редактирование шаблона отчета
-  // TODO
+  if (not Assigned(fSmReportEdit)) then
+    fSmReportEdit := TfSmReportEdit.Create(Self, qrReport.FieldByName('REPORT_ID').Value);
+  fSmReportEdit.ShowModal;
 end;
 
 procedure TfSmReportMain.mReportEditParamsClick(Sender: TObject);

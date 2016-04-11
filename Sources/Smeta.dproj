@@ -65,7 +65,7 @@
         <DCC_K>false</DCC_K>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UsePackage>officeXPrt;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>officeXPrt;office2K;$(DCC_UsePackage)</DCC_UsePackage>
         <Icon_MainIcon>Smeta_Icon.ico</Icon_MainIcon>
         <DCC_Namespace>System.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -74,7 +74,7 @@
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_UsePackage>officeXPrt;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>officeXPrt;office2K;$(DCC_UsePackage)</DCC_UsePackage>
         <Icon_MainIcon>Smeta_Icon.ico</Icon_MainIcon>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
@@ -572,6 +572,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fCalcSetupIndex</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="SmReportEdit.pas">
+            <Form>fSmReportEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <DCCReference Include="fEstRowFinder.pas">
             <Form>FormEstRowFinder</Form>
             <FormType>dfm</FormType>
@@ -604,7 +608,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6791</VersionInfo>
+                    <VersionInfo Name="Build">6794</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -616,7 +620,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6791</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6794</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>
@@ -629,7 +633,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <Source Name="MainSource">Smeta.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k190.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp190.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>

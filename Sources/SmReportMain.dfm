@@ -205,7 +205,7 @@ object fSmReportMain: TfSmReportMain
     TabOrder = 3
     object btnPreview: TBitBtn
       Left = 3
-      Top = 3
+      Top = 4
       Width = 118
       Height = 25
       Caption = #1055#1077#1095#1072#1090#1100' '#1086#1090#1095#1077#1090#1072
@@ -351,7 +351,6 @@ object fSmReportMain: TfSmReportMain
     end
     object mReportEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1096#1072#1073#1083#1086#1085
-      Enabled = False
       ImageIndex = 45
       OnClick = mReportEditClick
     end
