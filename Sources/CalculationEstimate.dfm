@@ -507,6 +507,19 @@
           ParentFont = False
           OnClick = lblForemanClick
         end
+        object lbVozvratMat: TLabel
+          Left = 573
+          Top = 4
+          Width = 130
+          Height = 13
+          Caption = #1042#1086#1079#1074#1088#1072#1090#1085#1099#1081' '#1084#1072#1090#1077#1088#1080#1072#1083
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
         object edtRateActive: TEdit
           Left = 272
           Top = 1
@@ -3649,6 +3662,18 @@
       ShortCut = 119
       OnClick = PMDeleteClick
     end
+    object PMEdit: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 44
+      OnClick = PMEditClick
+    end
+    object pmVozvratMat: TMenuItem
+      Caption = #1042#1086#1079#1074#1088#1072#1090#1085#1099#1081' '#1084#1072#1090#1077#1088#1080#1072#1083
+      OnClick = pmVozvratMatClick
+    end
+    object N16: TMenuItem
+      Caption = '-'
+    end
     object pmCopyFromSM: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1080#1079' '#1076#1088#1091#1075#1080#1093' '#1089#1084#1077#1090
       OnClick = pmCopyFromSMClick
@@ -3656,11 +3681,6 @@
     object mN12: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1085#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
       OnClick = PopupMenuCoefAddSetClick
-    end
-    object PMEdit: TMenuItem
-      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
-      ImageIndex = 44
-      OnClick = PMEditClick
     end
     object PMNumRow: TMenuItem
       Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077' '#1085#1091#1084#1077#1088#1072#1094#1080#1077#1081
@@ -5674,6 +5694,9 @@
       FieldName = 'MarkRow'
       OnChange = qrRatesExMarkRowChange
     end
+    object qrRatesExMAT_VOZVRAT: TSmallintField
+      FieldName = 'MAT_VOZVRAT'
+    end
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
@@ -5763,7 +5786,7 @@
     AppStoragePath = '%FORM_NAME%\'
     Options = [fpActiveControl]
     StoredValues = <>
-    Left = 136
+    Left = 72
     Top = 120
   end
   object pmAddTransp: TPopupMenu
@@ -5824,8 +5847,8 @@
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'CALL `GetRates_ex`(:vIsACT, :EAID);')
-    Left = 200
-    Top = 120
+    Left = 168
+    Top = 104
     ParamData = <
       item
         Name = 'VISACT'

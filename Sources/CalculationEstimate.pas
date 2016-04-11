@@ -516,6 +516,10 @@ type
     pmFindRowInEstim: TMenuItem;
     N15: TMenuItem;
     pmCopyFromSM: TMenuItem;
+    qrRatesExMAT_VOZVRAT: TSmallintField;
+    N16: TMenuItem;
+    pmVozvratMat: TMenuItem;
+    lbVozvratMat: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -720,6 +724,7 @@ type
     procedure grRatesExEnter(Sender: TObject);
     procedure pmFindRowInEstimClick(Sender: TObject);
     procedure pmCopyFromSMClick(Sender: TObject);
+    procedure pmVozvratMatClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта на доп. работы');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -1167,6 +1172,10 @@ begin
     FormMain.CreateButtonOpenWindow(CaptionButton[2 + TYPE_ACT], HintButton[2 + TYPE_ACT], Self, 1);
 
   flLoaded := True;
+
+  lbVozvratMat.Top := LabelCategory.Top;
+  lbVozvratMat.Left := LabelCategory.Left;
+  lbVozvratMat.Visible := False;
 end;
 
 procedure TFormCalculationEstimate.FormShow(Sender: TObject);
@@ -1707,6 +1716,26 @@ begin
   edtWinterPrice.Width := newWith;
   btnWinterPriceSelect.Left := edtWinterPrice.Left + edtWinterPrice.Width -
     4 { - btnWinterPriceSelect.Width };
+end;
+
+procedure TFormCalculationEstimate.pmVozvratMatClick(Sender: TObject);
+var NewVal: Byte;
+begin
+  if qrRatesExID_TYPE_DATA.AsInteger = 2 then
+  begin
+    NewVal := 1;
+    if qrRatesExMAT_VOZVRAT.AsInteger = 1 then
+      NewVal := 0;
+
+    qrRatesExMAT_VOZVRAT.AsInteger := NewVal;
+    qrTemp.SQL.Text := 'UPDATE materialcard_temp set VOZVRAT=:MV WHERE ID=:ID;';
+    qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.AsInteger;
+    qrTemp.ParamByName('MV').Value := NewVal;
+    qrTemp.ExecSQL;
+
+    pmVozvratMat.Checked := NewVal = 1;
+    lbVozvratMat.Visible := NewVal = 1;
+  end;
 end;
 
 procedure TFormCalculationEstimate.pnlCalculationYesNoClick(Sender: TObject);
@@ -6252,6 +6281,10 @@ begin
   PMPaste.Visible := not Act;
   mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3, 4];
 
+  pmVozvratMat.Visible := qrRatesExID_TYPE_DATA.Value = 2;
+  if pmVozvratMat.Visible then
+    pmVozvratMat.Checked := qrRatesExMAT_VOZVRAT.AsInteger = 1;
+
   if Act then
     pmFindRowInEstim.Caption := 'Искать в акте'
   else
@@ -7175,6 +7208,11 @@ begin
   EditCategory.Visible := qrRatesExID_TYPE_DATA.AsInteger = 1;
   edtRateActive.Visible := qrRatesExID_TYPE_DATA.AsInteger = 1;
   edtRateActiveDate.Visible := qrRatesExID_TYPE_DATA.AsInteger = 1;
+
+  //Подпись для возвратных материалов
+  lbVozvratMat.Visible :=
+    (qrRatesExID_TYPE_DATA.AsInteger = 2) and (qrRatesExMAT_VOZVRAT.AsInteger = 1);
+
   // Если расценка
   if qrRatesExID_TYPE_DATA.AsInteger = 1 then
   begin
