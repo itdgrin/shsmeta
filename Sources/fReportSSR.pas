@@ -1298,7 +1298,7 @@ begin
     if mtSSR.BookmarkValid(Bookmark0802) then
     begin
       mtSSR.GotoBookmark(Bookmark0802);
-      Line0802.Mat := Line0801.Mat + Line0801.ZP + Line0801.EMiM;
+      Line0802.Mat := Line0801.Total;
       CalcLineWithKoef(Line0802);
       AssignLineIfNoNull(Line0802);
       if mtSSR.BookmarkValid(Bookmark0996) then
