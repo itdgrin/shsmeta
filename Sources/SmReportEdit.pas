@@ -76,10 +76,26 @@ type
   private
     REPORT_ID: Variant;
     ROW_ID, COL_ID: Variant;
-    procedure buildReport(const AREPORT_ID: Integer);
+
   public
     { Public declarations }
   end;
+
+///	<summary>
+///	  Функция построения отчета
+///	</summary>
+///	<returns>
+///	  <para>
+///	    Возвращает массив [0..1]:
+///	  </para>
+///	  <para>
+///	    [0] - запрос на выборку;
+///	  </para>
+///	  <para>
+///	    [1] - массив с подписями полей.
+///	  </para>
+///	</returns>
+function BuildReport(const AREPORT_ID: Integer): Variant;
 
 var
   fSmReportEdit: TfSmReportEdit;
@@ -101,17 +117,29 @@ begin
 end;
 
 procedure TfSmReportEdit.btnTestClick(Sender: TObject);
+var
+  startTime: Int64;
+  res: Variant;
 begin
-  buildReport(REPORT_ID);
+  // DEBUG-->
+  FastExecSQL(mmoInParams.Text, VarArrayOf([]));
+  startTime := GetTickCount;
+  res := BuildReport(REPORT_ID);
+  qrPreview.SQL.Text := res[0];
+//qrPreview.SQL.SaveToFile('c:\report.sql');
+  mmoLog.Lines.Add('Prepare time: ' + IntToStr(GetTickCount - startTime));
+  startTime := GetTickCount;
+  qrPreview.Active := True;
+  mmoLog.Lines.Add('Exec time: ' + IntToStr(GetTickCount - startTime));
+  // <--DEBUG
 end;
 
-procedure TfSmReportEdit.buildReport(const AREPORT_ID: Integer);
+function BuildReport(const AREPORT_ID: Integer): Variant;
 var
   fullQuery, qr, SELECT, INTO, TABLE, FORMUL: string;
-  OLD_REPORT_VAR_TYPE, formulCache: Variant;
+  OLD_REPORT_VAR_TYPE, formulCache, ColNames: Variant;
   q, qrCol: TFDQuery;
-  startTime: Int64;
-  rowCnt: Integer;
+  cnt: Integer;
 
   procedure InitVariableType(const AREPORT_VAR_TYPE: Integer);
   begin
@@ -142,7 +170,6 @@ var
         begin
 
         end;
-
     end;
     // Записываем глобальные переменные
     FastExecSQL(qr, VarArrayOf([]));
@@ -213,6 +240,8 @@ var
           Result := True;
           tmp := formulCache[I];
           tmp[2] := FastSelectSQLOne('SELECT ' + AFormul, VarArrayOf([]));
+          if VarIsNull(tmp[2]) or (VarToStr(tmp[2]) = '') then
+            tmp[2] := 'NULL';
           AFormul := tmp[2];
           formulCache[I] := tmp;
           Break;
@@ -248,10 +277,8 @@ var
   end;
 
 begin
+  Result := Null;
   // Процедуда постройки отчета
-  // DEBUG-->
-  FastExecSQL(mmoInParams.Text, VarArrayOf([]));
-  // <--DEBUG
   formulCache := FastSelectSQL('SELECT ROW_ID, COL_ID, REPORT_CELL_VAL, NULL FROM report_cell WHERE REPORT_ID=:0 ORDER BY ROW_ID, COL_ID', VarArrayOf([AREPORT_ID]));
   q := DM.qrDifferent;
   qrCol := DM.qrDifferent1;
@@ -290,11 +317,10 @@ begin
   q.Active := False;
   InitVariableType(OLD_REPORT_VAR_TYPE);
   // <--Инициализация переменных отчета
-  // mmoLog.Lines.Add(fullQuery);
 
   // Сборка общего запроса на вывод отчета-->
   fullQuery := '';
-  startTime := GetTickCount;
+
   // Строки отчета
   q.SQL.Text := 'SELECT *'#13 +
     'FROM report_row'#13 +
@@ -312,19 +338,17 @@ begin
   qrCol.Active := True;
 
   // Формируем шапку таблицы
-  {
   qrCol.First;
-  SELECT := '';
+  cnt := 0;
+  ColNames := VarArrayCreate([0, qrCol.RecordCount], varVariant);
   while not qrCol.Eof do
   begin
-    SELECT := IIF(SELECT = '', '"', SELECT + ', "') + qrCol.FieldByName('REPORT_COL_LABEL').AsString + '"';
+    ColNames[cnt] := qrCol.FieldByName('REPORT_COL_LABEL').AsString;
     qrCol.Next;
+    Inc(cnt);
   end;
-  fullQuery := 'SELECT ' + SELECT + ''#13;
-  }
 
   // Проходим все источники строк отчета
-  rowCnt := 0;
   while not q.Eof do
   begin
     if fullQuery <> '' then
@@ -349,17 +373,13 @@ begin
     end;
     fullQuery := fullQuery + 'SELECT ' + SELECT + ''#13;
     q.Next;
-    Inc(rowCnt);
   end;
   q.Active := False;
   qrCol.Active := False;
-  mmoLog.Lines.Add('Prepare time: ' + IntToStr(GetTickCount - startTime));
   // <--Сборка общего запроса на вывод отчета
-  qrPreview.SQL.Text := fullQuery;
-//qrPreview.SQL.SaveToFile('c:\report.sql');
-  startTime := GetTickCount;
-  qrPreview.Active := True;
-  mmoLog.Lines.Add('Exec time: ' + IntToStr(GetTickCount - startTime));
+
+  Result := VarArrayOf([fullQuery, ColNames]);
+  //VarClear(formulCache);
 end;
 
 procedure TfSmReportEdit.FormClose(Sender: TObject; var Action: TCloseAction);

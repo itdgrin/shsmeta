@@ -47,7 +47,7 @@ object fCalcSetup: TfCalcSetup
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 2
       OnClick = btnCancelClick
     end
     object btnSave: TBitBtn
@@ -63,8 +63,18 @@ object fCalcSetup: TfCalcSetup
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnSaveClick
+    end
+    object btnCalcSetupIndex: TBitBtn
+      Left = 4
+      Top = 8
+      Width = 98
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Caption = #1048#1085#1076#1077#1082#1089' '#1088#1086#1089#1090#1072
+      TabOrder = 0
+      OnClick = btnCalcSetupIndexClick
     end
   end
   object ScrollBox1: TScrollBox

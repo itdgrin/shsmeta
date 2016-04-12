@@ -66,6 +66,7 @@ type
     procedure mCategoryEditNameClick(Sender: TObject);
     procedure mReportCopyClick(Sender: TObject);
     procedure qrReportDataBeforeOpen(DataSet: TDataSet);
+    procedure FormActivate(Sender: TObject);
   private
     ReportParams: TfSmReportParams;
     flAdmin: Boolean;
@@ -81,7 +82,7 @@ implementation
 
 {$R *.dfm}
 
-uses SmReportParamsEdit, SmReportListSQL, SmReportEdit;
+uses SmReportParamsEdit, SmReportListSQL, SmReportEdit, SmReportPreview;
 
 procedure TfSmReportMain.btnPreviewClick(Sender: TObject);
 var
@@ -126,12 +127,16 @@ begin
         qrActMat.Filter := '';
         qrActMat.Filtered := False;
       end;
+  else
+    begin
+      ShowReport(qrReport.FieldByName('REPORT_ID').AsInteger, ReportParams, nil, False);
+      Exit;
+    end;
   end;
   frxReport.LoadFromFile(tmpReportName);
   frxDS.DataSet.Active := True;
   frxReport.PrepareReport();
   frxReport.ShowPreparedReport;
-
   { пример говнокода
 
     dm.frxReport.Variables['ccc'] := dm.roomerCQ.RecordCount;
@@ -142,6 +147,15 @@ begin
     else
     dm.frxReport.FindObject('GroupHeader2').Visible := false;
   }
+end;
+
+procedure TfSmReportMain.FormActivate(Sender: TObject);
+begin
+  // Если нажата клавиша Ctrl и выбираем форму, то делаем
+  // каскадирование с переносом этой формы на передний план
+  FormMain.CascadeForActiveWindow;
+  // Делаем нажатой кнопку активной формы (на главной форме внизу)
+  FormMain.SelectButtonActiveWindow(Caption);
 end;
 
 procedure TfSmReportMain.FormClose(Sender: TObject; var Action: TCloseAction);

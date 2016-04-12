@@ -35,6 +35,7 @@ type
     function test(AFileName: string; SM_ID: Integer): Boolean;
     procedure doCreateDoc;
     function WorkBookIndex(WorkBookName: Ansistring): Integer;
+
   end;
 
 var

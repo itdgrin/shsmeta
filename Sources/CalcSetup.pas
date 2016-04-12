@@ -103,6 +103,7 @@ type
     jvdbspndtK_PP1: TJvDBSpinEdit;
     qrMain: TFDQuery;
     dsMain: TDataSource;
+    btnCalcSetupIndex: TBitBtn;
     procedure btnCancelClick(Sender: TObject);
     procedure dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -114,6 +115,7 @@ type
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure qrMainBeforeOpen(DataSet: TDataSet);
     procedure btnSaveClick(Sender: TObject);
+    procedure btnCalcSetupIndexClick(Sender: TObject);
   private
     // ћожно OBJ_ID не передавать, если нету под рукой
     OBJ_ID, SM_ID: Variant; // [0..1] InitParams->Create
@@ -123,9 +125,21 @@ type
 
 implementation
 
-uses CardObjectContractorServices, SSR, Main;
+uses CardObjectContractorServices, SSR, Main, CalcSetupIndex;
 
 {$R *.dfm}
+
+procedure TfCalcSetup.btnCalcSetupIndexClick(Sender: TObject);
+var
+  fCalcSetupIndex: TfCalcSetupIndex;
+begin
+  fCalcSetupIndex := TfCalcSetupIndex.Create(Self, VarArrayOf([OBJ_ID, SM_ID]));
+  try
+    fCalcSetupIndex.ShowModal;
+  finally
+    FreeAndNil(fCalcSetupIndex);
+  end;
+end;
 
 procedure TfCalcSetup.btnCancelClick(Sender: TObject);
 begin

@@ -209,8 +209,8 @@ type
 
     function CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
       AEventType: Byte = 0): TSpeedButton;
-    procedure DeleteButtonCloseWindow(const CaptionButton: String);
-    procedure SelectButtonActiveWindow(const CaptionButton: String);
+    procedure DeleteButtonCloseWindow(const CaptionButton: String); overload;
+    procedure SelectButtonActiveWindow(const CaptionButton: String); overload;
     procedure ReplaceButtonOpenWindow(const AFrom, ATo: TForm);
 
     procedure TimerCoverTimer(Sender: TObject);
@@ -342,6 +342,8 @@ type
     procedure FormShowEvent1(Sender: TObject);
     procedure FormShowEvent2(Sender: TObject);
   public
+    procedure SelectButtonActiveWindow(const AForm: TForm); overload;
+    procedure DeleteButtonCloseWindow(const AForm: TForm); overload;
     procedure IniSystem;
   end;
 
@@ -997,12 +999,54 @@ begin
   Dec(CountOpenWindows);
 end;
 
+procedure TFormMain.DeleteButtonCloseWindow(const AForm: TForm);
+var
+  i, Y: integer;
+begin
+  if not Assigned(PanelOpenWindows) or Application.Terminated then
+    Exit;
+
+  Y := -1;
+  for i := 0 to CountOpenWindows - 1 do
+    if (ButtonsWindows[i].Tag = Integer(AForm)) then
+    begin
+      Y := i;
+      Break;
+    end;
+
+  if (Y = -1) then // Нет кнопки с таким названием
+    Exit;
+
+  ButtonsWindows[Y].Free;
+  ButtonsWindows[Y] := nil;
+
+  while Y < CountOpenWindows - 1 do
+  begin
+    ButtonsWindows[Y] := ButtonsWindows[Y + 1];
+    Inc(Y);
+  end;
+
+  Dec(CountOpenWindows);
+end;
+
 procedure TFormMain.SelectButtonActiveWindow(const CaptionButton: String);
 var
   i: integer;
 begin
   for i := 0 to CountOpenWindows - 1 do
     if ButtonsWindows[i].Caption = CaptionButton then
+    begin
+      ButtonsWindows[i].Down := true;
+      Exit;
+    end;
+end;
+
+procedure TFormMain.SelectButtonActiveWindow(const AForm: TForm);
+var
+  i: integer;
+begin
+  for i := 0 to CountOpenWindows - 1 do
+    if ButtonsWindows[i].Tag = Integer(AForm) then
     begin
       ButtonsWindows[i].Down := true;
       Exit;

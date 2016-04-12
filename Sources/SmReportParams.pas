@@ -440,11 +440,12 @@ procedure TfSmReportParams.WriteReportParams(AQuery: TFDQuery);
 // Процедура для записи значений параметров в датасет
 var
   paramId: Integer;
-  ParamName, ErrorParams, msg: string;
+  ParamName, ErrorParams, msg, InitGlobalParams: string;
 begin
   if not CheckQrActiveEmpty(qrReportParam) then
     Exit;
   ErrorParams := '';
+  InitGlobalParams := '';
   qrReportParam.First;
   paramId := 0;
   while not qrReportParam.Eof do
@@ -457,6 +458,8 @@ begin
     ParamName := qrReportParam.FieldByName('REPORT_PARAM_NAME').AsString;
     if AQuery.FindParam(ParamName) <> nil then
       AQuery.ParamByName(ParamName).Value := Params[paramId, 0];
+    InitGlobalParams := {InitGlobalParams +} 'SET @' + ParamName + ' = :0;';
+    FastExecSQL(InitGlobalParams, VarArrayOf([Params[paramId, 0]]));
     Inc(paramId);
     qrReportParam.Next;
   end;

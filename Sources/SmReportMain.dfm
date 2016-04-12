@@ -3,7 +3,7 @@ object fSmReportMain: TfSmReportMain
   Top = 0
   ActiveControl = grReport
   Caption = #1055#1077#1095#1072#1090#1100' '#1086#1090#1095#1077#1090#1086#1074
-  ClientHeight = 282
+  ClientHeight = 285
   ClientWidth = 384
   Color = clBtnFace
   Constraints.MinHeight = 320
@@ -15,6 +15,7 @@ object fSmReportMain: TfSmReportMain
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -191,7 +192,7 @@ object fSmReportMain: TfSmReportMain
   end
   object pnlBott: TPanel
     Left = 0
-    Top = 251
+    Top = 254
     Width = 384
     Height = 31
     Align = alBottom
@@ -204,8 +205,8 @@ object fSmReportMain: TfSmReportMain
     ParentFont = False
     TabOrder = 3
     object btnPreview: TBitBtn
-      Left = 3
-      Top = 4
+      Left = 2
+      Top = 5
       Width = 118
       Height = 25
       Caption = #1055#1077#1095#1072#1090#1100' '#1086#1090#1095#1077#1090#1072
@@ -223,7 +224,7 @@ object fSmReportMain: TfSmReportMain
     Left = 0
     Top = 185
     Width = 384
-    Height = 66
+    Height = 69
     HorzScrollBar.Visible = False
     Align = alClient
     BorderStyle = bsNone

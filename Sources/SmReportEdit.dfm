@@ -33,7 +33,7 @@ object fSmReportEdit: TfSmReportEdit
         Top = 0
         Width = 596
         Height = 475
-        ActivePage = tsPreView
+        ActivePage = tsVar
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText

@@ -148,7 +148,8 @@ uses
   CalcSetupIndex in 'CalcSetupIndex.pas' {fCalcSetupIndex},
   SmReportEdit in 'SmReportEdit.pas' {fSmReportEdit},
   fEstRowFinder in 'fEstRowFinder.pas' {FormEstRowFinder},
-  fCopyEstimRow in 'fCopyEstimRow.pas' {FormCopyEstimRow};
+  fCopyEstimRow in 'fCopyEstimRow.pas' {FormCopyEstimRow},
+  SmReportPreview in 'SmReportPreview.pas' {fSmReportPreview};
 
 {$R *.res}
 var MHandle: THandle;
