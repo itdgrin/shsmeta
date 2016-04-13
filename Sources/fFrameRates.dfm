@@ -60,6 +60,7 @@
       Height = 511
       Align = alLeft
       BevelOuter = bvNone
+      Constraints.MinWidth = 100
       TabOrder = 0
       object EditRate: TEdit
         Left = 0
@@ -742,6 +743,7 @@
                 ParentBackground = False
                 ParentFont = False
                 TabOrder = 0
+                OnResize = PanelNCHeaderResize
               end
               object grNC: TJvDBGrid
                 Left = 0
@@ -941,9 +943,9 @@
     end
   end
   object pnlHead: TPanel
-    Left = 117
+    Left = 115
     Top = 25
-    Width = 622
+    Width = 624
     Height = 151
     Anchors = [akLeft, akTop, akRight]
     BevelOuter = bvNone
@@ -952,7 +954,7 @@
     object JvDBGrid1: TJvDBGrid
       Left = 0
       Top = 0
-      Width = 622
+      Width = 624
       Height = 152
       Align = alTop
       DataSource = dsHeader_1
@@ -994,7 +996,7 @@
         item
           Expanded = False
           FieldName = 'VALUE'
-          Width = 473
+          Width = 475
           Visible = True
         end>
     end

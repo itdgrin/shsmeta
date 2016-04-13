@@ -293,7 +293,7 @@ implementation
 {$R *.dfm}
 
 uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule, CalcSetup, CalcSetupIndex,
-  GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReportData;
+  GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReportData, SmReportPreview, SmReportEdit;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
   AEditable: Boolean = True; AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
@@ -392,7 +392,11 @@ end;
 
 procedure TfCalcResource.btnShowTemplateClick(Sender: TObject);
 begin
-  dmSmReport.showDocument(ExcelApp);
+  //dmSmReport.showDocument(ExcelApp);
+  // Редактирование шаблона отчета
+  if (not Assigned(fSmReportEdit)) then
+    fSmReportEdit := TfSmReportEdit.Create(Self, 1);
+  fSmReportEdit.ShowModal;
 end;
 
 function TfCalcResource.CanEditField(Field: TField): Boolean;
@@ -635,37 +639,27 @@ begin
     // Расчет стоимости
     0:
       begin
-        { if OleContainer1.State <> osEmpty then
-          Exit; }
-        try
+        {
+          try
           FormWaiting.Show;
           Application.ProcessMessages;
           fileName := ExtractFilePath(Application.ExeName) + C_REPORTDIR + 'ШАБЛОН ПОЛНЫЙ.xls';
           if not FileExists(fileName) then
           begin
-            Application.MessageBox(PChar('Не найден файл шабона!'#13 + fileName), 'Cводный расчет',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST);
-            Exit;
+          Application.MessageBox(PChar('Не найден файл шабона!'#13 + fileName), 'Cводный расчет',
+          MB_OK + MB_ICONSTOP + MB_TOPMOST);
+          Exit;
           end;
           // dmSmReport.test(fileName, IDEstimate);
           RangeRead(fileName); // записываем переменные и получаем обратно результат
-        finally
+          finally
           FormWaiting.Close;
           pgc.SetFocus;
-        end;
-        // Проходим по всем тулбарам связанного с контейнером приложения
-        // и устанавливаем всем невидимость, чтоб не мешали ...
-        {
-          for i := 1 to OleContainer1.OleObject.CommandBars.Count do
-          if OleContainer1.OleObject.CommandBars.Item[i].Visible then
-          OleContainer1.OleObject.CommandBars.Item[i].Visible := False;
-        }      {
-          if osEmpty = OleContainer1.State then
-          Exit;
-          OleContainer1.DoVerb(ovShow); // not in FormCreate, in or after FormShow
-          ev := 2;
-          OleContainer1.OleObject.Protect(ev);
-          OleContainer1.OleObject.ActiveWindow.ToggleRibbon; }
+          end;
+        }
+        ShowReport(1, VarArrayOf([VarArrayOf(['SM_ID', IIF(ShowFullObject, Null, IDEstimate)]),
+          VarArrayOf(['OBJ_ID', FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0',
+          VarArrayOf([IDEstimate]))])]), ts1);
       end;
     // Расчет материалов
     1:

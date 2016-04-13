@@ -26,23 +26,41 @@ type
   public
   end;
 
-///	<summary>
-///	  Процедура генерации вьюшки отчета
-///	</summary>
-///	<param name="AREPORT_ID">
-///	  ID отчета
-///	</param>
-///	<param name="AReportParams">
-///	  Форма выбора параметров отчета
-///	</param>
-///	<param name="AOwner">
-///	  Контрол для автоматического размешения вьюшки на нем
-///	</param>
-///	<param name="AMDIMode">
-///	  Вызов в MDI режиме
-///	</param>
-procedure ShowReport(const AREPORT_ID: Variant; const AReportParams: TfSmReportParams;
-  const AOwner: TWinControl = nil; const AMDIMode: Boolean = True);
+  /// <summary>
+  /// Процедура генерации вьюшки отчета
+  /// </summary>
+  /// <param name="AREPORT_ID">
+  /// ID отчета
+  /// </param>
+  /// <param name="AReportParams">
+  /// Форма выбора параметров отчета
+  /// </param>
+  /// <param name="AOwner">
+  /// Контрол для автоматического размешения вьюшки на нем
+  /// </param>
+  /// <param name="AMDIMode">
+  /// Вызов в MDI режиме
+  /// </param>
+function ShowReport(const AREPORT_ID: Variant; const AReportParams: TfSmReportParams;
+  const AOwner: TWinControl = nil; const AMDIMode: Boolean = True): TfSmReportPreview; overload;
+
+/// <summary>
+/// Процедура генерации вьюшки отчета
+/// </summary>
+/// <param name="AREPORT_ID">
+/// ID отчета
+/// </param>
+/// <param name="AReportParams">
+/// Вариантный массив Arr[N][0..1]: 0 - название параметра; 1 - значение
+/// </param>
+/// <param name="AOwner">
+/// Контрол для автоматического размешения вьюшки на нем
+/// </param>
+/// <param name="AMDIMode">
+/// Вызов в MDI режиме
+/// </param>
+function ShowReport(const AREPORT_ID: Variant; const AReportParams: Variant; const AOwner: TWinControl = nil;
+  const AMDIMode: Boolean = True): TfSmReportPreview; overload;
 
 implementation
 
@@ -50,42 +68,116 @@ uses SmReportEdit;
 
 {$R *.dfm}
 
-procedure ShowReport(const AREPORT_ID: Variant; const AReportParams: TfSmReportParams;
-  const AOwner: TWinControl = nil; const AMDIMode: Boolean = True);
+function ShowReport(const AREPORT_ID: Variant; const AReportParams: TfSmReportParams;
+  const AOwner: TWinControl = nil; const AMDIMode: Boolean = True): TfSmReportPreview;
 var
   f: TfSmReportPreview;
   res: Variant;
   i: Integer;
 begin
+  Result := nil;
   f := TfSmReportPreview.Create(AOwner, AREPORT_ID);
-  AReportParams.WriteReportParams(f.qrMain);
-  res := BuildReport(f.REPORT_ID);
-  if VarIsNull(res) then
-  begin
-    FreeAndNil(f);
-    Exit;
-  end;
-  f.qrMain.SQL.Text := res[0];
-  f.qrMain.Active := True;
-  for i := 0 to f.grMain.Columns.Count - 1 do
-  begin
-    f.grMain.Columns[i].Title.Caption := res[1][i];
-    f.grMain.Columns[i].Title.Alignment := taCenter;
-  end;
+  try
+    AReportParams.WriteReportParams(f.qrMain);
+    res := BuildReport(f.REPORT_ID);
+    if VarIsNull(res) then
+    begin
+      FreeAndNil(f);
+      Exit;
+    end;
+    f.qrMain.SQL.Text := res[0];
+    f.qrMain.Active := True;
+    for i := 0 to f.grMain.Columns.Count - 1 do
+    begin
+      f.grMain.Columns[i].Title.Caption := res[1][i];
+      f.grMain.Columns[i].Title.Alignment := taCenter;
+    end;
 
-  if AOwner <> nil then
-  begin
-    f.Parent := AOwner;
-    f.Align := alClient;
-    f.BorderStyle := bsNone;
-  end
-  else
-  begin
-    if AMDIMode then
-      f.FormStyle := fsMDIChild;
-    FormMain.CreateButtonOpenWindow(f.Caption, f.Caption, f, 1);
+    f.pnlBott.Visible := AOwner = nil;
+
+    if AOwner <> nil then
+    begin
+      f.Parent := AOwner;
+      f.Align := alClient;
+      f.BorderStyle := bsNone;
+    end
+    else
+    begin
+      if AMDIMode then
+        f.FormStyle := fsMDIChild;
+      FormMain.CreateButtonOpenWindow(f.Caption, f.Caption, f, 1);
+    end;
+    f.Show;
+    Result := f;
+  except
+    on e: Exception do
+    begin
+      MessageBox(0, PChar('При формировании отчета возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+        'Отчеты', MB_ICONERROR + MB_OK + mb_TaskModal);
+      FreeAndNil(f);
+    end;
   end;
-  f.Show;
+end;
+
+function ShowReport(const AREPORT_ID: Variant; const AReportParams: Variant; const AOwner: TWinControl = nil;
+  const AMDIMode: Boolean = True): TfSmReportPreview;
+var
+  f: TfSmReportPreview;
+  res: Variant;
+  i: Integer;
+  ParamName: string;
+begin
+  Result := nil;
+  f := TfSmReportPreview.Create(AOwner, AREPORT_ID);
+  try
+    for i := VarArrayLowBound(AReportParams, 1) to VarArrayHighBound(AReportParams, 1) do
+    begin
+      ParamName := VarToStr(AReportParams[i][0]);
+      {
+        if AQuery.FindParam(ParamName) <> nil then
+        AQuery.ParamByName(ParamName).Value := AReportParams[i][1];
+      }
+      FastExecSQL('SET @' + ParamName + ' = :0;', VarArrayOf([AReportParams[i][1]]));
+    end;
+
+    res := BuildReport(f.REPORT_ID);
+    if VarIsNull(res) then
+    begin
+      FreeAndNil(f);
+      Exit;
+    end;
+    f.qrMain.SQL.Text := res[0];
+    f.qrMain.Active := True;
+    for i := 0 to f.grMain.Columns.Count - 1 do
+    begin
+      f.grMain.Columns[i].Title.Caption := res[1][i];
+      f.grMain.Columns[i].Title.Alignment := taCenter;
+    end;
+
+    f.pnlBott.Visible := AOwner = nil;
+
+    if AOwner <> nil then
+    begin
+      f.Parent := AOwner;
+      f.Align := alClient;
+      f.BorderStyle := bsNone;
+    end
+    else
+    begin
+      if AMDIMode then
+        f.FormStyle := fsMDIChild;
+      FormMain.CreateButtonOpenWindow(f.Caption, f.Caption, f, 1);
+    end;
+    f.Show;
+    Result := f;
+  except
+    on e: Exception do
+    begin
+      MessageBox(0, PChar('При формировании отчета возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+        'Отчеты', MB_ICONERROR + MB_OK + mb_TaskModal);
+      FreeAndNil(f);
+    end;
+  end;
 end;
 
 procedure TfSmReportPreview.btnCloseClick(Sender: TObject);
@@ -120,10 +212,8 @@ var
 begin
   cnt := 0;
   REPORT_ID := InitParams;
-  Caption := 'Отчет - ' + FastSelectSQLOne('SELECT REPORT_NAME FROM REPORT WHERE REPORT_ID=:0',
+  Caption := FastSelectSQLOne('SELECT REPORT_NAME FROM REPORT WHERE REPORT_ID=:0',
     VarArrayOf([REPORT_ID])) + IIF(cnt > 1, '(' + IntToStr(cnt) + ')', '');
 end;
-
-
 
 end.

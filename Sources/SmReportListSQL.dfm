@@ -2,7 +2,7 @@ object fSmReportListSQL: TfSmReportListSQL
   Left = 0
   Top = 0
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1089#1087#1080#1089#1082#1086#1074
-  ClientHeight = 282
+  ClientHeight = 285
   ClientWidth = 464
   Color = clBtnFace
   Constraints.MinHeight = 320
@@ -19,7 +19,7 @@ object fSmReportListSQL: TfSmReportListSQL
   OnDestroy = FormDestroy
   DesignSize = (
     464
-    282)
+    285)
   PixelsPerInch = 96
   TextHeight = 13
   object lbl1: TLabel
@@ -47,7 +47,7 @@ object fSmReportListSQL: TfSmReportListSQL
     Left = 8
     Top = 8
     Width = 230
-    Height = 234
+    Height = 237
     Align = alCustom
     Anchors = [akLeft, akTop, akBottom]
     DataSource = dsMain
@@ -56,7 +56,7 @@ object fSmReportListSQL: TfSmReportListSQL
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
@@ -78,13 +78,13 @@ object fSmReportListSQL: TfSmReportListSQL
         FieldName = 'REPORT_LIST_SQL_NAME'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1089#1087#1080#1089#1082#1072
-        Width = 213
+        Width = 198
         Visible = True
       end>
   end
   object pnlBot: TPanel
     Left = 0
-    Top = 248
+    Top = 251
     Width = 464
     Height = 34
     Align = alBottom
@@ -148,7 +148,7 @@ object fSmReportListSQL: TfSmReportListSQL
     Left = 244
     Top = 162
     Width = 212
-    Height = 80
+    Height = 83
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataField = 'REPORT_LIST_SQL_SRC'
     DataSource = dsMain

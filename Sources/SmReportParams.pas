@@ -162,6 +162,8 @@ begin
     if TCheckBox(Sender).Checked then
       Params[paramId, 0] := Null;
   end;
+  // «аписываем параметр в глобальную переменную
+  FastExecSQL('SET @' + Params[paramId, 3] + '=:0;', VarArrayOf([Params[paramId, 0]]));
 end;
 
 procedure TfSmReportParams.qrReportParamAfterOpen(DataSet: TDataSet);

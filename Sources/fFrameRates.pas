@@ -183,6 +183,7 @@ type
     procedure JvDBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
     procedure JvDBGrid1CellClick(Column: TColumn);
+    procedure PanelNCHeaderResize(Sender: TObject);
   private
     StrQuery: String; // Для формирования строки запроса к БД
     flNewRecord: Boolean; // Признак новой записи
@@ -682,6 +683,14 @@ begin
   qrNC.Delete;
 end;
 
+procedure TFrameRates.PanelNCHeaderResize(Sender: TObject);
+begin
+  inherited;
+  //pnlHead.Left := PanelNCHeader.Left;
+  pnlHead.Left := SplitterLeft.Left + 5;
+  pnlHead.Width := PanelNCHeader.Width;
+end;
+
 procedure TFrameRates.pmNCPopup(Sender: TObject);
 begin
   if not CheckQrActiveEmpty(qrNormativ) then
@@ -912,6 +921,8 @@ procedure TFrameRates.SplitterLeftMoved(Sender: TObject);
 begin
   ImageSplitterLeft.Left := SplitterLeft.Left;
   ImageSplitterLeft.Top := SplitterLeft.Top + (SplitterLeft.Height - ImageSplitterLeft.Height) div 2;
+  //pnlHead.Left := SplitterLeft.Left + 5;
+  //pnlHead.Width := Width - pnlHead.Left - 15;
 end;
 
 procedure TFrameRates.SplitterRightMoved(Sender: TObject);

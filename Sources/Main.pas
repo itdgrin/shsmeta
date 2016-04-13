@@ -874,7 +874,7 @@ begin
       // Подргужаем Excel
       FormWaiting.lbProcess.Caption := 'Загрузка справочников:'#13 + 'объекты отчетов';
       Application.ProcessMessages;
-      dmSmReport.doCreateDoc;
+      // dmSmReport.doCreateDoc;
       //
       FormWaiting.Close;
       FormWaiting.Height := 88;
