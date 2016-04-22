@@ -426,7 +426,7 @@ object fCalcSetup: TfCalcSetup
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = [fsBold, fsItalic]
+      Font.Style = [fsBold]
       ParentBackground = False
       ParentFont = False
       TabOrder = 6
@@ -674,7 +674,7 @@ object fCalcSetup: TfCalcSetup
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = [fsBold, fsItalic]
+      Font.Style = [fsBold]
       ParentBackground = False
       ParentFont = False
       TabOrder = 10
@@ -1016,7 +1016,7 @@ object fCalcSetup: TfCalcSetup
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = [fsBold, fsItalic]
+      Font.Style = [fsBold]
       ParentBackground = False
       ParentFont = False
       TabOrder = 15
@@ -1033,7 +1033,7 @@ object fCalcSetup: TfCalcSetup
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = [fsBold, fsItalic]
+      Font.Style = [fsBold]
       ParentBackground = False
       ParentFont = False
       TabOrder = 19
@@ -1717,7 +1717,7 @@ object fCalcSetup: TfCalcSetup
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
-        Font.Style = [fsBold, fsItalic]
+        Font.Style = [fsBold]
         ParentFont = False
         WordWrap = True
         ExplicitLeft = 193
@@ -2287,12 +2287,7 @@ object fCalcSetup: TfCalcSetup
     SQL.Strings = (
       'SELECT *'
       'FROM calc_setup'
-      
-        'WHERE (OBJ_ID=:OBJ_ID AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, 0)) OR' +
-        ' '
-      
-        '      (IFNULL(:OBJ_ID, 0)=0 AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, ' +
-        '0))')
+      'WHERE (OBJ_ID=:OBJ_ID AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, 0))')
     Left = 17
     Top = 5
     ParamData = <

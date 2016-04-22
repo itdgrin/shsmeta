@@ -12,7 +12,6 @@ uses
 
 type
   TfCardObject = class(TSmForm)
-
     DataSourceSF: TDataSource;
     DataSourceCO: TDataSource;
     dsR: TDataSource;
@@ -27,24 +26,20 @@ type
     GroupBoxCategoryObject: TGroupBox;
     GroupBoxVAT: TGroupBox;
     GroupBoxRegion: TGroupBox;
-
     GroupBoxBasePrices: TGroupBox;
     GroupBoxTypeOXR: TGroupBox;
     GroupBoxZonePrices: TGroupBox;
     EditNumberObject: TEdit;
     EditNumberContract: TEdit;
-
     LabelNumberContract: TLabel;
     Label2: TLabel;
     LabelStartBuilding: TLabel;
-
     DateTimePickerDataCreateContract: TDateTimePicker;
     dblkcbbCategoryObject: TDBLookupComboBox;
     dblkcbbZonePrices: TDBLookupComboBox;
     dblkcbbTypeOXR: TDBLookupComboBox;
     DBLookupComboBoxBasePrices: TDBLookupComboBox;
     dblkcbbRegion: TDBLookupComboBox;
-
     ButtonListAgreements: TButton;
     ButtonSave: TButton;
     ButtonCancel: TButton;
@@ -92,13 +87,10 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-
     procedure ButtonSaveClick(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
-
     procedure SetColorDefaultToFields;
     procedure ClearAllFields;
-
     procedure GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
     procedure dblkcbbRegionCloseUp(Sender: TObject);
     procedure DateTimePickerStartBuildingChange(Sender: TObject);
@@ -108,12 +100,13 @@ type
     procedure btnCardObjectAdditionalClick(Sender: TObject);
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure cbbMonthBeginStrojChange(Sender: TObject);
-
   private
     FEditing: Boolean; // Для отслеживания режима добавления или редактирования записи
+    FEditingNewRecord: Boolean;
+    // Флаг, означающий, что запись нужно удалить в случае отмены или закрытия формы
+    FDoNotCloseForm: Boolean; // Не закрывать форму при нажатии на кнопку сохранения
     FIdObject: Integer; // ID выделенной строки в таблице
     FStrQuery: String;
-
     // ДЛЯ УСТАНОВКА ЗНАЧЕНИЙ В ВЫПАДАЮЩИХ СПИСКАХ ПРИ РЕДАКТИРОВАНИИ ЗАПИСИ
     FSourceFinance: Integer;
     FCategoryObject: Integer;
@@ -446,16 +439,20 @@ begin
   if ButtonSave.Tag = 0 then
     if MessageBox(0, PChar('Закрыть окно без сохранения?'), PChar(Caption),
       MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
-      CanClose := True
+    begin
+      // Необходимо удалить левую запись
+      if FEditingNewRecord then
+        FastExecSQL('DELETE FROM objcards WHERE OBJ_ID=:0;', VarArrayOf([FIdObject]));
+      CanClose := True;
+    end
     else
       CanClose := False;
 end;
 
 procedure TfCardObject.ButtonSaveClick(Sender: TObject);
 var
-  NumberObject, v2, v3, v4, v7, v9, v12, v15, v16, v17, v18, v19: string;
+  NumberObject, v3, v4, v7, v9, v12, v15, v16, v18, v19: string;
   CountField: Integer;
-  NEW_ID: Integer;
 begin
   ButtonSave.SetFocus; // Заглушка для датасета
   CountField := 0;
@@ -465,33 +462,17 @@ begin
 
   NumberObject := EditNumberObject.Text;
 
-  if qrMain.FieldByName('BEG_STROJ').AsDateTime > qrMain.FieldByName('BEG_STROJ2').AsDateTime then
+  if qrMain.FieldByName('BEG_STROJ').AsDateTime > StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1)
+    + '.' + IntToStr(seYearBeginStroj.Value))
+  // BEG_STROJ2 поправить позже глюк, должно быть в датасете qrMain.FieldByName('BEG_STROJ2').Value;
+  then
   begin
     ActiveControl := cbbMonthBeginStroj;
     MessageDlg
       ('Дата начала строительства должна быть больше или равна дате составления сметной документации!',
       mtError, [mbOK], 0);
+    Abort;
     Exit;
-  end;
-
-  // Шифр объекта
-  if EditCodeObject.Text <> '' then
-    v17 := EditCodeObject.Text
-  else
-  begin
-    v17 := '';
-    // EditCodeObject.Color := ColorWarningField;
-    // Inc(CountField);
-  end;
-
-  // Номер договора
-  if EditNumberContract.Text <> '' then
-    v2 := EditNumberContract.Text
-  else
-  begin
-    v2 := '';
-    // EditNumberContract.Color := ColorWarningField;
-    // Inc(CountField);
   end;
 
   // Дата заключения договора
@@ -512,6 +493,7 @@ begin
     MessageDlg('Для выбранной даты составления сметы значения ставок отсутствуют.'#13 +
       'Загрузите ставки или укажите другую дату составления сметы.', mtError, [mbOK], 0);
     cbbFromMonth.SetFocus;
+    Abort;
     Exit;
   end;
 
@@ -589,6 +571,7 @@ begin
     MessageBox(0, PChar('Вы заполнили не все поля!' + sLineBreak +
       'Поля выделенные красным не заполнены или заполнены неправильно.'), PChar(Caption),
       MB_ICONWARNING + MB_OK + mb_TaskModal);
+    Abort;
     Exit;
   end;
 
@@ -599,51 +582,37 @@ begin
       SQL.Clear;
       if FEditing then
       begin
-        SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
-          + '", agr_list = "' + v4 + '", full_name = :full_name, name = :name, beg_stroj = "' + v7 +
+        SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = :num_dog, date_dog = "' + v3 +
+          '", agr_list = "' + v4 + '", full_name = :full_name, name = :name, beg_stroj = "' + v7 +
           '", srok_stroj = :srok_stroj, ' + ' fin_id = ' + v9 +
           ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 +
           '", state_nds = :snds, region_id = :region_id, base_norm_id = "' + v15 + '", stroj_id = "' + v16 +
-          '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
+          '", encrypt = :encrypt, calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
           '", BEG_STROJ2=:BEG_STROJ2'#13 + 'WHERE obj_id = "' + IntToStr(FIdObject) + '";');
-        {
-          // Если поменялось зимнее удорожание
-          if (qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value <> qrMain.FieldByName('FL_APPLY_WINTERPRICE')
-          .OldValue) OR (qrMain.FieldByName('WINTERPRICE_TYPE').Value <>
-          qrMain.FieldByName('WINTERPRICE_TYPE').OldValue) then
-          begin
-          // Обновляем все сметы объекта
-          FastExecSQL
-          ('UPDATE smetasourcedata SET APPLY_WINTERPRISE_FLAG=:0, WINTERPRICE_TYPE=:1 WHERE OBJ_ID=:2',
-          VarArrayOf([qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value,
-          qrMain.FieldByName('WINTERPRICE_TYPE').Value, FIdObject]));
-          Application.MessageBox('Внимание! Была изменена настройка зимнего удорожания.' + #13#10 +
-          'Для применения настройки необходимо открыть смету и выполнить перерасчет.', 'Настройка расчета',
-          MB_OK + MB_ICONWARNING + MB_TOPMOST);
-
-          end;
-        }
         // Обновляем МАИС на всех зависимых сметах/актах
-        if qrMain.FieldByName('MAIS_ID').OldValue <> qrMain.FieldByName('MAIS_ID').Value then
+        if (qrMain.FieldByName('MAIS_ID').OldValue <> qrMain.FieldByName('MAIS_ID').Value) and not FDoNotCloseForm
+        then
           FastExecSQL('UPDATE smetasourcedata SET MAIS_ID=:0 WHERE OBJ_ID=:1',
             VarArrayOf([qrMain.FieldByName('MAIS_ID').Value, FIdObject]));
       end
       else
       begin
-        NEW_ID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_OBJ]));
+        IdObject := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_OBJ]));
         SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
-          ' calc_econom, MAIS_ID, USER_ID, BEG_STROJ2)'#13 + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2
-          + '", "' + v3 + '", "' + v4 + '", :full_name, :name, "' + v7 + '", :srok_stroj, ' + v9 +
-          ', :cust_id, :general_id, "' + v12 + '", :snds, :region_id, "' + v15 + '", "' + v16 + '", "' + v17 +
-          '", "' + v18 + '", "' + v19 + '", :USER_ID, :BEG_STROJ2);');
-        ParamByName('NEW_ID').Value := NEW_ID;
+          ' calc_econom, MAIS_ID, USER_ID, BEG_STROJ2)'#13 + 'VALUE (:NEW_ID, "' + NumberObject +
+          '", :num_dog, "' + v3 + '", "' + v4 + '", :full_name, :name, "' + v7 + '", :srok_stroj, ' + v9 +
+          ', :cust_id, :general_id, "' + v12 + '", :snds, :region_id, "' + v15 + '", "' + v16 +
+          '", :encrypt, "' + v18 + '", "' + v19 + '", :USER_ID, :BEG_STROJ2);');
+        ParamByName('NEW_ID').Value := FIdObject;
         ParamByName('USER_ID').Value := G_USER_ID;
-        FIdObject := NEW_ID;
+        FEditingNewRecord := True;
       end;
       ParamByName('cust_id').Value := qrMain.FieldByName('cust_id').AsInteger;
       ParamByName('general_id').Value := qrMain.FieldByName('general_id').AsInteger;
       ParamByName('snds').Value := ComboBoxVAT.ItemIndex;
+      ParamByName('encrypt').Value := EditCodeObject.Text;
+      ParamByName('num_dog').Value := EditNumberContract.Text;
 
       ParamByName('BEG_STROJ2').Value := StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1) + '.' +
         IntToStr(seYearBeginStroj.Value));
@@ -654,16 +623,21 @@ begin
       ExecSQL;
     end;
 
-    ButtonSave.Tag := 1;
-    qrMain.Close;
-
-    // Если открыта смета или акт, то вызываем перерасчет
-    if Assigned(FormCalculationEstimate) then
+    if not FDoNotCloseForm then
     begin
-      FormCalculationEstimate.RecalcEstimate;
-      FormCalculationEstimate.FillObjectInfo;
+      ButtonSave.Tag := 1;
+      qrMain.Close;
+
+      // Если открыта смета или акт, то вызываем перерасчет
+      if Assigned(FormCalculationEstimate) then
+      begin
+        FormCalculationEstimate.RecalcEstimate;
+        FormCalculationEstimate.FillObjectInfo;
+      end;
+
+      FEditingNewRecord := False;
+      ModalResult := mrOk;
     end;
-    ModalResult := mrOk;
   except
     on e: Exception do
       MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
@@ -709,6 +683,12 @@ procedure TfCardObject.btnCardObjectAdditionalClick(Sender: TObject);
 var
   fCalcSetup: TfCalcSetup;
 begin
+  FDoNotCloseForm := True;
+  try
+    ButtonSaveClick(Sender);
+  finally
+    FDoNotCloseForm := False;
+  end;
   fCalcSetup := TfCalcSetup.Create(Self, VarArrayOf([FIdObject, Null]));
   try
     fCalcSetup.ShowModal;
@@ -771,17 +751,8 @@ end;
 
 procedure TfCardObject.DateTimePickerStartBuildingChange(Sender: TObject);
 begin
-  // Автоматическое заполнение %в расхода
   // if not Editing then // только для новых записей
   begin
-    {
-      qrMain.Edit;
-
-      qrMain.FieldByName('PER_TEMP_BUILD').Value := GetUniDictParamValue('PER_TEMP_BUILD',
-      cbbFromMonth.ItemIndex + 1, seYear.Value);
-      qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value := GetUniDictParamValue('PER_TEMP_BUILD_BACK',
-      cbbFromMonth.ItemIndex + 1, seYear.Value);
-    }
     // Автоподстановка МАИС
     if CheckQrActiveEmpty(qrMAIS) then
     begin
@@ -792,8 +763,10 @@ begin
     end;
   end;
   // Если дата начала строительства при изменении оказалась раньше, то устанавливаем по дате составления сметы
-  if (cbbMonthBeginStroj.ItemIndex + seYearBeginStroj.Value * 12) <
+  { Меняем дату всегда при изменении даты составления сметы
+    if (cbbMonthBeginStroj.ItemIndex + seYearBeginStroj.Value * 12) <
     (cbbFromMonth.ItemIndex + seYear.Value * 12) then
+  }
   begin
     cbbMonthBeginStroj.ItemIndex := cbbFromMonth.ItemIndex;
     seYearBeginStroj.Value := seYear.Value;
@@ -863,38 +836,8 @@ end;
 procedure TfCardObject.qrMainNewRecord(DataSet: TDataSet);
 begin
   // Устанавливаем начальные значения
-  {
-    qrMain.FieldByName('FL_CALC_TRAVEL').Value := 0;
-    qrMain.FieldByName('FL_CALC_WORKER_DEPARTMENT').Value := 0;
-    qrMain.FieldByName('FL_CALC_TRAVEL_WORK').Value := 0;
-    qrMain.FieldByName('FL_CALC_ZEM_NAL').Value := 0;
-    qrMain.FieldByName('FL_CALC_VEDOMS_NAL').Value := 0;
-    qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value := 0;
-    qrMain.FieldByName('WINTERPRICE_TYPE').Value := 0;
-
-    qrMain.FieldByName('Fl_NAL_USN').Value := 0;
-    qrMain.FieldByName('NAL_USN').Value := 0;
-    qrMain.FieldByName('Fl_SPEC_SCH').Value := 0;
-    qrMain.FieldByName('SPEC_SCH').Value := 0;
-
-    qrMain.FieldByName('K_ZP').Value := 1;
-    qrMain.FieldByName('K_OHR').Value := 1;
-    qrMain.FieldByName('K_PP').Value := 1;
-
-    qrMain.FieldByName('PER_WINTERPRICE').Value := 0;
-    qrMain.FieldByName('FL_DIFF_MAT').Value := 0;
-    qrMain.FieldByName('FL_DIFF_TRANSP').Value := 0;
-    qrMain.FieldByName('FL_DIFF_EMIM').Value := 0;
-    qrMain.FieldByName('FL_DIFF_OTHER').Value := 0;
-    qrMain.FieldByName('FL_DIFF_NAL').Value := 0;
-    qrMain.FieldByName('FL_DIFF_MAT_ZAK').Value := 0;
-    qrMain.FieldByName('FL_DIFF_NAL_USN').Value := 0;
-    qrMain.FieldByName('FL_DIFF_NDS').Value := 0;
-    qrMain.FieldByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value := 0;
-    qrMain.FieldByName('PER_DONE').Value := 100;
-    qrMain.FieldByName('PER_NPZ').Value := 0;
-  }
   qrMain.FieldByName('SROK_STROJ').Value := 1;
+  qrMain.FieldByName('MAIS_ID').Value := dblkcbbMAIS.KeyValue;
 end;
 
 end.

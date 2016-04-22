@@ -43,6 +43,12 @@ object fCalcResource: TfCalcResource
       Width = 131
       Height = 25
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1088#1072#1089#1095#1077#1090#1086#1074
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnClick = btnCalcSetupClick
     end
@@ -144,9 +150,13 @@ object fCalcResource: TfCalcResource
       Anchors = [akTop, akRight]
       DropDownCount = 12
       Enabled = False
-      ItemIndex = 0
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 4
-      Text = #1073#1077#1079' '#1053#1044#1057
       OnChange = pgcChange
       Items.Strings = (
         #1073#1077#1079' '#1053#1044#1057
@@ -192,21 +202,34 @@ object fCalcResource: TfCalcResource
         Height = 273
         ActivePage = ts6
         Align = alClient
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         MultiLine = True
+        ParentFont = False
         TabOrder = 0
         TabPosition = tpBottom
+        OnChange = pgcRSChange
         object ts6: TTabSheet
           Margins.Left = 0
           Margins.Top = 0
           Margins.Right = 0
           Margins.Bottom = 0
           Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           object grRS: TJvDBGrid
-            Left = 0
+            Left = 3
             Top = 0
-            Width = 732
-            Height = 247
-            Align = alClient
+            Width = 109
+            Height = 81
+            Align = alCustom
             DataSource = dsRS
             DrawingStyle = gdsClassic
             Font.Charset = DEFAULT_CHARSET
@@ -240,7 +263,7 @@ object fCalcResource: TfCalcResource
                 FieldName = 'f1'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1089#1090#1072#1090#1077#1081' '#1079#1072#1090#1088#1072#1090
-                Width = 110
+                Width = 11
                 Visible = True
               end
               item
@@ -290,15 +313,21 @@ object fCalcResource: TfCalcResource
               end>
           end
         end
-        object ts7: TTabSheet
+        object tsTravel: TTabSheet
           Caption = #1056#1072#1089#1095#1077#1090' '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           ImageIndex = 1
+          ParentFont = False
           object grTravel: TJvDBGrid
             Left = 0
             Top = 0
-            Width = 732
-            Height = 247
-            Align = alClient
+            Width = 112
+            Height = 81
+            Align = alCustom
             DataSource = dsTravel
             DrawingStyle = gdsClassic
             Font.Charset = DEFAULT_CHARSET
@@ -340,7 +369,7 @@ object fCalcResource: TfCalcResource
                 FieldName = 'f2'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
-                Width = 462
+                Width = 3
                 Visible = True
               end
               item
@@ -363,15 +392,15 @@ object fCalcResource: TfCalcResource
               end>
           end
         end
-        object ts8: TTabSheet
+        object tsTravelWork: TTabSheet
           Caption = #1056#1072#1089#1095#1077#1090' '#1088#1072#1079#1098#1077#1079#1076#1085#1086#1075#1086' '#1093#1072#1088#1072#1082#1090#1077#1088#1072' '#1088#1072#1073#1086#1090
           ImageIndex = 2
           object grTravelWork: TJvDBGrid
             Left = 0
             Top = 0
-            Width = 732
-            Height = 247
-            Align = alClient
+            Width = 112
+            Height = 81
+            Align = alCustom
             DataSource = dsTravelWork
             DrawingStyle = gdsClassic
             Font.Charset = DEFAULT_CHARSET
@@ -413,7 +442,7 @@ object fCalcResource: TfCalcResource
                 FieldName = 'f2'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
-                Width = 462
+                Width = 3
                 Visible = True
               end
               item
@@ -438,13 +467,19 @@ object fCalcResource: TfCalcResource
         end
         object ts9: TTabSheet
           Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1090#1088#1072#1090' '#1085#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1088#1072#1073#1086#1095#1080#1093
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           ImageIndex = 3
+          ParentFont = False
           object grWorkerDepartment: TJvDBGrid
             Left = 0
             Top = 0
-            Width = 732
-            Height = 247
-            Align = alClient
+            Width = 112
+            Height = 89
+            Align = alCustom
             DataSource = dsWorkerDepartment
             DrawingStyle = gdsClassic
             Font.Charset = DEFAULT_CHARSET
@@ -486,7 +521,7 @@ object fCalcResource: TfCalcResource
                 FieldName = 'f2'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
-                Width = 462
+                Width = 3
                 Visible = True
               end
               item
@@ -511,13 +546,20 @@ object fCalcResource: TfCalcResource
         end
         object ts10: TTabSheet
           Caption = #1055#1077#1088#1077#1084#1077#1085#1085#1099#1077
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           ImageIndex = 4
+          ParentFont = False
+          TabVisible = False
           object grVars: TJvDBGrid
             Left = 0
             Top = 0
-            Width = 732
-            Height = 247
-            Align = alClient
+            Width = 112
+            Height = 89
+            Align = alCustom
             DataSource = dsVars
             DrawingStyle = gdsClassic
             Font.Charset = DEFAULT_CHARSET
@@ -551,7 +593,7 @@ object fCalcResource: TfCalcResource
                 FieldName = 'f1'
                 Title.Alignment = taCenter
                 Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1087#1077#1088#1077#1084#1077#1085#1085#1086#1081
-                Width = 413
+                Width = 34
                 Visible = True
               end
               item
@@ -2198,6 +2240,7 @@ object fCalcResource: TfCalcResource
       'WHERE ((m.DELETED = 0) OR (:SHOW_DELETED)) '
       '/*AND m.REPLACED = 0*/ '
       '  AND m.CONSIDERED=1 '
+      '  AND m.VOZVRAT=0 /*'#1053#1077' '#1091#1095#1080#1090#1099#1074#1072#1090#1100' '#1074#1086#1079#1074#1088#1072#1090#1085#1099#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1099'*/'
       '  AND COALESCE(m.MAT_COUNT, 0) <> 0'
       '  AND ((:SHOW_FULL_OBJECT) OR'
       '   (smetasourcedata.SM_ID = :SM_ID) OR'
@@ -2985,9 +3028,9 @@ object fCalcResource: TfCalcResource
       'join smetasourcedata S1 ON S1.SM_ID = d.SM_ID'
       'join smetasourcedata S2 ON S2.SM_ID = S1.PARENT_ID'
       'WHERE'
-      
-        '  ((m.DELETED = 0) OR (:SHOW_DELETED)) AND COALESCE(c.RATE_COUNT' +
-        ', IFNULL(m.MAT_COUNT, 0)) <> 0'
+      '  ((m.DELETED = 0) OR (:SHOW_DELETED)) '
+      '  AND COALESCE(c.RATE_COUNT, IFNULL(m.MAT_COUNT, 0)) <> 0'
+      '  AND m.VOZVRAT=0 /*'#1053#1077' '#1091#1095#1080#1090#1099#1074#1072#1090#1100' '#1074#1086#1079#1074#1088#1072#1090#1085#1099#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1099'*/'
       'ORDER BY SM_NAME, PTM_NAME, F1, CODE')
     Left = 27
     Top = 264

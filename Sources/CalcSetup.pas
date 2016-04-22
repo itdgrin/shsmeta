@@ -120,7 +120,6 @@ type
     // ћожно OBJ_ID не передавать, если нету под рукой
     OBJ_ID, SM_ID: Variant; // [0..1] InitParams->Create
   public
-    // fCardObject: TfCardObject;
   end;
 
 implementation
@@ -267,11 +266,11 @@ procedure TfCalcSetup.lbl2Click(Sender: TObject);
 var
   res: Variant;
 begin
-  res := EditContractorServices( { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
+  res := EditContractorServices(qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
   if not VarIsNull(res) then
   begin
-    { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
-    { fCardObject. } qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
+    qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
+    qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
   end;
 end;
 
@@ -279,11 +278,11 @@ procedure TfCalcSetup.lbl4Click(Sender: TObject);
 var
   res: Variant;
 begin
-  res := EditContractorServices( { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
+  res := EditContractorServices(qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
   if not VarIsNull(res) then
   begin
-    { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
-    { fCardObject. } qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
+    qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
+    qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
   end;
 end;
 
@@ -297,6 +296,14 @@ procedure TfCalcSetup.qrMainNewRecord(DataSet: TDataSet);
 begin
   qrMain.FieldByName('OBJ_ID').Value := OBJ_ID;
   qrMain.FieldByName('SM_ID').Value := SM_ID;
+  {
+    qrMain.Edit;
+
+    qrMain.FieldByName('PER_TEMP_BUILD').Value := GetUniDictParamValue('PER_TEMP_BUILD',
+    cbbFromMonth.ItemIndex + 1, seYear.Value);
+    qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value := GetUniDictParamValue('PER_TEMP_BUILD_BACK',
+    cbbFromMonth.ItemIndex + 1, seYear.Value);
+  }
 end;
 
 end.

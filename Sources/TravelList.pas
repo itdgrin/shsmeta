@@ -273,7 +273,7 @@ begin
   begin
     fCalcTravel.Visible := CheckQrActiveEmpty(qrTravel);
     if fCalcTravel.Visible then
-      fCalcTravel.InitParams;
+      fCalcTravel.ReloadMain;
   end;
 end;
 
@@ -289,12 +289,6 @@ begin
       begin
         if fCalcTravel.qrCalc.IsEmpty then
         begin
-          if fCalcTravel.cbbSource.ItemIndex = 0 then
-            Application.MessageBox('Не указан акт!', 'Расчет командировочных',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST)
-          else
-            Application.MessageBox('Не указана смета!', 'Расчет командировочных',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST);
           Abort;
         end;
         fCalcTravel.qrCalc.Last;
@@ -367,7 +361,7 @@ begin
   begin
     fCalcTravelWork.Visible := CheckQrActiveEmpty(qrTravelWork);
     if fCalcTravelWork.Visible then
-      fCalcTravelWork.InitParams;
+      fCalcTravelWork.ReloadMain;
   end;
 end;
 
@@ -383,12 +377,6 @@ begin
       begin
         if fCalcTravelWork.qrCalc.IsEmpty then
         begin
-          if fCalcTravelWork.cbbSource.ItemIndex = 0 then
-            Application.MessageBox('Не указан акт!', 'Расчет командировочных',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST)
-          else
-            Application.MessageBox('Не указана смета!', 'Расчет командировочных',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST);
           Abort;
         end;
         fCalcTravelWork.qrCalc.Last;

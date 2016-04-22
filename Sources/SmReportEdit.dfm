@@ -100,13 +100,19 @@ object fSmReportEdit: TfSmReportEdit
                 Visible = True
               end>
           end
-          object pnl2: TPanel
+          object pnlVarsBott: TPanel
             Left = 0
             Top = 414
             Width = 588
             Height = 33
             Align = alBottom
             BevelOuter = bvNone
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
             TabOrder = 1
             object dbnvgr4: TDBNavigator
               Left = 0
@@ -177,6 +183,12 @@ object fSmReportEdit: TfSmReportEdit
               end
               item
                 Expanded = False
+                FieldName = 'LK_TYPE'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'Tahoma'
+                Font.Style = []
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1080#1087
                 Width = 59
@@ -191,7 +203,7 @@ object fSmReportEdit: TfSmReportEdit
                 Visible = True
               end>
           end
-          object pnl3: TPanel
+          object pnlRowsBott: TPanel
             Left = 0
             Top = 414
             Width = 588
@@ -276,7 +288,7 @@ object fSmReportEdit: TfSmReportEdit
                 Visible = True
               end>
           end
-          object pnl4: TPanel
+          object pnlColsBott: TPanel
             Left = 0
             Top = 414
             Width = 588
@@ -515,6 +527,62 @@ object fSmReportEdit: TfSmReportEdit
         ParamType = ptInput
         Value = Null
       end>
+    object qrRowsREPORT_ROW_ID: TFDAutoIncField
+      FieldName = 'REPORT_ROW_ID'
+      Origin = 'REPORT_ROW_ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrRowsREPORT_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_ID'
+      Origin = 'REPORT_ID'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrRowsROW_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ROW_ID'
+      Origin = 'ROW_ID'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrRowsPOS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'POS'
+      Origin = 'POS'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrRowsREPORT_ROW_NAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_ROW_NAME'
+      Origin = 'REPORT_ROW_NAME'
+      Size = 512
+    end
+    object qrRowsFL_SHOW: TBooleanField
+      AutoGenerateValue = arDefault
+      FieldName = 'FL_SHOW'
+      Origin = 'FL_SHOW'
+    end
+    object qrRowsREPORT_ROW_TYPE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_ROW_TYPE'
+      Origin = 'REPORT_ROW_TYPE'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrRowsLK_TYPE: TStringField
+      FieldKind = fkLookup
+      FieldName = 'LK_TYPE'
+      LookupDataSet = qrRowType
+      LookupKeyFields = 'ROW_TYPE_ID'
+      LookupResultField = 'ROW_TYPE_NAME'
+      KeyFields = 'REPORT_ROW_TYPE'
+      Size = 200
+      Lookup = True
+    end
   end
   object dsRows: TDataSource
     DataSet = qrRows
@@ -698,7 +766,35 @@ object fSmReportEdit: TfSmReportEdit
   object bh: TBalloonHint
     Delay = 200
     HideAfter = 1000
-    Left = 72
-    Top = 203
+    Left = 24
+    Top = 59
+  end
+  object dsRowType: TDataSource
+    DataSet = qrRowType
+    Left = 70
+    Top = 250
+  end
+  object qrRowType: TFDQuery
+    BeforeOpen = qrRowsBeforeOpen
+    OnNewRecord = qrRowsNewRecord
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByte
+        TargetDataType = dtBoolean
+      end>
+    UpdateOptions.UpdateTableName = 'smeta.report_row'
+    SQL.Strings = (
+      'SELECT 1 as ROW_TYPE_ID, "'#1060#1080#1082#1089#1080#1088#1086#1074#1072#1085#1085#1072#1103' '#1089#1090#1088#1086#1082#1072'" as ROW_TYPE_NAME'
+      'UNION ALL'
+      'SELECT 2 as ROW_TYPE_ID, "'#1058#1072#1073#1083#1080#1094#1072'/'#1079#1072#1087#1088#1086#1089'" as ROW_TYPE_NAME')
+    Left = 70
+    Top = 202
   end
 end

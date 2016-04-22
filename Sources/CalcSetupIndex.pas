@@ -110,6 +110,9 @@ begin
     OBJ_ID := FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0', VarArrayOf([SM_ID]));
   qrInd.Active := True;
   qrMain.Active := True;
+
+  if VarIsNull(qrMain.FieldByName('INDEX_VAL_BEGIN').Value) then
+    JvDBDateTimePicker3Change(Sender);
 end;
 
 procedure TfCalcSetupIndex.JvDBDateTimePicker3Change(Sender: TObject);

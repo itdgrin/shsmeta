@@ -9,7 +9,8 @@ uses
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
   JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, FireDAC.UI.Intf, FireDAC.Comp.ScriptCommands,
-  FireDAC.Comp.Script, Tools, Vcl.OleCtnrs, Vcl.OleServer, ExcelXP, JvExGrids, JvStringGrid, ActiveX, ComObj;
+  FireDAC.Comp.Script, Tools, Vcl.OleCtnrs, Vcl.OleServer, ExcelXP, JvExGrids, JvStringGrid, ActiveX, ComObj,
+  SmReportPreview;
 
 type
   TfCalcResource = class(TSmForm)
@@ -165,8 +166,8 @@ type
     qrmtf6: TStringField;
     pgcRS: TPageControl;
     ts6: TTabSheet;
-    ts7: TTabSheet;
-    ts8: TTabSheet;
+    tsTravel: TTabSheet;
+    tsTravelWork: TTabSheet;
     ts9: TTabSheet;
     grRS: TJvDBGrid;
     grTravel: TJvDBGrid;
@@ -268,15 +269,18 @@ type
     procedure btnShowTemplateClick(Sender: TObject);
     procedure btnCalcSetupClick(Sender: TObject);
     procedure btnCalcSetupIndexClick(Sender: TObject);
+    procedure pgcRSChange(Sender: TObject);
   private
     Footer: Variant;
-    IDEstimate: Integer;
+    IDEstimate, OBJ_ID: Integer;
     flLoaded: Boolean;
     Editable: Boolean;
     ShowFullObject: Boolean;
     ExcelApp: OLEVariant;
     FOldGridProc: TWndMethod;
+    fRS: TfSmReportPreview;
     procedure GridProc(var Message: TMessage);
+    procedure GetRSReport;
 
     function CanEditField(Field: TField): Boolean;
   public
@@ -293,7 +297,8 @@ implementation
 {$R *.dfm}
 
 uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule, CalcSetup, CalcSetupIndex,
-  GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReportData, SmReportPreview, SmReportEdit;
+  GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReportData, SmReportEdit, CalcTravel,
+  CalcTravelWork, CalcWorkerDepartment;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
   AEditable: Boolean = True; AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
@@ -323,6 +328,8 @@ begin
 
   fCalcResource.flLoaded := False;
   fCalcResource.IDEstimate := ID_ESTIMATE;
+  fCalcResource.OBJ_ID := FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0',
+    VarArrayOf([ID_ESTIMATE]));
   fCalcResource.Editable := AEditable;
   fCalcResource.ShowFullObject := AShowFullObject;
   fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
@@ -370,11 +377,16 @@ procedure TfCalcResource.btnCalcSetupClick(Sender: TObject);
 var
   fCalcSetup: TfCalcSetup;
 begin
-  fCalcSetup := TfCalcSetup.Create(Self, VarArrayOf([Null, IDEstimate]));
+  // Для объекта и всех смет
+  fCalcSetup := TfCalcSetup.Create(Self, VarArrayOf([OBJ_ID, Null]));
+  // Для сметы
+  // fCalcSetup := TfCalcSetup.Create(Self, VarArrayOf([Null, IDEstimate]));
   try
     fCalcSetup.ShowModal;
   finally
     FreeAndNil(fCalcSetup);
+    // Формируем заного отчет
+    GetRSReport;
   end;
 end;
 
@@ -382,21 +394,26 @@ procedure TfCalcResource.btnCalcSetupIndexClick(Sender: TObject);
 var
   fCalcSetupIndex: TfCalcSetupIndex;
 begin
-  fCalcSetupIndex := TfCalcSetupIndex.Create(Self, VarArrayOf([Null, IDEstimate]));
+  // Для объекта и всех смет
+  fCalcSetupIndex := TfCalcSetupIndex.Create(Self, VarArrayOf([OBJ_ID, Null]));
+  // Для сметы
+  // fCalcSetupIndex := TfCalcSetupIndex.Create(Self, VarArrayOf([Null, IDEstimate]));
   try
     fCalcSetupIndex.ShowModal;
   finally
     FreeAndNil(fCalcSetupIndex);
+    GetRSReport;
   end;
 end;
 
 procedure TfCalcResource.btnShowTemplateClick(Sender: TObject);
 begin
-  //dmSmReport.showDocument(ExcelApp);
+  // dmSmReport.showDocument(ExcelApp);
   // Редактирование шаблона отчета
   if (not Assigned(fSmReportEdit)) then
     fSmReportEdit := TfSmReportEdit.Create(Self, 1);
   fSmReportEdit.ShowModal;
+  GetRSReport;
 end;
 
 function TfCalcResource.CanEditField(Field: TField): Boolean;
@@ -632,8 +649,8 @@ procedure TfCalcResource.FormShow(Sender: TObject);
     end;
   end;
 
-var
-  fileName: string;
+{ var
+  fileName: string; }
 begin
   case pgc.ActivePageIndex of
     // Расчет стоимости
@@ -657,9 +674,7 @@ begin
           pgc.SetFocus;
           end;
         }
-        ShowReport(1, VarArrayOf([VarArrayOf(['SM_ID', IIF(ShowFullObject, Null, IDEstimate)]),
-          VarArrayOf(['OBJ_ID', FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0',
-          VarArrayOf([IDEstimate]))])]), ts1);
+        GetRSReport;
       end;
     // Расчет материалов
     1:
@@ -682,6 +697,18 @@ begin
         DoSort(qrRates, grRates);
       end;
   end;
+end;
+
+procedure TfCalcResource.GetRSReport;
+var
+  pOldForm: TfSmReportPreview;
+begin
+  pOldForm := fRS;
+  fRS := ShowReport(1, VarArrayOf([VarArrayOf(['SM_ID', IIF(ShowFullObject, Null, IDEstimate)]),
+    VarArrayOf(['OBJ_ID', FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0',
+    VarArrayOf([IDEstimate]))])]), ts6);
+  if Assigned(pOldForm) then
+    FreeAndNil(pOldForm);
 end;
 
 procedure TfCalcResource.grDevBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -1082,8 +1109,8 @@ begin
             '?'), Pwidechar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) <> mrYes then
             Exit;
           DM.qrDifferent.SQL.Text := 'SELECT ID FROM materialcard_temp'#13 +
-            'WHERE PROC_TRANSP=:PROC_TRANSP AND DELETED=:DELETED'#13 +
-            'AND MAT_PROC_ZAC=:MAT_PROC_ZAC AND MAT_PROC_PODR=:MAT_PROC_PODR'#13 +
+            'WHERE PROC_TRANSP=:PROC_TRANSP AND DELETED=:DELETED AND VOZVRAT=0 /*Не учитывать возвратные материалы*/'#13
+            + 'AND MAT_PROC_ZAC=:MAT_PROC_ZAC AND MAT_PROC_PODR=:MAT_PROC_PODR'#13 +
             'AND TRANSP_PROC_ZAC=:TRANSP_PROC_ZAC AND TRANSP_PROC_PODR=:TRANSP_PROC_PODR'#13 +
             'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:COAST AND MAT_ID=:MAT_ID';
           DM.qrDifferent.ParamByName('PROC_TRANSP').Value := qrMaterialData.FieldByName('PROC_TRANSP').Value;
@@ -1629,6 +1656,54 @@ begin
     4:
       begin
         CloseOpen(qrRates);
+      end;
+  end;
+end;
+
+procedure TfCalcResource.pgcRSChange(Sender: TObject);
+begin
+  case pgcRS.ActivePageIndex of
+    0:
+      begin
+        // Формируем заного отчет
+        GetRSReport;
+      end;
+    // Расчет командировочных
+    1:
+      begin
+        // Создаем форму расчета командировочных
+        if (not Assigned(fCalcTravel)) then
+        begin
+          fCalcTravel := TfCalcTravel.Create(tsTravel, VarArrayOf([OBJ_ID, Null]));
+          fCalcTravel.BorderStyle := bsNone;
+          fCalcTravel.Parent := tsTravel;
+          fCalcTravel.Align := alClient;
+          fCalcTravel.Show;
+        end;
+      end;
+    // Разъездной
+    2:
+      begin
+        if (not Assigned(fCalcTravelWork)) then
+        begin
+          fCalcTravelWork := TfCalcTravelWork.Create(tsTravelWork, VarArrayOf([OBJ_ID, Null]));
+          fCalcTravelWork.BorderStyle := bsNone;
+          fCalcTravelWork.Parent := tsTravelWork;
+          fCalcTravelWork.Align := alClient;
+          fCalcTravelWork.Show;
+        end;
+      end;
+    // Перевозка
+    3:
+      begin
+        if (not Assigned(fCalcWorkerDepartment)) then
+        begin
+          fCalcWorkerDepartment := TfCalcWorkerDepartment.Create(ts9, VarArrayOf([OBJ_ID, Null]));
+          fCalcWorkerDepartment.BorderStyle := bsNone;
+          fCalcWorkerDepartment.Parent := ts9;
+          fCalcWorkerDepartment.Align := alClient;
+          fCalcWorkerDepartment.Show;
+        end;
       end;
   end;
 end;

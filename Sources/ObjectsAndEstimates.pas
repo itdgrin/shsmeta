@@ -193,7 +193,6 @@ type
   private
     IdObject: Integer;
     flLoaded: Boolean;
-    // TypeEstimate: Integer;
   public
     ActReadOnly: Boolean;
     function getCurObject: Integer;

@@ -724,7 +724,7 @@ end;
 procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // if VarIsNull(dmSmReport.ADocument) then
-  dmSmReport.closeDocument(dmSmReport.ADocument);
+  // dmSmReport.closeDocument(dmSmReport.ADocument);
 end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);

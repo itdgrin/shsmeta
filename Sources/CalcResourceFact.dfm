@@ -154,10 +154,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -175,10 +171,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts2: TTabSheet
       Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1080#1077'  '#1084#1072#1090#1077#1088#1080#1072#1083#1099
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl2: TSplitter
         Left = 0
         Top = 193
@@ -554,10 +546,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts3: TTabSheet
       Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1080#1077' '#1084#1077#1093#1072#1085#1080#1079#1084#1099
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl4: TSplitter
         Left = 0
         Top = 209
@@ -901,10 +889,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts4: TTabSheet
       Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1086#1077' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 209
@@ -1280,10 +1264,6 @@ object fCalcResourceFact: TfCalcResourceFact
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlRatesTop: TPanel
         Left = 0
         Top = 0
@@ -1703,6 +1683,7 @@ object fCalcResourceFact: TfCalcResourceFact
         'CT_ID'
       'WHERE'
       '  ((m.DELETED = 0) OR (:SHOW_DELETED))'
+      '  AND m.VOZVRAT=0 /*'#1053#1077' '#1091#1095#1080#1090#1099#1074#1072#1090#1100' '#1074#1086#1079#1074#1088#1072#1090#1085#1099#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1099'*/'
       'ORDER BY 1,2')
     Left = 27
     Top = 264

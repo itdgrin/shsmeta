@@ -152,7 +152,7 @@ end;
 
 procedure TfCardObjectContractorServices.qrMainCalcFields(DataSet: TDataSet);
 begin
-  qrMainChecked.Value := (CheckMask and (1 shl qrMainNO.Value)) = 0;
+  qrMainChecked.Value := (CheckMask and (1 shl qrMainNO.Value)) <> 0;
 end;
 
 procedure TfCardObjectContractorServices.qrMainCheckedChange(Sender: TField);

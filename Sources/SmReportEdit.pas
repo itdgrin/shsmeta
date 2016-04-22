@@ -39,11 +39,11 @@ type
     pnl1: TPanel;
     mmoLog: TMemo;
     mmoInParams: TMemo;
-    pnl2: TPanel;
+    pnlVarsBott: TPanel;
     dbnvgr4: TDBNavigator;
-    pnl3: TPanel;
+    pnlRowsBott: TPanel;
     dbnvgr1: TDBNavigator;
-    pnl4: TPanel;
+    pnlColsBott: TPanel;
     dbnvgr2: TDBNavigator;
     qrVarType: TFDQuery;
     dsVarType: TDataSource;
@@ -61,6 +61,16 @@ type
     qrVarsLK_TYPE: TStringField;
     lblCellLink: TLabel;
     bh: TBalloonHint;
+    dsRowType: TDataSource;
+    qrRowType: TFDQuery;
+    qrRowsREPORT_ROW_ID: TFDAutoIncField;
+    qrRowsREPORT_ID: TIntegerField;
+    qrRowsROW_ID: TIntegerField;
+    qrRowsPOS: TIntegerField;
+    qrRowsREPORT_ROW_NAME: TStringField;
+    qrRowsFL_SHOW: TBooleanField;
+    qrRowsREPORT_ROW_TYPE: TIntegerField;
+    qrRowsLK_TYPE: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -81,20 +91,20 @@ type
     { Public declarations }
   end;
 
-///	<summary>
-///	  Функция построения отчета
-///	</summary>
-///	<returns>
-///	  <para>
-///	    Возвращает массив [0..1]:
-///	  </para>
-///	  <para>
-///	    [0] - запрос на выборку;
-///	  </para>
-///	  <para>
-///	    [1] - массив с подписями полей.
-///	  </para>
-///	</returns>
+  /// <summary>
+  /// Функция построения отчета
+  /// </summary>
+  /// <returns>
+  /// <para>
+  /// Возвращает массив [0..1]:
+  /// </para>
+  /// <para>
+  /// [0] - запрос на выборку;
+  /// </para>
+  /// <para>
+  /// [1] - массив с подписями полей.
+  /// </para>
+  /// </returns>
 function BuildReport(const AREPORT_ID: Integer): Variant;
 
 var
@@ -107,10 +117,11 @@ implementation
 procedure TfSmReportEdit.btnSaveFormulClick(Sender: TObject);
 begin
   // Если были изменения в фомуле расчета
-  if not VarIsNull(COL_ID) and (qrRepCell.FieldByName(grCell.SelectedField.FieldName).AsString
-    <> edtFormul.Text) then
+  if not VarIsNull(COL_ID) and (qrRepCell.FieldByName(grCell.SelectedField.FieldName).AsString <>
+    edtFormul.Text) then
   begin
-    FastExecSQL('INSERT INTO report_cell(REPORT_CELL_VAL, ROW_ID, COL_ID, REPORT_ID) VALUES(:0,:1,:2,:3) ON DUPLICATE KEY UPDATE REPORT_CELL_VAL=:4;',
+    FastExecSQL
+      ('INSERT INTO report_cell(REPORT_CELL_VAL, ROW_ID, COL_ID, REPORT_ID) VALUES(:0,:1,:2,:3) ON DUPLICATE KEY UPDATE REPORT_CELL_VAL=:4;',
       VarArrayOf([Trim(edtFormul.Text), ROW_ID, COL_ID, REPORT_ID, Trim(edtFormul.Text)]));
     CloseOpen(qrRepCell);
   end;
@@ -126,7 +137,7 @@ begin
   startTime := GetTickCount;
   res := BuildReport(REPORT_ID);
   qrPreview.SQL.Text := res[0];
-//qrPreview.SQL.SaveToFile('c:\report.sql');
+  // qrPreview.SQL.SaveToFile('c:\report.sql');
   mmoLog.Lines.Add('Prepare time: ' + IntToStr(GetTickCount - startTime));
   startTime := GetTickCount;
   qrPreview.Active := True;
@@ -145,8 +156,11 @@ var
   begin
     qr := 'SELECT ' + SELECT + ''#13 + 'INTO ' + INTO + ''#13 + 'FROM ' + TABLE + ''#13;
     case OLD_REPORT_VAR_TYPE of
-      // Настройка расчета (@OBJ_ID/@SM_ID) - не/обязательные входные параметры
-      1:
+      // 1 - Настройка расчета (@OBJ_ID/@SM_ID) - не/обязательные входные параметры
+      // 5 - Расчет командировочных
+      // 6 - Расчет разъездного
+      // 7 - Расчет перевозки рабочих
+      1, 5, 6, 7:
         begin
           qr := qr +
             'WHERE ((@OBJ_ID IS NULL) OR (OBJ_ID = @OBJ_ID)) AND IFNULL(SM_ID, 0) = IFNULL(@SM_ID, 0) LIMIT 1;';
@@ -154,17 +168,16 @@ var
       // Сводный сметный расчет (@OBJ_ID/@SM_ID) - не/обязательные входные параметры
       2:
         begin
-          qr := qr +
-            'INNER JOIN smetasourcedata s ON s.SM_ID = summary_calculation.SM_ID'#13 +
-            '  AND s.ACT = 0'#13 +  //  Пока только для смет
+          qr := qr + 'INNER JOIN smetasourcedata s ON s.SM_ID = summary_calculation.SM_ID'#13 +
+            '  AND s.ACT = 0'#13 + // Пока только для смет
+            '  AND IFNULL(s.SM_SUBTYPE, 0) <> 2'#13 + // без учета смет на ПНР
             '  AND ((@OBJ_ID IS NULL) OR (s.OBJ_ID = @OBJ_ID))'#13 +
             '  AND ((@SM_ID IS NULL) OR (s.TREE_PATH LIKE CONCAT((SELECT s2.TREE_PATH FROM smetasourcedata s2 WHERE s2.SM_ID=@SM_ID), "%")));';
         end;
       // Объект  (@OBJ_ID) - обязательный входной параметр
       3:
         begin
-          qr := qr +
-            'WHERE OBJ_ID = @OBJ_ID';
+          qr := qr + 'WHERE OBJ_ID = @OBJ_ID';
         end;
       4:
         begin
@@ -192,11 +205,10 @@ var
       I := (L + H) shr 1;
       if (formulCache[I][0] = R_ID) and (formulCache[I][1] = C_ID) then
         C := 0
+      else if (formulCache[I][0] * 10000 + formulCache[I][1]) <= (R_ID * 10000 + C_ID) then
+        C := -1
       else
-        if (formulCache[I][0] * 10000 + formulCache[I][1]) <= (R_ID * 10000 + C_ID) then
-          C := -1
-        else
-          C := 1;
+        C := 1;
       if C < 0 then
         L := I + 1
       else
@@ -225,11 +237,10 @@ var
       I := (L + H) shr 1;
       if (formulCache[I][0] = R_ID) and (formulCache[I][1] = C_ID) then
         C := 0
+      else if (formulCache[I][0] * 10000 + formulCache[I][1]) <= (R_ID * 10000 + C_ID) then
+        C := -1
       else
-        if (formulCache[I][0] * 10000 + formulCache[I][1]) <= (R_ID * 10000 + C_ID) then
-          C := -1
-        else
-          C := 1;
+        C := 1;
       if C < 0 then
         L := I + 1
       else
@@ -250,7 +261,7 @@ var
     end;
   end;
 
-  // Функция парсинга формулы
+// Функция парсинга формулы
   function ParseFormul(const AFormul: string): string;
   var
     ROW_ID, COL_ID, sp, fp, offset: Integer;
@@ -264,8 +275,7 @@ var
       fp := Pos(']', Result, sp);
       SubLinkFormul := Copy(Result, sp + 1, fp - sp - 1);
       ROW_ID := StrToInt(Copy(SubLinkFormul, 0, Pos(':', SubLinkFormul) - 1));
-      COL_ID := StrToInt(Copy(SubLinkFormul, Pos(':', SubLinkFormul) + 1, length
-        (SubLinkFormul) - 1));
+      COL_ID := StrToInt(Copy(SubLinkFormul, Pos(':', SubLinkFormul) + 1, length(SubLinkFormul) - 1));
       SubLinkFormul := GetFormul(ROW_ID, COL_ID);
       if SubLinkFormul <> '' then
         SubLinkFormul := '(' + SubLinkFormul + ')';
@@ -279,20 +289,17 @@ var
 begin
   Result := Null;
   // Процедуда постройки отчета
-  formulCache := FastSelectSQL('SELECT ROW_ID, COL_ID, REPORT_CELL_VAL, NULL FROM report_cell WHERE REPORT_ID=:0 ORDER BY ROW_ID, COL_ID', VarArrayOf([AREPORT_ID]));
+  formulCache := FastSelectSQL
+    ('SELECT ROW_ID, COL_ID, REPORT_CELL_VAL, NULL FROM report_cell WHERE REPORT_ID=:0 ORDER BY ROW_ID, COL_ID',
+    VarArrayOf([AREPORT_ID]));
   q := DM.qrDifferent;
   qrCol := DM.qrDifferent1;
   fullQuery := '';
   // Инициализация переменных отчета-->
-  q.SQL.Text := 'SELECT'#13 +
-    '  rv.`REPORT_VAR_NAME`,'#13 +
-    '  rv.`REPORT_VAR_TYPE`,'#13 +
-    '  rvt.`TABLE_NAME`,'#13 +
-    '  rv.`REPORT_VAR_VAL`'#13 +
-    'FROM `report_var` rv '#13 +
+  q.SQL.Text := 'SELECT'#13 + '  rv.`REPORT_VAR_NAME`,'#13 + '  rv.`REPORT_VAR_TYPE`,'#13 +
+    '  rvt.`TABLE_NAME`,'#13 + '  rv.`REPORT_VAR_VAL`'#13 + 'FROM `report_var` rv '#13 +
     'LEFT JOIN `report_var_type` rvt ON rvt.`REPORT_VAR_TYPE_ID`=rv.`REPORT_VAR_TYPE`'#13 +
-    'WHERE rv.`REPORT_ID` = :REPORT_ID'#13 +
-    'ORDER BY rv.REPORT_VAR_TYPE';
+    'WHERE rv.`REPORT_ID` = :REPORT_ID'#13 + 'ORDER BY rv.REPORT_VAR_TYPE';
   q.ParamByName('REPORT_ID').Value := AREPORT_ID;
   q.Active := True;
   q.First;
@@ -322,18 +329,12 @@ begin
   fullQuery := '';
 
   // Строки отчета
-  q.SQL.Text := 'SELECT *'#13 +
-    'FROM report_row'#13 +
-    'WHERE REPORT_ID = :REPORT_ID'#13 +
-    'ORDER BY POS';
+  q.SQL.Text := 'SELECT *'#13 + 'FROM report_row'#13 + 'WHERE REPORT_ID = :REPORT_ID'#13 + 'ORDER BY POS';
   q.ParamByName('REPORT_ID').Value := AREPORT_ID;
   q.Active := True;
   q.First;
   // Колонки отчета
-  qrCol.SQL.Text := 'SELECT *'#13 +
-    'FROM report_col'#13 +
-    'WHERE REPORT_ID = :REPORT_ID'#13 +
-    'ORDER BY POS';
+  qrCol.SQL.Text := 'SELECT *'#13 + 'FROM report_col'#13 + 'WHERE REPORT_ID = :REPORT_ID'#13 + 'ORDER BY POS';
   qrCol.ParamByName('REPORT_ID').Value := AREPORT_ID;
   qrCol.Active := True;
 
@@ -365,9 +366,9 @@ begin
         FORMUL := ParseFormul(GetFormul(q.FieldByName('ROW_ID').Value, qrCol.FieldByName('COL_ID').Value));
       SELECT := IIF(SELECT = '', '', SELECT + ', ') + IIF(FORMUL = '', 'NULL', FORMUL);
 
-        if q.RecNo = 1 then
-        SELECT := SELECT + ' AS F' {+ qrCol.FieldByName
-        ('REPORT_COL_LABEL').AsString + '"'};
+      if q.RecNo = 1 then
+        SELECT := SELECT + ' AS F' { + qrCol.FieldByName
+          ('REPORT_COL_LABEL').AsString + '"' };
 
       qrCol.Next;
     end;
@@ -379,7 +380,7 @@ begin
   // <--Сборка общего запроса на вывод отчета
 
   Result := VarArrayOf([fullQuery, ColNames]);
-  //VarClear(formulCache);
+  // VarClear(formulCache);
 end;
 
 procedure TfSmReportEdit.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -391,6 +392,7 @@ begin
   qrRows.Active := False;
   qrCols.Active := False;
   qrVarType.Active := False;
+  qrRowType.Active := False;
   Action := caFree;
 end;
 
@@ -401,6 +403,7 @@ begin
   qrCols.Active := True;
   qrVars.Active := True;
   qrVarType.Active := True;
+  qrRowType.Active := True;
 end;
 
 procedure TfSmReportEdit.FormDestroy(Sender: TObject);
@@ -415,7 +418,7 @@ end;
 
 procedure TfSmReportEdit.grCellColEnter(Sender: TObject);
 begin
-  //dbedtROW_NAME.DataField := grCell.SelectedField.FieldName; //  Column.FieldName;
+  // dbedtROW_NAME.DataField := grCell.SelectedField.FieldName; //  Column.FieldName;
   edtFormul.Text := qrRepCell.FieldByName(grCell.SelectedField.FieldName).AsString;
   ROW_ID := qrRepCell.FieldByName('ROW_ID').Value;
   if qrRepCell.FindField('ID' + grCell.SelectedField.FieldName) <> nil then
@@ -464,22 +467,19 @@ begin
   while not qrCols.Eof do
   begin
     fields := fields +
-      ', (SELECT REPORT_CELL_VAL FROM report_cell WHERE REPORT_ID=r.REPORT_ID AND ROW_ID=r.ROW_ID AND COL_ID=' +
-      qrCols.FieldByName('COL_ID').AsString + ') AS F' + IntToStr(fCount) + ''#13;
-    fields := fields + ', ' + qrCols.FieldByName('COL_ID').AsString +
-      ' AS IDF' + IntToStr(fCount) + ''#13;
+      ', (SELECT REPORT_CELL_VAL FROM report_cell WHERE REPORT_ID=r.REPORT_ID AND ROW_ID=r.ROW_ID AND COL_ID='
+      + qrCols.FieldByName('COL_ID').AsString + ') AS F' + IntToStr(fCount) + ''#13;
+    fields := fields + ', ' + qrCols.FieldByName('COL_ID').AsString + ' AS IDF' + IntToStr(fCount) + ''#13;
 
     if qrCols.FieldByName('FL_PRINT_ROW_NAME').Value <> 1 then
-      addCol(grCell, 'F' + IntToStr(fCount), qrCols.FieldByName('REPORT_COL_LABEL').AsString,
-      100);
+      addCol(grCell, 'F' + IntToStr(fCount), qrCols.FieldByName('REPORT_COL_LABEL').AsString, 100);
     Inc(fCount);
     qrCols.Next;
   end;
 
   fields := fields + ', r.ROW_ID' + ''#13;
 
-  qrRepCell.SQL.Text := fields +
-    'FROM report_row r WHERE r.REPORT_ID=:REPORT_ID ORDER BY r.POS';
+  qrRepCell.SQL.Text := fields + 'FROM report_row r WHERE r.REPORT_ID=:REPORT_ID ORDER BY r.POS';
   CloseOpen(qrRepCell);
 end;
 

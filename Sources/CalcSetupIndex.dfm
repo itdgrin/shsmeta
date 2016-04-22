@@ -103,6 +103,12 @@ object fCalcSetupIndex: TfCalcSetupIndex
     Height = 21
     DataField = 'INDEX_VAL_BEGIN'
     DataSource = dsMain
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 5
     OnChange = dbedtINDEX_VAL_ENDChange
   end
@@ -131,8 +137,6 @@ object fCalcSetupIndex: TfCalcSetupIndex
     ParentFont = False
     TabOrder = 9
     OnClick = btnCancelClick
-    ExplicitLeft = 251
-    ExplicitTop = 249
   end
   object btnSave: TBitBtn
     Left = 171
@@ -149,8 +153,6 @@ object fCalcSetupIndex: TfCalcSetupIndex
     ParentFont = False
     TabOrder = 8
     OnClick = btnSaveClick
-    ExplicitLeft = 170
-    ExplicitTop = 249
   end
   object dbedtINDEX_VAL: TDBEdit
     Left = 224
@@ -172,6 +174,7 @@ object fCalcSetupIndex: TfCalcSetupIndex
     DateFormat = dfLong
     TabOrder = 1
     OnChange = JvDBDateTimePicker3Change
+    DropDownDate = 42474.000000000000000000
     DataField = 'DATE_BEGIN'
     DataSource = dsMain
   end
@@ -223,12 +226,7 @@ object fCalcSetupIndex: TfCalcSetupIndex
     SQL.Strings = (
       'SELECT *'
       'FROM calc_setup'
-      
-        'WHERE (OBJ_ID=:OBJ_ID AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, 0)) OR' +
-        ' '
-      
-        '      (IFNULL(:OBJ_ID, 0)=0 AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, ' +
-        '0))')
+      'WHERE (OBJ_ID=:OBJ_ID AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, 0))')
     Left = 40
     Top = 136
     ParamData = <
