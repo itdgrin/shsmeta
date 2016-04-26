@@ -170,7 +170,7 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'POS'
                 Title.Alignment = taCenter
                 Title.Caption = #1055#1086#1079#1080#1094#1080#1103
-                Width = 57
+                Width = 51
                 Visible = True
               end
               item
@@ -178,20 +178,23 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'REPORT_ROW_NAME'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1080#1089#1090#1086#1095#1085#1080#1082#1072
-                Width = 394
+                Width = 353
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'LK_TYPE'
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'Tahoma'
-                Font.Style = []
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1080#1087
-                Width = 59
+                Width = 53
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'LK_LIST_NAME'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1087#1080#1089#1086#1082
+                Width = 58
                 Visible = True
               end
               item
@@ -199,7 +202,7 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'FL_SHOW'
                 Title.Alignment = taCenter
                 Title.Caption = #1042#1099#1074#1086#1076#1080#1090#1100
-                Width = 58
+                Width = 52
                 Visible = True
               end>
           end
@@ -531,6 +534,7 @@ object fSmReportEdit: TfSmReportEdit
       FieldName = 'REPORT_ROW_ID'
       Origin = 'REPORT_ROW_ID'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
       DisplayFormat = '###,##0.########'
       EditFormat = '0.########'
     end
@@ -581,6 +585,23 @@ object fSmReportEdit: TfSmReportEdit
       LookupResultField = 'ROW_TYPE_NAME'
       KeyFields = 'REPORT_ROW_TYPE'
       Size = 200
+      Lookup = True
+    end
+    object qrRowsREPORT_LIST_SQL_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_LIST_SQL_ID'
+      Origin = 'REPORT_LIST_SQL_ID'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrRowsLK_LIST_NAME: TStringField
+      FieldKind = fkLookup
+      FieldName = 'LK_LIST_NAME'
+      LookupDataSet = qrReportListSql
+      LookupKeyFields = 'REPORT_LIST_SQL_ID'
+      LookupResultField = 'REPORT_LIST_SQL_NAME'
+      KeyFields = 'REPORT_LIST_SQL_ID'
+      Size = 254
       Lookup = True
     end
   end
@@ -793,8 +814,22 @@ object fSmReportEdit: TfSmReportEdit
     SQL.Strings = (
       'SELECT 1 as ROW_TYPE_ID, "'#1060#1080#1082#1089#1080#1088#1086#1074#1072#1085#1085#1072#1103' '#1089#1090#1088#1086#1082#1072'" as ROW_TYPE_NAME'
       'UNION ALL'
-      'SELECT 2 as ROW_TYPE_ID, "'#1058#1072#1073#1083#1080#1094#1072'/'#1079#1072#1087#1088#1086#1089'" as ROW_TYPE_NAME')
+      'SELECT 2 as ROW_TYPE_ID, "'#1057#1087#1080#1089#1086#1082'" as ROW_TYPE_NAME')
     Left = 70
+    Top = 202
+  end
+  object qrReportListSql: TFDQuery
+    MasterFields = 'REPORT_CATEGORY_ID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    SQL.Strings = (
+      'SELECT *'
+      'FROM report_list_sql'
+      'ORDER BY REPORT_LIST_SQL_NAME')
+    Left = 118
     Top = 202
   end
 end

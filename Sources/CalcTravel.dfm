@@ -11,7 +11,6 @@ object fCalcTravel: TfCalcTravel
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate

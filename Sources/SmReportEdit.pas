@@ -71,6 +71,9 @@ type
     qrRowsFL_SHOW: TBooleanField;
     qrRowsREPORT_ROW_TYPE: TIntegerField;
     qrRowsLK_TYPE: TStringField;
+    qrReportListSql: TFDQuery;
+    qrRowsREPORT_LIST_SQL_ID: TIntegerField;
+    qrRowsLK_LIST_NAME: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -169,16 +172,16 @@ var
       2:
         begin
           qr := qr + 'INNER JOIN smetasourcedata s ON s.SM_ID = summary_calculation.SM_ID'#13 +
-            '  AND s.ACT = 0'#13 + // Пока только для смет
             '  AND IFNULL(s.SM_SUBTYPE, 0) <> 2'#13 + // без учета смет на ПНР
             '  AND ((@OBJ_ID IS NULL) OR (s.OBJ_ID = @OBJ_ID))'#13 +
-            '  AND ((@SM_ID IS NULL) OR (s.TREE_PATH LIKE CONCAT((SELECT s2.TREE_PATH FROM smetasourcedata s2 WHERE s2.SM_ID=@SM_ID), "%")));';
+            '  AND ((@SM_ID IS NULL AND s.ACT = 0) OR (s.TREE_PATH LIKE CONCAT((SELECT s2.TREE_PATH FROM smetasourcedata s2 WHERE s2.SM_ID=@SM_ID), "%")));';
         end;
       // Объект  (@OBJ_ID) - обязательный входной параметр
       3:
         begin
           qr := qr + 'WHERE OBJ_ID = @OBJ_ID';
         end;
+      // data_row
       4:
         begin
 
@@ -282,7 +285,7 @@ var
       Result := Copy(Result, 0, sp - 1) + SubLinkFormul + Copy(Result, fp + 1, length(Result) - 1);
       offset := sp;
     end;
-    if (Result <> '') then
+    if (Result <> '') and (Pos('t.', Result) = 0) then
       SetFormul(q.FieldByName('ROW_ID').Value, qrCol.FieldByName('COL_ID').Value, Result);
   end;
 
@@ -329,7 +332,9 @@ begin
   fullQuery := '';
 
   // Строки отчета
-  q.SQL.Text := 'SELECT *'#13 + 'FROM report_row'#13 + 'WHERE REPORT_ID = :REPORT_ID'#13 + 'ORDER BY POS';
+  q.SQL.Text := 'SELECT report_row.*, REPORT_LIST_SQL.REPORT_LIST_SQL_SRC'#13 +
+    'FROM report_row LEFT JOIN REPORT_LIST_SQL ON REPORT_LIST_SQL.REPORT_LIST_SQL_ID=report_row.REPORT_LIST_SQL_ID'#13
+    + 'WHERE REPORT_ID = :REPORT_ID'#13 + 'ORDER BY POS';
   q.ParamByName('REPORT_ID').Value := AREPORT_ID;
   q.Active := True;
   q.First;
@@ -361,7 +366,16 @@ begin
     while not qrCol.Eof do
     begin
       if qrCol.FieldByName('FL_PRINT_ROW_NAME').Value = 1 then
-        FORMUL := '"' + q.FieldByName('REPORT_ROW_NAME').AsString + '"'
+      begin
+        case q.FieldByName('REPORT_ROW_TYPE').AsInteger of
+          // Фиксированная строка
+          1:
+            FORMUL := '"' + q.FieldByName('REPORT_ROW_NAME').AsString + '"';
+          // Список
+          2:
+            FORMUL := 't.VALUE';
+        end;
+      end
       else
         FORMUL := ParseFormul(GetFormul(q.FieldByName('ROW_ID').Value, qrCol.FieldByName('COL_ID').Value));
       SELECT := IIF(SELECT = '', '', SELECT + ', ') + IIF(FORMUL = '', 'NULL', FORMUL);
@@ -372,7 +386,15 @@ begin
 
       qrCol.Next;
     end;
-    fullQuery := fullQuery + 'SELECT ' + SELECT + ''#13;
+    case q.FieldByName('REPORT_ROW_TYPE').AsInteger of
+      // Фиксированная строка
+      1:
+        fullQuery := fullQuery + 'SELECT ' + SELECT + ''#13;
+      // Список
+      2:
+        fullQuery := fullQuery + 'SELECT ' + SELECT + ''#13 + 'FROM (' + q.FieldByName('REPORT_LIST_SQL_SRC')
+          .AsString + ') AS t'#13;
+    end;
     q.Next;
   end;
   q.Active := False;
@@ -393,6 +415,7 @@ begin
   qrCols.Active := False;
   qrVarType.Active := False;
   qrRowType.Active := False;
+  qrReportListSql.Active := False;
   Action := caFree;
 end;
 
@@ -404,6 +427,7 @@ begin
   qrVars.Active := True;
   qrVarType.Active := True;
   qrRowType.Active := True;
+  qrReportListSql.Active := True;
 end;
 
 procedure TfSmReportEdit.FormDestroy(Sender: TObject);

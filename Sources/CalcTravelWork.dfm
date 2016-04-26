@@ -11,7 +11,6 @@ object fCalcTravelWork: TfCalcTravelWork
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -89,7 +88,6 @@ object fCalcTravelWork: TfCalcTravelWork
     Font.Style = []
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 609
     DesignSize = (
       620
       32)
@@ -121,7 +119,6 @@ object fCalcTravelWork: TfCalcTravelWork
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      ExplicitWidth = 371
     end
     object chkEnableEditing: TCheckBox
       Left = 450
@@ -138,7 +135,6 @@ object fCalcTravelWork: TfCalcTravelWork
       ParentFont = False
       TabOrder = 1
       OnClick = chkEnableEditingClick
-      ExplicitLeft = 439
     end
   end
   object dsCalc: TDataSource

@@ -412,7 +412,7 @@ begin
   begin
     fCalcWorkerDepartment.Visible := CheckQrActiveEmpty(qrWorkerDepartment);
     if fCalcWorkerDepartment.Visible then
-      fCalcWorkerDepartment.InitParams;
+      fCalcWorkerDepartment.ReloadMain;
   end;
 end;
 
@@ -428,12 +428,6 @@ begin
       begin
         if fCalcWorkerDepartment.qrCalc.IsEmpty then
         begin
-          if fCalcWorkerDepartment.cbbSource.ItemIndex = 0 then
-            Application.MessageBox('Не указан акт!', 'Расчет командировочных',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST)
-          else
-            Application.MessageBox('Не указана смета!', 'Расчет командировочных',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST);
           Abort;
         end;
         fCalcWorkerDepartment.qrCalc.Last;

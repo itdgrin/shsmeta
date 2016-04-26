@@ -62,7 +62,6 @@ object fSmReportPreview: TfSmReportPreview
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 0
       OnClick = btnCloseClick
-      ExplicitTop = 6
     end
   end
   object dsMain: TDataSource
@@ -76,12 +75,16 @@ object fSmReportPreview: TfSmReportPreview
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
-    FormatOptions.AssignedValues = [fvMapRules, fvDataSnapCompatibility]
+    FormatOptions.AssignedValues = [fvMapRules]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         NameMask = 'F_*'
         TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
       end>
     Left = 30
     Top = 58
