@@ -127,6 +127,8 @@ const SSRItems: array[0..12, 0..3] of string =
    ('90.19','9019','ÂÎÇÂÐÀÒÍÛÅ ÑÓÌÌÛ','0'),
    ('90.20','9020','ÑÌÅÒÍÀß ÑÒÎÈÌÎÑÒÜ ÄÎËÅÂÎÃÎ Ó×ÀÑÒÈß Â ÑÒÐÎÈÒÅËÜÑÒÂÅ ÎÁÚÅÊÒÎÂ ÈËÈ ÈÕ ×ÀÑÒÅÉ ÂÑÏÎÌÎÃÀÒÅËÜÍÎÃÎ ÏÐÎÈÇÂÎÄÑÒÂÀ È ÍÀÇÍÀ×ÅÍÈß, ÏÐÅÄÍÀÇÍÀ×ÅÍÍÛÕ ÄËß ÎÁÑËÓÆÈÂÀÍÈß ÍÅÑÊÎËÜÊÈÕ ÇÀÊÀÇ×ÈÊÎÂ, ÇÀÑÒÐÎÉÙÈÊÎÂ','0'),
    ('90.30','9030','ÂÑÅÃÎ Ê ÓÒÂÅÐÆÄÅÍÈÞ','1'));
+      VozvratMatStr = '          âîçâðàòíûå ìàòåðèàëû';
+
 
 procedure TFormReportSSR.btnObjInfoClick(Sender: TObject);
 var fCardObject: TfCardObject;
@@ -477,11 +479,11 @@ end;
 
 procedure TFormReportSSR.CalcTotal();
 begin
-  mtSSRTotal.Value :=
-    mtSSRZP.Value + mtSSREMiM.Value + mtSSRMat.Value +
-    mtSSRMatTransp.Value + mtSSROXROPR.Value +
-    mtSSRPlanPrib.Value + mtSSRDevices.Value +
-    mtSSRTransp.Value + mtSSROther.Value;
+  mtSSRTotal.Value := mtSSRZP.AsExtended + mtSSREMiM.AsExtended +
+    mtSSRMat.AsExtended +
+    mtSSRMatTransp.AsExtended + mtSSROXROPR.AsExtended +
+    mtSSRPlanPrib.AsExtended + mtSSRDevices.AsExtended +
+    mtSSRTransp.AsExtended + mtSSROther.AsExtended;
 end;
 
 procedure TFormReportSSR.mtSSRKoefChange(Sender: TField);
@@ -589,6 +591,8 @@ var SmStr, CaptStr: string;
     LastC, LastSC: Integer;
     I, J: Integer;
     ev: TFieldNotifyEvent;
+    ChapVozvrat,
+    AllVozvrat: Extended;
 
 procedure AddItog();
 begin
@@ -598,9 +602,24 @@ begin
   mtSSRName.AsString := 'ÈÒÎÃÎ ÏÎ ÃËÀÂÅ ' + LastC.ToString;
   mtSSRCID.Value := LastC;
   mtSSRSCID.Value := 0;
-  mtSSRItog.Value := 1;
+  mtSSRItog.Value := 1;   //Èòîã ïî ãëàâå
   mtSSR.Post;
-  if (LastC >= 7) and (LastC <> 10) then
+
+  if ChapVozvrat > 0 then
+  begin
+    mtSSR.Append;
+    AllVozvrat := AllVozvrat + ChapVozvrat;
+    mtSSRNum.AsString := LastC.ToString + '.91';
+    mtSSRCNum.AsString := Copy((100 + LastC).ToString, 2, 2) + '91';
+    mtSSRName.AsString := VozvratMatStr;
+    mtSSRCID.Value := LastC;
+    mtSSRSCID.Value := 0;
+    mtSSRItog.Value := 3;  //Èòîã âîçâðàòà ïî ñòðîêå
+    mtSSR.Post;
+  end;
+
+  if (LastC >= 7) and
+     (LastC <> 10) then
   begin
     mtSSR.Append;
     mtSSRNum.AsString := LastC.ToString + '.95';
@@ -608,8 +627,21 @@ begin
     mtSSRName.AsString := 'ÈÒÎÃÎ ÏÎ ÃËÀÂÀÌ 1-' + LastC.ToString;
     mtSSRCID.Value := LastC;
     mtSSRSCID.Value := 0;
-    mtSSRItog.Value := 2;
+    mtSSRItog.Value := 2; //Èòîã ïî ãëàâàì
     mtSSR.Post;
+
+    if ((AllVozvrat > 0) and
+       ((LastC = 7) or (LastC = 8))) or (LastC = 9) then
+    begin
+      mtSSR.Append;
+      mtSSRNum.AsString := LastC.ToString + '.96';
+      mtSSRCNum.AsString := Copy((100 + LastC).ToString, 2, 2) + '96';
+      mtSSRName.AsString := VozvratMatStr;
+      mtSSRCID.Value := LastC;
+      mtSSRSCID.Value := 0;
+      mtSSRItog.Value := 4; // èòîã ïî âîçâðàòàì
+      mtSSR.Post;
+    end;
   end;
 end;
 
@@ -634,24 +666,25 @@ begin
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) SM_NAME, ' +
     '(Select SM_TYPE FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) SM_TYPE, ' +
-    '(SELECT IFNULL(`CID`, 2) FROM `ssr_chapters` WHERE ID = ' +
-      '(Select CHAP_ID FROM smetasourcedata WHERE SM_ID = ' +
+    '(SELECT `CID` FROM `ssr_chapters` WHERE ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) CHAPTER, ' +
     '(SELECT IFNULL(`SCID`, 1) FROM `ssr_chapters` WHERE ID = ' +
-      '(Select CHAP_ID FROM smetasourcedata WHERE SM_ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) ROW_NUMBER, ' +
-    'SUM(COALESCE(d.ZPF, d.ZP, 0)) ZP, ' +
-    'SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0)) ZP_PR, ' +
-    'SUM(COALESCE(d.EMiMF, d.EMiM, 0)) EMiM, ' +
-    'SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH, 0)) ZP_MASH, ' +
-    'SUM(COALESCE(d.MRF, d.MR, 0)) MR, ' +
-    'SUM(COALESCE(d.TRANSPF, d.TRANSP, 0)) TRANSP, ' +
-    'SUM(COALESCE(d.OHROPRF, d.OHROPR, 0)) OHROPR, ' +
-    'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0)) PLAN_PRIB, ' +
-    'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0)) MR_DEVICE, ' +
-    'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0)) TRANSP_DEVICE, ' +
-    'SUM(0) OTHER, ' +
-    'SUM(COALESCE(d.TRUDF, d.TRUD, 0) + COALESCE(d.TRUD_MASHF, d.TRUD_MASH, 0)) TRUD ' +
+    'SUM(COALESCE(d.ZPF, d.ZP)) ZP, ' +
+    'SUM(COALESCE(d.ZP_PRF, d.ZP_PR)) ZP_PR, ' +
+    'SUM(COALESCE(d.EMiMF, d.EMiM)) EMiM, ' +
+    'SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH)) ZP_MASH, ' +
+    'SUM(COALESCE(d.MRF, d.MR)) MR, ' +
+    'SUM(COALESCE(d.TRANSPF, d.TRANSP)) TRANSP, ' +
+    'SUM(COALESCE(d.OHROPRF, d.OHROPR)) OHROPR, ' +
+    'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB)) PLAN_PRIB, ' +
+    'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE)) MR_DEVICE, ' +
+    'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE)) TRANSP_DEVICE, ' +
+    'SUM(Null) OTHER, ' +
+    'SUM(COALESCE(d.TRUDF, d.TRUD) + COALESCE(d.TRUD_MASHF, d.TRUD_MASH)) TRUD, ' +
+    '1 SORT2 ' +
     'FROM smetasourcedata s, summary_calculation d ' +
     'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
           '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
@@ -662,28 +695,62 @@ begin
             ' and (IFNULL(SM_SUBTYPE, 0) <> 2))))) ' +
     'GROUP BY SM_ID ' +
     'UNION ALL ' +
+    'Select (Select SM_ID FROM smetasourcedata WHERE SM_ID = ' +
+      '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) SM_ID, ' +
+    '"' + VozvratMatStr + '" SM_NAME, ' +
+    '98 SM_TYPE, ' +
+    '(SELECT `CID` FROM `ssr_chapters` WHERE ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
+      '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) CHAPTER, ' +
+    '(SELECT IFNULL(`SCID`, 1) FROM `ssr_chapters` WHERE ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
+      '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) ROW_NUMBER, ' +
+    'SUM(Null) ZP, ' +
+    'SUM(Null) ZP_PR, ' +
+    'SUM(Null) EMiM, ' +
+    'SUM(Null) ZP_MASH, ' +
+    'SUM(COALESCE(d.MR_VOZVRF, d.MR_VOZVR)) MR, ' +
+    'SUM(Null) TRANSP, ' +
+    'SUM(Null) OHROPR, ' +
+    'SUM(Null) PLAN_PRIB, ' +
+    'SUM(Null) MR_DEVICE, ' +
+    'SUM(Null) TRANSP_DEVICE, ' +
+    'SUM(Null) OTHER, ' +
+    'SUM(Null) TRUD, ' +
+    '2 SORT2 ' +
+    'FROM smetasourcedata s, summary_calculation d ' +
+    'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+          '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
+          '(s.SM_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '(OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 0) AND (SM_TYPE = 2)))' +
+            ' and (IFNULL(SM_SUBTYPE, 0) <> 2))))) ' +
+    'GROUP BY SM_ID HAVING MR > 0 ' +
+    'UNION ALL ' +
     'Select (Select SM_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID) SM_ID, ' +
     '(Select CONCAT(IFNULL(SM_NUMBER, ""), " ",  IFNULL(NAME, "")) SM_NAME ' +
       'FROM smetasourcedata WHERE SM_ID = s.PARENT_ID) SM_NAME, ' +
     '(Select SM_TYPE FROM smetasourcedata WHERE SM_ID = s.PARENT_ID) SM_TYPE, ' +
-    '(SELECT IFNULL(`CID`, 2) FROM `ssr_chapters` WHERE ID = ' +
-      '(Select CHAP_ID FROM smetasourcedata WHERE SM_ID = ' +
+    '(SELECT `CID` FROM `ssr_chapters` WHERE ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) CHAPTER, ' +
     '(SELECT IFNULL(`SCID`, 1) FROM `ssr_chapters` WHERE ID = ' +
-      '(Select CHAP_ID FROM smetasourcedata WHERE SM_ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) ROW_NUMBER, ' +
-    'SUM(COALESCE(d.ZPF, d.ZP, 0)) ZP, ' +
-    'SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0)) ZP_PR, ' +
-    'SUM(COALESCE(d.EMiMF, d.EMiM, 0)) EMiM, ' +
-    'SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH, 0)) ZP_MASH, ' +
-    'SUM(COALESCE(d.MRF, d.MR, 0)) MR, ' +
-    'SUM(COALESCE(d.TRANSPF, d.TRANSP, 0)) TRANSP, ' +
-    'SUM(COALESCE(d.OHROPRF, d.OHROPR, 0)) OHROPR, ' +
-    'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0)) PLAN_PRIB, ' +
-    'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0)) MR_DEVICE, ' +
-    'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0)) TRANSP_DEVICE, ' +
-    'SUM(0) OTHER, ' +
-    'SUM(COALESCE(d.TRUDF, d.TRUD, 0) + COALESCE(d.TRUD_MASHF, d.TRUD_MASH, 0)) TRUD ' +
+    'SUM(COALESCE(d.ZPF, d.ZP)) ZP, ' +
+    'SUM(COALESCE(d.ZP_PRF, d.ZP_PR)) ZP_PR, ' +
+    'SUM(COALESCE(d.EMiMF, d.EMiM)) EMiM, ' +
+    'SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH)) ZP_MASH, ' +
+    'SUM(COALESCE(d.MRF, d.MR)) MR, ' +
+    'SUM(COALESCE(d.TRANSPF, d.TRANSP)) TRANSP, ' +
+    'SUM(COALESCE(d.OHROPRF, d.OHROPR)) OHROPR, ' +
+    'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB)) PLAN_PRIB, ' +
+    'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE)) MR_DEVICE, ' +
+    'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE)) TRANSP_DEVICE, ' +
+    'SUM(Null) OTHER, ' +
+    'SUM(COALESCE(d.TRUDF, d.TRUD) + COALESCE(d.TRUD_MASHF, d.TRUD_MASH)) TRUD, ' +
+    '1 SORT2 ' +
     'FROM smetasourcedata s, summary_calculation d ' +
     'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
           '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
@@ -692,17 +759,49 @@ begin
             '((PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
             '(OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 0) AND (SM_TYPE = 2))))' +
             ' and (IFNULL(SM_SUBTYPE, 0) <> 2))))) ' +
-    'GROUP BY SM_ID';
+    'GROUP BY SM_ID ' +
+    'UNION ALL ' +
+    'Select (Select SM_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID) SM_ID, ' +
+    '"' + VozvratMatStr + '" SM_NAME, ' +
+    '99 SM_TYPE, ' +
+    '(SELECT `CID` FROM `ssr_chapters` WHERE ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
+      '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) CHAPTER, ' +
+    '(SELECT IFNULL(`SCID`, 1) FROM `ssr_chapters` WHERE ID = ' +
+      '(Select IFNULL(`CHAP_ID`, 16) FROM smetasourcedata WHERE SM_ID = ' +
+      '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID))) ROW_NUMBER, ' +
+    'SUM(Null) ZP, ' +
+    'SUM(Null) ZP_PR, ' +
+    'SUM(Null) EMiM, ' +
+    'SUM(Null) ZP_MASH, ' +
+    'SUM(COALESCE(d.MR_VOZVRF, d.MR_VOZVR)) MR, ' +
+    'SUM(Null) TRANSP, ' +
+    'SUM(Null) OHROPR, ' +
+    'SUM(Null) PLAN_PRIB, ' +
+    'SUM(Null) MR_DEVICE, ' +
+    'SUM(Null) TRANSP_DEVICE, ' +
+    'SUM(Null) OTHER, ' +
+    'SUM(Null) TRUD, ' +
+    '2 SORT2 ' +
+    'FROM smetasourcedata s, summary_calculation d ' +
+    'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+          '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
+          '(s.SM_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '((PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '(OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 0) AND (SM_TYPE = 2))))' +
+            ' and (IFNULL(SM_SUBTYPE, 0) <> 2))))) ' +
+    'GROUP BY SM_ID HAVING MR > 0';
 
   CaptStr := 'Select sc.CID, COALESCE(sc.SCID, 0) SCID, sc.CNAME, sc.CNUM, sm.SM_ID, ' +
     'IF(sm.SM_ID is NULL, NULL, FN_getSortSM(sm.SM_ID)) SM_SORT, sm.SM_NAME, ' +
     'sm.SM_TYPE, ZP, ZP_PR, EMiM, ZP_MASH, MR, TRANSP, OHROPR, PLAN_PRIB, ' +
-    'MR_DEVICE, TRANSP_DEVICE, OTHER, TRUD ' +
+    'MR_DEVICE, TRANSP_DEVICE, OTHER, TRUD, SORT2 ' +
     'FROM ssr_chapters sc left join (' + SmStr + ') sm ' +
     'on (sc.CID = sm.CHAPTER) and (COALESCE(sc.SCID, 0) = COALESCE(sm.ROW_NUMBER, 0)) ' +
     'where ((DATES is Null) or (DATES >= :DATESM)) and ' +
           '((DATEPO is Null) or (DATEPO <= :DATESM)) ' +
-    'order by sc.CID, SCID, SM_SORT';
+    'order by sc.CID, SCID, SM_SORT, SORT2';
 
   InitKoefArray(FKoefArray);
 
@@ -728,6 +827,9 @@ begin
     LastC := 0;
     LastSC := 0;
 
+    ChapVozvrat := 0;
+    AllVozvrat := 0;
+
     while not qrTemp.Eof do
     begin
       //Äîáàâëÿåò ñòðîêó 8.2
@@ -751,25 +853,12 @@ begin
         if LastC > 0 then
           AddItog();
 
-        if (LastC = 9) then
-        begin
-          mtSSR.Append;
-          mtSSRNum.AsString := '9.96';
-          mtSSRCNum.AsString := '0996';
-          AddKoef(mtSSRCNum.AsString);
-          mtSSRName.AsString :=
-            'â ò.÷. ÂÎÇÂÐÀÒ ÌÀÒÅÐÈÀËÎÂ';
-
-          mtSSRCID.Value := 9;
-          mtSSRSCID.Value := 96;
-
-          mtSSR.Post;
-        end;
-
         LastC := qrTemp.FieldByName('CID').AsInteger;
         LastSC := 0;
         I := 0;
         J := 0;
+
+        ChapVozvrat := 0;
 
         mtSSR.Append;
         mtSSRNum.AsString := LastC.ToString + '.' + LastSC.ToString;
@@ -811,9 +900,21 @@ begin
           mtSSRNum.AsString :=
             LastC.ToString + '.' + LastSC.ToString + '.' + I.ToString;
         end
-        else
+        else if qrTemp.FieldByName('SM_TYPE').AsInteger = 98 then
+        begin
+          mtSSRNum.AsString :=
+            LastC.ToString + '.' + LastSC.ToString + '.' + I.ToString;
+          ChapVozvrat := ChapVozvrat + qrTemp.FieldByName('MR').AsFloat;
+        end
+        else if qrTemp.FieldByName('SM_TYPE').AsInteger = 1 then
         begin
           inc(J);
+          mtSSRNum.AsString :=
+            LastC.ToString + '.' + LastSC.ToString + '.' +
+            I.ToString + '.' + J.ToString;
+        end
+        else if qrTemp.FieldByName('SM_TYPE').AsInteger = 99 then
+        begin
           mtSSRNum.AsString :=
             LastC.ToString + '.' + LastSC.ToString + '.' +
             I.ToString + '.' + J.ToString;
@@ -821,18 +922,18 @@ begin
 
         mtSSRName.AsString := qrTemp.FieldByName('SM_NAME').AsString;
 
-        mtSSRZP.Value := qrTemp.FieldByName('ZP').AsFloat;
-        mtSSRZP5.Value := qrTemp.FieldByName('ZP_PR').AsFloat;
-        mtSSREMiM.Value := qrTemp.FieldByName('EMiM').AsFloat;
-        mtSSRZPMash.Value := qrTemp.FieldByName('ZP_MASH').AsFloat;
-        mtSSRMat.Value := qrTemp.FieldByName('MR').AsFloat;
-        mtSSRMatTransp.Value := qrTemp.FieldByName('TRANSP').AsFloat;
-        mtSSROXROPR.Value := qrTemp.FieldByName('OHROPR').AsFloat;
-        mtSSRPlanPrib.Value := qrTemp.FieldByName('PLAN_PRIB').AsFloat;
-        mtSSRDevices.Value := qrTemp.FieldByName('MR_DEVICE').AsFloat;
-        mtSSRTransp.Value := qrTemp.FieldByName('TRANSP_DEVICE').AsFloat;
-        mtSSROther.Value := qrTemp.FieldByName('OTHER').AsFloat;
-        mtSSRTrud.Value := qrTemp.FieldByName('TRUD').AsFloat;
+        TField(mtSSRZP).Value := qrTemp.FieldByName('ZP').Value;
+        TField(mtSSRZP5).Value := qrTemp.FieldByName('ZP_PR').Value;
+        TField(mtSSREMiM).Value := qrTemp.FieldByName('EMiM').Value;
+        TField(mtSSRZPMash).Value := qrTemp.FieldByName('ZP_MASH').Value;
+        TField(mtSSRMat).Value := qrTemp.FieldByName('MR').Value;
+        TField(mtSSRMatTransp).Value := qrTemp.FieldByName('TRANSP').Value;
+        TField(mtSSROXROPR).Value := qrTemp.FieldByName('OHROPR').Value;
+        TField(mtSSRPlanPrib).Value := qrTemp.FieldByName('PLAN_PRIB').Value;
+        TField(mtSSRDevices).Value := qrTemp.FieldByName('MR_DEVICE').Value;
+        TField(mtSSRTransp).Value := qrTemp.FieldByName('TRANSP_DEVICE').Value;
+        TField(mtSSROther).Value := qrTemp.FieldByName('OTHER').Value;
+        TField(mtSSRTrud).Value := qrTemp.FieldByName('TRUD').Value;
         CalcTotal();
 
         mtSSRCID.Value := qrTemp.FieldByName('CID').AsInteger;
@@ -881,6 +982,7 @@ var I, J: Integer;
     TmpLine,
     TmpLine1,
     AllLine,
+    VozvLine,
     Line0190,
     Line0795,
     Line0801,
@@ -906,8 +1008,6 @@ var I, J: Integer;
     Line1195,
     Line9011,
     Line9013: TRepSSRLine;
-    Bookmark0802,
-    Bookmark0996,
     Bookmark9012,
     TmpBookmark: TBookMark;
     KZp, KEmim, KEmimZp, KMr: Double;
@@ -939,19 +1039,32 @@ end;
 
 procedure AssignLine(const ALine: TRepSSRLine);
 begin
-  mtSSRZP.Value := ALine.ZP;
-  mtSSRZP5.Value := ALine.ZP5;
-  mtSSREMiM.Value := ALine.EMiM;
-  mtSSRZPMash.Value := ALine.ZPMash;
-  mtSSRMat.Value := ALine.Mat;
-  mtSSRMatTransp.Value := ALine.MatTransp;
-  mtSSROXROPR.Value := ALine.OXROPR;
-  mtSSRPlanPrib.Value := ALine.PlanPrib;
-  mtSSRDevices.Value := ALine.Devices;
-  mtSSRTransp.Value := ALine.Transp;
-  mtSSROther.Value := ALine.Other;
-  mtSSRTotal.Value := ALine.Total;
-  mtSSRTrud.Value := ALine.Trud;
+  if ALine.ZP > 0 then
+    mtSSRZP.Value := ALine.ZP;
+  if ALine.ZP5 > 0 then
+    mtSSRZP5.Value := ALine.ZP5;
+  if ALine.EMiM > 0 then
+    mtSSREMiM.Value := ALine.EMiM;
+  if ALine.ZPMash > 0 then
+    mtSSRZPMash.Value := ALine.ZPMash;
+  if ALine.Mat > 0 then
+    mtSSRMat.Value := ALine.Mat;
+  if ALine.MatTransp > 0 then
+    mtSSRMatTransp.Value := ALine.MatTransp;
+  if ALine.OXROPR > 0 then
+    mtSSROXROPR.Value := ALine.OXROPR;
+  if ALine.PlanPrib > 0 then
+    mtSSRPlanPrib.Value := ALine.PlanPrib;
+  if ALine.Devices > 0 then
+    mtSSRDevices.Value := ALine.Devices;
+  if ALine.Transp > 0 then
+    mtSSRTransp.Value := ALine.Transp;
+  if ALine.Other > 0 then
+    mtSSROther.Value := ALine.Other;
+  if ALine.Total > 0 then
+    mtSSRTotal.Value := ALine.Total;
+  if ALine.Trud > 0 then
+    mtSSRTrud.Value := ALine.Trud;
 end;
 
 procedure AssignLineIfNoNull(const ALine: TRepSSRLine);
@@ -1015,6 +1128,7 @@ begin
   TmpLine := default(TRepSSRLine);
   TmpLine1 := default(TRepSSRLine);
   AllLine := default(TRepSSRLine);
+  VozvLine := default(TRepSSRLine);
   Line0190 := default(TRepSSRLine);
   Line0795 := default(TRepSSRLine);
   Line0801 := default(TRepSSRLine);
@@ -1055,12 +1169,6 @@ begin
           CalcLineWithKoef(TmpLine);
         AssignLineIfNoNull(TmpLine);
 
-        if mtSSRCNum.AsString = '0802' then
-          Bookmark0802 := mtSSR.GetBookmark;
-
-        if mtSSRCNum.AsString = '0996' then
-          Bookmark0996 := mtSSR.GetBookmark;
-
         if mtSSRCNum.AsString = '0904' then
           Line0904 := TmpLine;
         if mtSSRCNum.AsString = '0905' then
@@ -1097,6 +1205,9 @@ begin
     TmpLine := default(TRepSSRLine);
     AllLine := default(TRepSSRLine);
 
+    TmpLine1 := default(TRepSSRLine);
+    VozvLine := default(TRepSSRLine);
+
     //Ïîäáèâàåò èòîã ïî êîæäîé èç ãëàâ äî ãëàâû 7
     while not mtSSR.Eof do
     begin
@@ -1120,6 +1231,23 @@ begin
 
         if mtSSRCNum.AsString = '1195' then
           Break;
+      end;
+
+      if (mtSSRSM_ID.Value > 0) and (mtSSRSM_TYPE.Value = 98) then
+      begin
+        SummToLine(TmpLine1);
+      end;
+
+      if (mtSSRItog.Value = 3) then
+      begin
+        AssignLineIfNoNull(TmpLine1);
+        SummToLine(VozvLine);
+        TmpLine := default(TRepSSRLine);
+      end;
+
+      if (mtSSRItog.Value = 4) then
+      begin
+        AssignLineIfNoNull(VozvLine);
       end;
 
       if (mtSSRItog.Value = 1) then
@@ -1171,6 +1299,14 @@ begin
           CalcLineWithKoef(Line0801);
           AssignLineIfNoNull(Line0801);
           SummToLine(TmpLine);
+          Line0802.Mat := Line0801.Total;
+        end;
+
+        if mtSSRCNum.AsString = '0802' then
+        begin
+          CalcLineWithKoef(Line0802);
+          AssignLineIfNoNull(Line0802);
+          VozvLine.Summ(Line0802);
         end;
 
         if mtSSRCNum.AsString = '0901' then
@@ -1292,27 +1428,6 @@ begin
       end;
       mtSSR.Next;
     end;
-
-    TmpBookmark := mtSSR.GetBookmark;
-    //Ðàñ÷åò ïóíêòà 0802  è 0996
-    if mtSSR.BookmarkValid(Bookmark0802) then
-    begin
-      mtSSR.GotoBookmark(Bookmark0802);
-      Line0802.Mat := Line0801.Total;
-      CalcLineWithKoef(Line0802);
-      AssignLineIfNoNull(Line0802);
-      if mtSSR.BookmarkValid(Bookmark0996) then
-      begin
-        mtSSR.GotoBookmark(Bookmark0996);
-        TmpLine := Line0802;   //Âîçìîæííî ýòî ëèøíåå
-        CalcLineWithKoef(TmpLine);
-        AssignLineIfNoNull(TmpLine);
-      end;
-      mtSSR.FreeBookmark(Bookmark0802);
-      mtSSR.FreeBookmark(Bookmark0996);
-    end;
-    mtSSR.GotoBookmark(TmpBookmark);
-    mtSSR.FreeBookmark(TmpBookmark);
 
     //Ðàñ÷åò îñòàâøèõñÿ ñòðîê 90
     while not mtSSR.Eof do
@@ -1599,14 +1714,15 @@ begin
 
       if (mtSSRSM_ID.Value > 0) and (mtSSRName.Index = Column.Index) then
       begin
-        if (mtSSRSM_TYPE.Value = 2) then
-          Brush.Color := $00CACEC8
+        if (mtSSRSM_TYPE.Value = 2) or
+           (mtSSRSM_TYPE.Value = 98) then
+        begin
+          Brush.Color := $00CACEC8;
+          Font.Style := Font.Style + [fsBold];
+        end
         else
           Brush.Color := $00DEE1E3;
       end;
-
-      if mtSSRSM_TYPE.Value = 2 then
-        Font.Style := Font.Style + [fsBold];
 
       // Ñòðîêà â ôîêóñå
       if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and

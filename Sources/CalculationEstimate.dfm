@@ -1512,7 +1512,6 @@
           ParentBackground = False
           ShowCaption = False
           TabOrder = 0
-          OnResize = PanelClientRightTablesResize
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -1529,28 +1528,6 @@
             Cursor = crVSplit
             AutoSize = True
           end
-          object SplitterRight1: TSplitter
-            Left = 0
-            Top = 24
-            Width = 546
-            Height = 5
-            Cursor = crVSplit
-            Align = alTop
-            ResizeStyle = rsUpdate
-            ExplicitTop = 30
-            ExplicitWidth = 482
-          end
-          object SplitterRight2: TSplitter
-            Left = 0
-            Top = 51
-            Width = 546
-            Height = 5
-            Cursor = crVSplit
-            Align = alTop
-            ResizeStyle = rsUpdate
-            ExplicitTop = 65
-            ExplicitWidth = 482
-          end
           object SplitterRightMemo: TSplitter
             Left = 0
             Top = 175
@@ -1563,7 +1540,7 @@
           end
           object dbgrdMechanizm: TJvDBGrid
             Left = 0
-            Top = 29
+            Top = 24
             Width = 546
             Height = 22
             Align = alTop
@@ -2124,7 +2101,7 @@
           end
           object dbgrdDevices: TJvDBGrid
             Left = 0
-            Top = 56
+            Top = 46
             Width = 546
             Height = 25
             Align = alTop
@@ -2354,7 +2331,7 @@
           end
           object dbgrdDump: TJvDBGrid
             Left = 0
-            Top = 99
+            Top = 71
             Width = 546
             Height = 30
             Align = alTop
@@ -2372,7 +2349,7 @@
             ParentFont = False
             PopupMenu = pmDumpTransp
             ReadOnly = True
-            TabOrder = 4
+            TabOrder = 3
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2475,47 +2452,9 @@
                 Visible = True
               end>
           end
-          object dbgrdDescription: TJvDBGrid
-            Left = 0
-            Top = 81
-            Width = 546
-            Height = 18
-            Align = alTop
-            DataSource = dsDescription
-            DefaultDrawing = False
-            DrawingStyle = gdsClassic
-            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
-            TabOrder = 3
-            TitleFont.Charset = DEFAULT_CHARSET
-            TitleFont.Color = clWindowText
-            TitleFont.Height = -11
-            TitleFont.Name = 'Tahoma'
-            TitleFont.Style = []
-            OnDrawColumnCell = dbgrdDescription1DrawColumnCell
-            OnEnter = dbgrdEnter
-            AutoAppend = False
-            AutoSort = False
-            IniStorage = FormStorage
-            SelectColumnsDialogStrings.Caption = 'Select columns'
-            SelectColumnsDialogStrings.OK = '&OK'
-            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-            CanDelete = False
-            EditControls = <>
-            RowsHeight = 17
-            TitleRowHeight = 17
-            OnCanEditCell = dbgrdCanEditCell
-            Columns = <
-              item
-                Expanded = False
-                FieldName = 'work'
-                Title.Alignment = taCenter
-                Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1089#1086#1089#1090#1072#1074#1072' '#1088#1072#1073#1086#1090
-                Visible = True
-              end>
-          end
           object dbgrdTransp: TJvDBGrid
             Left = 0
-            Top = 144
+            Top = 116
             Width = 546
             Height = 25
             Align = alTop
@@ -2533,7 +2472,7 @@
             ParentFont = False
             PopupMenu = pmDumpTransp
             ReadOnly = True
-            TabOrder = 6
+            TabOrder = 5
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2662,7 +2601,7 @@
           end
           object dbgrdStartup: TJvDBGrid
             Left = 0
-            Top = 129
+            Top = 101
             Width = 546
             Height = 15
             Align = alTop
@@ -2673,7 +2612,7 @@
             Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             ParentCtl3D = False
             ReadOnly = True
-            TabOrder = 5
+            TabOrder = 4
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2741,8 +2680,20 @@
             ParentFont = False
             ReadOnly = True
             ScrollBars = ssVertical
-            TabOrder = 7
+            TabOrder = 6
             OnEnter = dbmmoEnter
+          end
+          object memDescription: TDBMemo
+            Left = 0
+            Top = 141
+            Width = 546
+            Height = 28
+            Align = alTop
+            DataField = 'WorkDesc'
+            DataSource = dsDescription
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 7
           end
         end
       end
@@ -4026,31 +3977,14 @@
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     SQL.Strings = (
-      'SELECT FIRST_NAME AS "work"'
-      'FROM normativ_directory '
-      
-        'WHERE type_directory = 6 AND parent_id=(SELECT normativg.normati' +
-        'v_directory_id FROM normativg WHERE normativg.normativ_id = :IdN' +
-        'orm)'
-      'ORDER BY FIRST_NAME;')
+      'SELECT WorkDesc FROM normdesc WHERE NORMATIV_ID = :NORMATIV_ID')
     Left = 616
     Top = 80
     ParamData = <
       item
-        Name = 'IDNORM'
-        DataType = ftInteger
+        Name = 'NORMATIV_ID'
         ParamType = ptInput
-        Size = 10
-        Value = 0
       end>
-    object qrDescriptionwork: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'work'
-      Origin = 'work'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 1024
-    end
   end
   object qrTemp: TFDQuery
     Connection = DM.Connect

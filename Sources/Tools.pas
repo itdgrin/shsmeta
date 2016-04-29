@@ -151,7 +151,7 @@ function GetGlob(const AParamName: String; const AGlobParamType: TGlobParamType 
 function GetGlobDef(const AParamName: String; const ADefValue: Variant;
   const AGlobParamType: TGlobParamType = gptReportParam): Variant;
 //получчение нового айдишника для справочников
-function GetNewID(ATypeID: Integer): Variant;
+function GetNewID(ATypeID: Integer; ABase: Byte): Variant;
 // Округления для расчетов в программе
 function SmRound(AValue: Extended): Extended;
 {
@@ -163,10 +163,11 @@ implementation
 
 uses uSelectColumn;
 
-function GetNewID(ATypeID: Integer): Variant;
+function GetNewID(ATypeID: Integer; ABase: Byte): Variant;
 begin
-  Result := FastSelectSQLOne('Select GetNewManualID(:0)', VarArrayOf([ATypeID]));
+  Result := FastSelectSQLOne('Select GetNewSprID(:0, :1)', VarArrayOf([ATypeID, ABase]));
 end;
+
 // Заготовка пустышка
 function SmRound(AValue: Extended): Extended;
 begin

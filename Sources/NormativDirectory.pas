@@ -15,7 +15,6 @@ type
     qrMain: TFDQuery;
     dsMain: TDataSource;
     tvMain: TJvDBTreeView;
-    grSostav: TJvDBGrid;
     spl1: TSplitter;
     qrDetail: TFDQuery;
     dsDetail: TDataSource;
@@ -31,6 +30,8 @@ type
     pnl2: TPanel;
     btn1: TBitBtn;
     btn2: TBitBtn;
+    pnlDesc: TPanel;
+    memDesc: TDBMemo;
     procedure FormCreate(Sender: TObject);
     procedure tvMainDblClick(Sender: TObject);
     procedure tvMainChange(Sender: TObject; Node: TTreeNode);

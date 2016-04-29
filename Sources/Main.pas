@@ -1121,29 +1121,8 @@ begin
 end;
 
 procedure TFormMain.ServiceUpdNormClick(Sender: TObject);
-var
-  tmp: TFDGUIxScreenCursor;
 begin
-  try
-    with DM.qrDifferent do
-    begin
-      Active := False;
-      SQL.Text := 'CALL `UpdateNormSortField`()';
-      tmp := DM.FDGUIxWaitCursor1.ScreenCursor;
-      try
-        DM.FDGUIxWaitCursor1.ScreenCursor := TFDGUIxScreenCursor.gcrHourGlass;
-        ExecSQL;
-      finally
-        DM.FDGUIxWaitCursor1.ScreenCursor := tmp;
-      end;
-    end;
-  except
-    on e: Exception do
-    begin
-      e.Message := 'Возникло исключение:' + sLineBreak + e.Message;
-      Application.ShowException(e);
-    end;
-  end;
+  FastExecSQL('CALL `UpdateNormSortField`()', VarArrayOf([]));
 end;
 
 procedure TFormMain.TimerCoverTimer(Sender: TObject);

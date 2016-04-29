@@ -680,7 +680,7 @@
                 Width = 530
                 Height = 80
                 Align = alClient
-                DataSource = dsHistory
+                DataSource = dsSW
                 Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
                 TabOrder = 1
                 TitleFont.Charset = DEFAULT_CHARSET
@@ -709,7 +709,7 @@
                   end
                   item
                     Expanded = False
-                    FieldName = 'prikaz'
+                    FieldName = 'PBEGIN_NAME'
                     Title.Alignment = taCenter
                     Title.Caption = #1054#1089#1085#1086#1074#1072#1085#1080#1077
                     Width = 380
@@ -844,49 +844,17 @@
                 ParentFont = False
                 TabOrder = 0
               end
-              object grSostav: TJvDBGrid
+              object memSW: TDBMemo
                 Left = 0
                 Top = 20
                 Width = 530
                 Height = 80
                 Align = alClient
+                DataField = 'WorkDesc'
                 DataSource = dsSW
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'Tahoma'
-                Font.Style = []
-                Options = [dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
-                ParentFont = False
                 ReadOnly = True
+                ScrollBars = ssVertical
                 TabOrder = 1
-                TitleFont.Charset = DEFAULT_CHARSET
-                TitleFont.Color = clWindowText
-                TitleFont.Height = -11
-                TitleFont.Name = 'Tahoma'
-                TitleFont.Style = []
-                AutoAppend = False
-                OnResize = grNCResize
-                ScrollBars = ssNone
-                AutoSizeColumns = True
-                SelectColumnsDialogStrings.Caption = 'Select columns'
-                SelectColumnsDialogStrings.OK = '&OK'
-                SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-                CanDelete = False
-                EditControls = <>
-                RowsHeight = 17
-                TitleRowHeight = 17
-                WordWrap = True
-                WordWrapAllFields = True
-                Columns = <
-                  item
-                    Expanded = False
-                    FieldName = 'FULL_NAME'
-                    Title.Alignment = taCenter
-                    Title.Caption = #1057#1086#1089#1090#1072#1074' '#1088#1072#1073#1086#1090
-                    Width = 525
-                    Visible = True
-                  end>
               end
             end
             object pnlSaveCancel: TPanel
@@ -1116,34 +1084,6 @@
     Left = 24
     Top = 96
   end
-  object dsHistory: TDataSource
-    DataSet = qrHistory
-    Left = 171
-    Top = 448
-  end
-  object qrHistory: TFDQuery
-    AfterOpen = qrHistoryAfterOpen
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evRecordCountMode]
-    SQL.Strings = (
-      'select distinct date_beginer, prikaz'
-      'from normativg'
-      
-        'where (NORM_NUM like :NORM_NUM) AND ((`normativg`.`date_end` IS ' +
-        'NOT NULL) OR (`normativg`.`date_beginer` IS NOT NULL))'
-      'ORDER BY date_beginer DESC, date_end DESC')
-    Left = 132
-    Top = 448
-    ParamData = <
-      item
-        Name = 'NORM_NUM'
-        DataType = ftString
-        ParamType = ptInput
-        Value = ''
-      end>
-  end
   object dsNormativ: TDataSource
     DataSet = qrNormativ
     Left = 72
@@ -1151,7 +1091,6 @@
   end
   object qrSW: TFDQuery
     BeforeOpen = qrSWBeforeOpen
-    AfterOpen = qrSWAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1160,15 +1099,18 @@
     FormatOptions.AssignedValues = [fvDefaultParamDataType]
     FormatOptions.DefaultParamDataType = ftBCD
     SQL.Strings = (
-      'SELECT FIRST_NAME AS FULL_NAME, normativ_directory_id'
-      'FROM normativ_directory'
-      'WHERE type_directory = 6 AND parent_id=:normativ_directory_id'
-      'ORDER BY FIRST_NAME')
+      
+        'SELECT normativg.NORMATIV_ID, date_beginer, WorkDesc, PBEGIN_NAM' +
+        'E '
+      'FROM normativg, normdesc '
+      
+        'WHERE (normativg.NORMATIV_ID = normdesc.NORMATIV_ID) AND (normat' +
+        'ivg.NORMATIV_ID = :NORMATIV_ID)')
     Left = 137
     Top = 336
     ParamData = <
       item
-        Name = 'NORMATIV_DIRECTORY_ID'
+        Name = 'NORMATIV_ID'
         ParamType = ptInput
       end>
   end

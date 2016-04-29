@@ -19,19 +19,18 @@ object fNormativDirectory: TfNormativDirectory
   TextHeight = 13
   object spl1: TSplitter
     Left = 0
-    Top = 327
+    Top = 325
     Width = 646
     Height = 3
     Cursor = crVSplit
     Align = alBottom
-    ExplicitTop = 398
-    ExplicitWidth = 554
+    ExplicitTop = 333
   end
   object tvMain: TJvDBTreeView
     Left = 0
     Top = 27
     Width = 646
-    Height = 300
+    Height = 298
     DataSource = dsMain
     MasterField = 'normativ_directory_id'
     DetailField = 'parent_id'
@@ -55,43 +54,6 @@ object fNormativDirectory: TfNormativDirectory
     ParentFont = False
     RowSelect = True
     Mirror = False
-  end
-  object grSostav: TJvDBGrid
-    Left = 0
-    Top = 330
-    Width = 646
-    Height = 121
-    Align = alBottom
-    DataSource = dsDetail
-    Options = [dgTitles, dgColumnResize, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
-    ReadOnly = True
-    TabOrder = 2
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
-    OnDrawColumnCell = grSostavDrawColumnCell
-    AutoAppend = False
-    AutoSizeColumns = True
-    SelectColumnsDialogStrings.Caption = 'Select columns'
-    SelectColumnsDialogStrings.OK = '&OK'
-    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-    CanDelete = False
-    EditControls = <>
-    RowsHeight = 16
-    TitleRowHeight = 17
-    WordWrap = True
-    WordWrapAllFields = True
-    Columns = <
-      item
-        Expanded = False
-        FieldName = 'FULL_NAME'
-        Title.Alignment = taCenter
-        Title.Caption = #1057#1086#1089#1090#1072#1074' '#1088#1072#1073#1086#1090
-        Width = 642
-        Visible = True
-      end>
   end
   object pnl1: TPanel
     Left = 0
@@ -155,7 +117,7 @@ object fNormativDirectory: TfNormativDirectory
     Width = 646
     Height = 38
     Align = alBottom
-    TabOrder = 3
+    TabOrder = 2
     DesignSize = (
       646
       38)
@@ -177,6 +139,31 @@ object fNormativDirectory: TfNormativDirectory
       Anchors = [akRight, akBottom]
       Caption = #1042#1099#1073#1088#1072#1090#1100
       ModalResult = 1
+      TabOrder = 0
+    end
+  end
+  object pnlDesc: TPanel
+    Left = 0
+    Top = 328
+    Width = 646
+    Height = 123
+    Align = alBottom
+    Caption = #1057#1086#1089#1090#1072#1074' '#1088#1072#1073#1086#1090
+    TabOrder = 3
+    VerticalAlignment = taAlignTop
+    DesignSize = (
+      646
+      123)
+    object memDesc: TDBMemo
+      Left = 0
+      Top = 16
+      Width = 646
+      Height = 107
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      DataField = 'WorkDesc'
+      DataSource = dsDetail
+      ReadOnly = True
+      ScrollBars = ssVertical
       TabOrder = 0
     end
   end
@@ -223,10 +210,13 @@ object fNormativDirectory: TfNormativDirectory
     FormatOptions.AssignedValues = [fvDefaultParamDataType]
     FormatOptions.DefaultParamDataType = ftBCD
     SQL.Strings = (
-      'SELECT FIRST_NAME AS FULL_NAME, normativ_directory_id'
-      'FROM normativ_directory'
-      'WHERE type_directory = 6 AND parent_id=:normativ_directory_id'
-      'ORDER BY FIRST_NAME')
+      'SELECT WorkDesc, date_beginer   '
+      
+        'FROM normdesc join normativg on normdesc.NORMATIV_ID = normativg' +
+        '.NORMATIV_ID '
+      'WHERE normativ_directory_id = :normativ_directory_id'
+      'ORDER BY date_beginer '
+      'Limit 1')
     Left = 89
     Top = 368
     ParamData = <

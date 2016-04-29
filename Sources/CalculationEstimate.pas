@@ -139,8 +139,6 @@ type
     PanelClientRightTables: TPanel;
     ImageSplitterRight1: TImage;
     ImageSplitterRight2: TImage;
-    SplitterRight1: TSplitter;
-    SplitterRight2: TSplitter;
     ImageNoData: TImage;
     LabelNoData1: TLabel;
     LabelNoData2: TLabel;
@@ -177,7 +175,6 @@ type
     dsDescription: TDataSource;
     qrMechanizm: TFDQuery;
     dsMechanizm: TDataSource;
-    qrDescriptionwork: TStringField;
     qrMechanizmID: TFDAutoIncField;
     qrMechanizmID_CARD_RATE: TIntegerField;
     qrMechanizmMECH_CODE: TStringField;
@@ -236,7 +233,6 @@ type
     qrDumpNUM: TIntegerField;
     pmDumpTransp: TPopupMenu;
     PMDumpEdit: TMenuItem;
-    dbgrdDescription: TJvDBGrid;
     btnTransp: TSpeedButton;
     btnStartup: TSpeedButton;
     qrTransp: TFDQuery;
@@ -520,6 +516,7 @@ type
     N16: TMenuItem;
     pmVozvratMat: TMenuItem;
     lbVozvratMat: TLabel;
+    memDescription: TDBMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -584,7 +581,6 @@ type
     procedure Panel1Resize(Sender: TObject);
     procedure PanelTopMenuResize(Sender: TObject);
     procedure SettingVisibleRightTables;
-    procedure PanelClientRightTablesResize(Sender: TObject);
     procedure btnEquipmentsClick(Sender: TObject);
     procedure SpeedButtonModeTablesClick(Sender: TObject);
     procedure GetMonthYearCalculationEstimate;
@@ -615,8 +611,6 @@ type
       Column: TColumn; State: TGridDrawState);
     procedure qrRatesExAfterScroll(DataSet: TDataSet);
     procedure qrRatesExCOUNTChange(Sender: TField);
-    procedure dbgrdDescription1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-      Column: TColumn; State: TGridDrawState);
     procedure qrMechanizmBeforeInsert(DataSet: TDataSet);
     procedure qrMechanizmAfterScroll(DataSet: TDataSet);
     procedure qrMechanizmCalcFields(DataSet: TDataSet);
@@ -1735,6 +1729,8 @@ begin
 
     pmVozvratMat.Checked := NewVal = 1;
     lbVozvratMat.Visible := NewVal = 1;
+
+    CloseOpen(qrCalculations);
   end;
 end;
 
@@ -1766,24 +1762,6 @@ begin
   frSummaryCalculations.grSummaryCalculation.Repaint;
   if Assigned(fCalcResource) then
     fCalcResource.pnlCalculationYesNoClick(nil);
-end;
-
-procedure TFormCalculationEstimate.PanelClientRightTablesResize(Sender: TObject);
-var
-  H: Integer;
-begin
-  if VisibleRightTables = '0001000' then
-  begin
-    dbgrdDescription.Columns[0].Width := dbgrdDescription.Width - 50;
-  end
-  else if VisibleRightTables = '1110000' then
-  begin
-    H := PanelClientRightTables.Height - SplitterRight1.Height - SplitterRight2.Height;
-
-    dbgrdMaterial.Height := H div 3;
-    dbgrdMechanizm.Height := dbgrdMaterial.Height;
-    dbgrdDevices.Height := dbgrdMaterial.Height;
-  end;
 end;
 
 procedure TFormCalculationEstimate.PanelDataResize(Sender: TObject);
@@ -1887,12 +1865,6 @@ begin
 
   ImageSplitterLeft.Top := SplitterLeft.Top;
   ImageSplitterLeft.Left := SplitterLeft.Left + (SplitterLeft.Width - ImageSplitterLeft.Width) div 2;
-
-  ImageSplitterRight1.Top := SplitterRight1.Top;
-  ImageSplitterRight1.Left := SplitterRight1.Left + (SplitterRight1.Width - ImageSplitterRight1.Width) div 2;
-
-  ImageSplitterRight2.Top := SplitterRight2.Top;
-  ImageSplitterRight2.Left := SplitterRight2.Left + (SplitterRight2.Width - ImageSplitterRight2.Width) div 2;
 
   ImageSplitterRightBottom.Top := SplitterRightMemo.Top;
   ImageSplitterRightBottom.Left := SplitterRightMemo.Left +
@@ -2581,7 +2553,7 @@ begin
           tID := FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:0',
             VarArrayOf([qrRatesExID_TABLES.Value]));
           // Копируем расценку
-          newID := GetNewID(C_MANID_NORM);
+          newID := GetNewID(C_MANID_NORM, 1);
           FastExecSQL
             ('INSERT INTO normativg(NORMATIV_ID,SORT_NUM, NORM_NUM, NORM_CAPTION, ' +
               'UNIT_ID, NORM_ACTIVE,normativ_directory_id, NORM_BASE, NORM_TYPE, ' +
@@ -2591,7 +2563,7 @@ begin
             VarArrayOf([newID, OBJ_NAME, qrRatesExOBJ_NAME.Value, Now, tID]));
 
           // Копируем материалы
-          newID1 := GetNewID(C_MANID_NORM_MAT);
+          newID1 := GetNewID(C_MANID_NORM_MAT, 1);
           DM.qrDifferent.Active := False;
           DM.qrDifferent.SQL.Text :=
             'SELECT MAT_ID, MAT_NORMA FROM materialcard_temp WHERE ID_CARD_RATE=' +
@@ -2609,7 +2581,7 @@ begin
           DM.qrDifferent.Active := False;
 
           // Копируем механизмы
-          newID1 := GetNewID(C_MANID_NORM_MECH);
+          newID1 := GetNewID(C_MANID_NORM_MECH, 1);
           DM.qrDifferent.Active := False;
           DM.qrDifferent.SQL.Text :=
             'SELECT MECH_ID, MECH_NORMA FROM mechanizmcard_temp WHERE ID_CARD_RATE=' +
@@ -2627,7 +2599,7 @@ begin
           DM.qrDifferent.Active := False;
 
           // Копируем затраты труда
-          newID1 := GetNewID(C_MANID_NORM_WORK);
+          newID1 := GetNewID(C_MANID_NORM_WORK, 1);
           DM.qrDifferent.Active := False;
           DM.qrDifferent.SQL.Text :=
             'SELECT WORK_ID, NORMA FROM normativwork WHERE NORMATIV_ID=' +
@@ -2694,7 +2666,7 @@ begin
           end;
 
           // Копируем
-          newID := GetNewID(C_MANID_MAT);
+          newID := GetNewID(C_MANID_MAT, 1);
           FastExecSQL
             ('INSERT INTO MATERIAL (MATERIAL_ID, MAT_CODE, MAT_NAME, MAT_TYPE, ' +
               'UNIT_ID, BASE) (SELECT :3, :0, :1, MAT_TYPE, UNIT_ID, 1 ' +
@@ -2741,7 +2713,7 @@ begin
           tID := FastSelectSQLOne('SELECT MECH_ID FROM mechanizmcard_temp WHERE ID=:0',
             VarArrayOf([qrRatesExID_TABLES.Value]));
           // Копируем
-          newID := GetNewID(C_MANID_MECH);
+          newID := GetNewID(C_MANID_MECH, 1);
           FastExecSQL
             ('INSERT INTO MECHANIZM(MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID, ' +
             'DESCRIPTION, MECH_PH, TYPE_MEH_SMEN_HOUR, BASE) (SELECT :3, :0, :1, ' +
@@ -2787,7 +2759,7 @@ begin
           tID := FastSelectSQLOne('SELECT DEVICE_ID FROM devicescard_temp WHERE ID=:0',
             VarArrayOf([qrRatesExID_TABLES.Value]));
           // Копируем
-          newID := GetNewID(C_MANID_DEV);
+          newID := GetNewID(C_MANID_DEV, 1);
           FastExecSQL
             ('INSERT INTO devices (DEVICE_ID, DEVICE_CODE1, DEVICE_CODE2, NAME, ' +
             'UNIT, BASE) (SELECT :3, :0, '''', :1, ' +
@@ -6606,18 +6578,15 @@ begin
     if TmpID > 0 then
       qrRatesExWORK_ID.AsInteger := TmpID;
   end;
-
 end;
 
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
 begin
-  with qrDescription do
-  begin
-    Active := False;
-    ParamByName('IdNorm').Value := FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
-      VarArrayOf([vIdNormativ]));
-    Active := True;
-  end;
+  qrDescription.Active := False;
+  qrDescription.ParamByName('NORMATIV_ID').Value :=
+    FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
+    VarArrayOf([vIdNormativ]));
+  qrDescription.Active := True;
 end;
 
 function TFormCalculationEstimate.GetRankBuilders(const vIdNormativ: string): Double;
@@ -6779,23 +6748,17 @@ begin
     if FCalculator.Visible then
       FCalculator.OnExit(FCalculator);
 
-  SplitterRight1.Align := alBottom;
-  SplitterRight2.Align := alBottom;
-
-  SplitterRight1.Visible := False;
-  SplitterRight2.Visible := False;
-
   dbgrdMaterial.Visible := False;
   dbgrdDevices.Visible := False;
   dbgrdMechanizm.Visible := False;
-  dbgrdDescription.Visible := False;
+  memDescription.Visible := False;
   dbgrdDump.Visible := False;
   dbgrdTransp.Visible := False;
   dbgrdStartup.Visible := False;
 
   dbgrdMaterial.Align := alNone;
   dbgrdDevices.Align := alNone;
-  dbgrdDescription.Align := alNone;
+  memDescription.Align := alNone;
   dbgrdMechanizm.Align := alNone;
   dbgrdDump.Align := alNone;
   dbgrdTransp.Align := alNone;
@@ -6834,11 +6797,10 @@ begin
   end
   else if VisibleRightTables = '0001000' then
   begin
-    dbgrdDescription.Align := alClient;
-    dbgrdDescription.Visible := True;
-    dbgrdDescription.Columns[0].Width := dbgrdDescription.Width - 50;
-    dbmmoRight.DataSource := dsDescription;
-    dbmmoRight.DataField := qrDescription.Fields[0].FieldName;
+    memDescription.Align := alClient;
+    memDescription.Visible := True;
+  //  dbmmoRight.DataSource := dsDescription;
+  //  dbmmoRight.DataField := qrDescription.Fields[0].FieldName;
   end
   else if VisibleRightTables = '0000100' then
   begin
@@ -6860,30 +6822,7 @@ begin
     dbgrdStartup.Visible := True;
     dbmmoRight.DataSource := dsStartup;
     dbmmoRight.DataField := 'RATE_CAPTION';
-  end
-  else if VisibleRightTables = '1110000' then // Не используется!!!
-  begin
-    dbgrdMaterial.Align := alTop;
-    SplitterRight1.Align := alTop;
-
-    dbgrdDevices.Align := alBottom;
-    SplitterRight2.Align := alTop;
-    SplitterRight2.Align := alBottom;
-
-    dbgrdMechanizm.Align := alClient;
-
-    dbgrdMaterial.Visible := True;
-    dbgrdMechanizm.Visible := True;
-    dbgrdDevices.Visible := True;
-
-    SplitterRight1.Visible := True;
-    SplitterRight2.Visible := True;
-
-    ImageSplitterRight1.Visible := True;
-    ImageSplitterRight2.Visible := True;
   end;
-
-  PanelClientRightTablesResize(PanelClientRightTables);
 end;
 
 procedure TFormCalculationEstimate.GetMonthYearCalculationEstimate;
@@ -7725,31 +7664,6 @@ begin
     dbgrdCalculations.ScrollBars := ssNone;
 end;
 
-procedure TFormCalculationEstimate.dbgrdDescription1DrawColumnCell(Sender: TObject; const Rect: TRect;
-  DataCol: Integer; Column: TColumn; State: TGridDrawState);
-begin
-  with dbgrdDescription.Canvas do
-  begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-    if gdFocused in State then // Ячейка в фокусе
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-    end;
-
-    if Assigned(TMyDBGrid(dbgrdDescription).DataLink) and
-      (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1) and
-      (dbgrdDescription = FLastEntegGrd) then
-    begin
-      Font.Style := Font.Style + [fsBold];
-    end;
-
-    FillRect(Rect);
-    TextRect(Rect, Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
-  end;
-end;
-
 procedure TFormCalculationEstimate.dbgrdCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
 begin
   AllowEdit := Editable;
@@ -8260,7 +8174,7 @@ begin
   dbgrdDump.Repaint;
   dbgrdTransp.Repaint;
   dbgrdStartup.Repaint;
-  dbgrdDescription.Repaint;
+  memDescription.Repaint;
 end;
 
 procedure TFormCalculationEstimate.dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

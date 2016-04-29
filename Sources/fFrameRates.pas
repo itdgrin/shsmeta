@@ -65,12 +65,9 @@ type
     qrTemp: TFDQuery;
     tmrFilter: TTimer;
     grHistory: TJvDBGrid;
-    dsHistory: TDataSource;
-    qrHistory: TFDQuery;
     dsNormativ: TDataSource;
     qrSW: TFDQuery;
     dsSW: TDataSource;
-    grSostav: TJvDBGrid;
     grRates: TJvDBGrid;
     tmrScroll: TTimer;
     dbedtNumberNormative: TDBEdit;
@@ -113,6 +110,7 @@ type
     JvDBGrid1: TJvDBGrid;
     dsHeader_1: TDataSource;
     qrHeader_1: TFDQuery;
+    memSW: TDBMemo;
 
     procedure FrameResize(Sender: TObject);
     procedure ReceivingSearch(vStr: string);
@@ -153,7 +151,6 @@ type
     procedure qrNCAfterOpen(DataSet: TDataSet);
     procedure pnlNaviatorResize(Sender: TObject);
     procedure qrSWBeforeOpen(DataSet: TDataSet);
-    procedure qrSWAfterOpen(DataSet: TDataSet);
     procedure qrHistoryAfterOpen(DataSet: TDataSet);
     procedure mAddClick(Sender: TObject);
     procedure qrNormativNewRecord(DataSet: TDataSet);
@@ -221,7 +218,6 @@ begin
   try
     try
       // Проверяем на наличие такой же записи
-      //Закомментированно так как алгоритм не учитывает внушние ключи normativg
       flOk := False;
       while not flOk do
       begin
@@ -246,7 +242,7 @@ begin
 
       dm.Read.StartTransaction;
       // Копируем расценку
-      newID := GetNewID(C_MANID_NORM);
+      newID := GetNewID(C_MANID_NORM, 1);
       FastExecSQL('INSERT INTO normativg(NORMATIV_ID, SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, ' +
         'NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ' +
         'ZNORMATIVS_ID, date_beginer)'#13 +
@@ -254,8 +250,12 @@ begin
         'NORM_TYPE,work_id,ZNORMATIVS_ID, :2 FROM normativg WHERE NORMATIV_ID = :3);',
         VarArrayOf([newID, ANormNum, Now, ANormID]));
 
+      FastExecSQL('INSERT INTO `normdesc` (NORMATIV_ID, WorkDesc, BASE) '#13 +
+        '(SELECT :0, WorkDesc, 1 FROM `normdesc` WHERE NORMATIV_ID = :2);',
+        VarArrayOf([newID, ANormID]));
+
       // Копируем материалы
-      newID1 := GetNewID(C_MANID_NORM_MAT);
+      newID1 := GetNewID(C_MANID_NORM_MAT, 1);
       DM.qrDifferent.Active := False;
       DM.qrDifferent.SQL.Text := 'SELECT MATERIAL_ID, NORM_RAS ' +
         'FROM materialnorm WHERE NORMATIV_ID=' + ANormID.ToString;
@@ -271,7 +271,7 @@ begin
       DM.qrDifferent.Active := False;
 
       // Копируем механизмы
-      newID1 := GetNewID(C_MANID_NORM_MECH);
+      newID1 := GetNewID(C_MANID_NORM_MECH, 1);
       DM.qrDifferent.Active := False;
       DM.qrDifferent.SQL.Text := 'SELECT MECHANIZM_ID, NORM_RAS ' +
         'FROM mechanizmnorm WHERE NORMATIV_ID=' + ANormID.ToString;
@@ -287,7 +287,7 @@ begin
       DM.qrDifferent.Active := False;
 
       // Копируем затраты труда
-      newID1 := GetNewID(C_MANID_NORM_WORK);
+      newID1 := GetNewID(C_MANID_NORM_WORK, 1);
       DM.qrDifferent.Active := False;
       DM.qrDifferent.SQL.Text := 'SELECT WORK_ID, NORMA FROM normativwork ' +
         'WHERE NORMATIV_ID=' + ANormID.ToString;
@@ -322,13 +322,20 @@ begin
   fNormativDirectory.skipReload := true;
   fNormativDirectory.Kind := kdSelect;
   if qrNormativ.FieldByName('normativ_directory_id').AsInteger <> 0 then
-    fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
-      .Expand(False);
+    fNormativDirectory.tvMain.
+      SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger).
+      Expand(False);
   if fNormativDirectory.ShowModal = mrOk then
   begin
     qrNormativ.Edit;
-    qrNormativ.FieldByName('normativ_directory_id').Value := fNormativDirectory.qrMain.FieldByName
-      ('normativ_directory_id').Value;
+    qrNormativ.FieldByName('normativ_directory_id').Value :=
+      fNormativDirectory.qrMain.FieldByName('normativ_directory_id').Value;
+
+    qrSW.Edit;
+    qrSW.FieldByName('WorkDesc').Value :=
+      fNormativDirectory.qrDetail.FieldByName('WorkDesc').Value;
+
+
     Sbornik(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
   end;
 end;
@@ -370,7 +377,11 @@ end;
 
 procedure TFrameRates.btnSaveClick(Sender: TObject);
 begin
-  qrNormativ.Post;
+  if qrNormativ.State <> dsBrowse then
+    qrNormativ.Post;
+
+  if qrSW.State <> dsBrowse then
+    qrSW.Post;
 end;
 
 procedure TFrameRates.btnSelectWinterPriceClick(Sender: TObject);
@@ -594,7 +605,7 @@ procedure TFrameRates.mN31Click(Sender: TObject);
 var
   newID1: Variant;
 begin
-  newID1 := GetNewID(C_MANID_NORM_WORK);
+  newID1 := GetNewID(C_MANID_NORM_WORK, 1);
   FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
     'VALUE(:0,:1,:2,0,1)',
     VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, (Sender as TComponent).Tag]));
@@ -608,7 +619,7 @@ var
 begin
   for i := 1 to 3 do
   begin
-    newID1 := GetNewID(C_MANID_NORM_WORK);
+    newID1 := GetNewID(C_MANID_NORM_WORK, 1);
     FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' + 'VALUE(:0,:1,:2, 0,1)',
       VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, i]));
   end;
@@ -626,7 +637,7 @@ begin
         res := SelectMechanizm;
         if res.ID > 0 then
         begin
-          newID1 := GetNewID(C_MANID_NORM_MECH);
+          newID1 := GetNewID(C_MANID_NORM_MECH, 1);
           FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
             'VALUE(:0,:1,:2,"1", 1)', VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value,
             res.ID]));
@@ -638,7 +649,7 @@ begin
         res := SelectMaterial;
         if res.ID > 0 then
         begin
-          newID1 := GetNewID(C_MANID_NORM_MAT);
+          newID1 := GetNewID(C_MANID_NORM_MAT, 1);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
             'VALUE(:0,:1,:2,"1", 1)', VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value,
             res.ID]));
@@ -650,7 +661,7 @@ begin
         res := SelectMaterial;
         if res.ID > 0 then
         begin
-          newID1 := GetNewID(C_MANID_NORM_MAT);
+          newID1 := GetNewID(C_MANID_NORM_MAT, 1);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
             'VALUE(:0,:1,:2,"1",1)', VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value,
             res.ID]));
@@ -836,7 +847,7 @@ begin
       VarArrayOf([qrNormativ.FieldByName('Unit').Value]));
     if VarIsNull(res) then
     begin
-      newID := GetNewID(C_MANID_UNIT);
+      newID := GetNewID(C_MANID_UNIT, 1);
       FastExecSQL('INSERT INTO units(UNIT_NAME, BASE, UNIT_ID) VALUE(:0, 1, :1)',
         VarArrayOf([qrNormativ.FieldByName('Unit').Value, newID]));
       res := newID;
@@ -859,16 +870,10 @@ begin
   // qrNormativ.Edit;
 end;
 
-procedure TFrameRates.qrSWAfterOpen(DataSet: TDataSet);
-begin
-  // PanelStructureWorks.Height := PanelSWHeader.Height + qrSW.RecordCount * (grSostav.RowsHeight + 2) + 1;
-  grNCResize(grSostav);
-end;
-
 procedure TFrameRates.qrSWBeforeOpen(DataSet: TDataSet);
 begin
-  qrSW.ParamByName('normativ_directory_id').AsInteger := qrNormativ.FieldByName('normativ_directory_id')
-    .AsInteger;
+  qrSW.ParamByName('NORMATIV_ID').AsInteger :=
+    qrNormativ.FieldByName('IdNormative').AsInteger;
 end;
 
 procedure TFrameRates.ReceivingAll;
@@ -1021,13 +1026,7 @@ begin
       end;
   end;
 
-  // Заполняем историю изменений
-  qrHistory.ParamByName('NORM_NUM').AsString :=
-    '%' + Trim(StringReplace(qrNormativ.FieldByName('NumberNormative').AsString, '*', '',
-    [rfReplaceAll])) + '%';
-  CloseOpen(qrHistory);
-
-  // Заполняем состав работ
+  // Заполняем состав работ и историю
   CloseOpen(qrSW);
   // Определяем зимнее удорожание
   GetWinterPrice;

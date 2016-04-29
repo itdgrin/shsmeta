@@ -657,7 +657,7 @@ object fCardEstimate: TfCardEstimate
         'SELECT ID, `CID`, CONCAT("'#1043#1051#1040#1042#1040' ",`CID`, ". ", `CNAME`) AS chap_' +
         'name'
       'FROM `ssr_chapters`'
-      'WHERE (`SCID` is Null) and '
+      'WHERE (`SCID` is Null) and (`CID` <= 7) and '
       '      ((DATES is Null) or (DATES >= :DATESM)) and '
       '      ((DATEPO is Null) or (DATEPO <= :DATESM)) ORDER BY `CID`;')
     Left = 353
