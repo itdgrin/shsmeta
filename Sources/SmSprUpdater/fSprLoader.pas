@@ -9,6 +9,7 @@ uses
   System.Variants,
   System.Classes,
   System.IOUtils,
+  System.StrUtils,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -24,9 +25,19 @@ uses
   ComObj,
   ActiveX,
   Vcl.Samples.Spin,
-  Data.DB;
+  Data.DB, Bde.DBTables;
 
 type
+  TIzmRec = record
+    IzmDate: TDateTime;
+    Prikaz: string;
+    PNom: string;
+    PDate: TDateTime;
+  end;
+
+  PIzmRec = ^TIzmRec;
+  TIzmArray = array of TIzmRec;
+
   TSprLoaderForm = class(TForm)
     MainMenu: TMainMenu;
     ActionList: TActionList;
@@ -119,6 +130,24 @@ type
     cbMonthTarif: TComboBox;
     edtYearTarif: TSpinEdit;
     actUpdTarif: TAction;
+    tsRates: TTabSheet;
+    pnlUpdRates: TPanel;
+    lbUpdRatesTitle: TLabel;
+    btnUpdRates: TButton;
+    edtUpdRates: TButtonedEdit;
+    memUpdRateRes: TMemo;
+    Label1: TLabel;
+    tsSverka: TTabSheet;
+    q1: TQuery;
+    Panel1: TPanel;
+    lbDBFPath: TLabel;
+    btnSverkaMat: TButton;
+    edtDBFPath: TButtonedEdit;
+    btnSverkaMech: TButton;
+    btnSverkaDev: TButton;
+    btnSverkaRate: TButton;
+    memError: TMemo;
+    lblError: TLabel;
     procedure actCloseExecute(Sender: TObject);
     procedure edtRightButtonClick(Sender: TObject);
     procedure actUpdMatExecute(Sender: TObject);
@@ -136,24 +165,52 @@ type
     procedure actUpdDumpExecute(Sender: TObject);
     procedure actUpdCargoExecute(Sender: TObject);
     procedure actUpdTarifExecute(Sender: TObject);
+    procedure btnUpdRatesClick(Sender: TObject);
+    procedure btnSverkaMatClick(Sender: TObject);
+    procedure btnSverkaMechClick(Sender: TObject);
+    procedure btnSverkaDevClick(Sender: TObject);
+    procedure btnSverkaRateClick(Sender: TObject);
   private
     FUnitsName, FUnitsID: TStringList;
     procedure ChackFileExsist(const AFileName: string);
     procedure LoadUnits();
     function AddNewUnit(AUnitName: string): Integer;
     function AddNewMat(ACode, AName, AUnit: string; ADate: TDateTime;
-      AJBI, ANoUpdate: Boolean): Integer;
-    function AddNewMech(ACode, AName: string; ADate: TDateTime; ANoUpdate: Boolean): Integer;
+      ANoUpdate: Boolean; AMatType: Byte): Integer;
+    function AddNewMech(ACode, AName, AUnit: string; ADate: TDateTime;
+      ANoUpdate: Boolean; ATrud: Double; AUpdateTrud: Boolean): Integer;
     function AddNewDump(AName, AUnit: string; ACode, OblID: Integer; ANoUpdate: Boolean): Integer;
+    function AddNewDev(ACode, AName, AUnit: string; ANoUpdate: Boolean): Integer;
+
+    function ConvertStrToDate(AStr: string): TDateTime;
+    function AddNewNormDir(AName, ASecName, AParent: Variant;
+      AType: Integer; AAddNew: Boolean): Integer;
+    function VarToFloat(AVar: Variant): Double;
+    function GetUnitID(AUnitName: string): Integer;
+
+    function GetRateID(ACode: string): Integer;
+    procedure AddRateWork(ARateID: Integer; AZTRab, AZTMach, ARazrad: Double);
+    procedure AddRateMat(ARateCode, AMatStr, APMatStr: string; ARateID: Integer);
+    procedure AddRateMech(ARateCode, AMechStr: string; ARateID: Integer);
+    procedure ParsRateIZM(AIzm: string; var AIzmArray: TIzmArray);
+    function GetDirectoryID(ACode: string): Integer;
+
+    procedure AddRateDesc(const ARateDesc: string; ARateID: Integer; AIzmRec: PIzmRec);
+
+    function GetMatID(AMatCode: string): Integer;
+    function GetMechID(AMatCode: string): Integer;
+    function GetMatNormID(ARateID, AMatID: Integer): Integer;
+    function GetMechNormID(ARateID, AMechID: Integer): Integer;
+
+    function AddNewPMat(ACode, AName, AUnit: string): Integer;
   public
     { Public declarations }
   end;
 
 implementation
-
 {$R *.dfm}
 
-uses DataModule, GlobsAndConst;
+uses DataModule, GlobsAndConst, Tools;
 
 procedure TSprLoaderForm.actClearMechPriceExecute(Sender: TObject);
 begin
@@ -287,6 +344,1233 @@ begin
   FUnitsID.Add(IntToStr(NextID));
   FUnitsName.Add(AUnitName.ToLower);
   Result := NextID;
+end;
+
+function TSprLoaderForm.ConvertStrToDate(AStr: string): TDateTime;
+var D, M, Y: Word;
+begin
+  D := StrToIntDef(Copy(AStr, 1, 2), 1);
+  M := StrToIntDef(Copy(AStr, 4, 2), 1);
+  Y := StrToIntDef(Copy(AStr, 7, 4), 1900);
+  Result := EncodeDate(Y, M, D);
+end;
+
+function TSprLoaderForm.VarToFloat(AVar: Variant): Double;
+var TmpStr: string;
+begin
+  TmpStr := VarToStr(AVar);
+  TmpStr := StringReplace(TmpStr, ',', FormatSettings.DecimalSeparator, []);
+  TmpStr := StringReplace(TmpStr, '.', FormatSettings.DecimalSeparator, []);
+  Result := StrToFloatDef(TmpStr, 0);
+end;
+
+function TSprLoaderForm.AddNewNormDir(AName, ASecName, AParent: Variant;
+  AType: Integer; AAddNew: Boolean): Integer;
+begin
+  DM.qrDifferent.SQL.Text :=
+    'Select normativ_directory_id from normativ_directory ' +
+    'where (lower(first_name) = lower(:first_name)) and ' +
+    '(type_directory = :type_directory) and (parent_id = :parent_id)';
+  Result := -1;
+  DM.qrDifferent.ParamByName('first_name').Value := AName;
+  DM.qrDifferent.ParamByName('type_directory').Value := AType;
+  DM.qrDifferent.ParamByName('parent_id').Value := AParent;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+
+  if (Result = -1) and AAddNew then
+  begin
+    DM.qrDifferent.SQL.Text :=
+      'Insert into normativ_directory ' +
+      '(first_name, second_name, type_directory, parent_id) ' +
+      'values ' +
+      '(:first_name, :second_name, :type_directory, :parent_id)';
+    DM.qrDifferent.ParamByName('first_name').Value := AName;
+    DM.qrDifferent.ParamByName('second_name').Value := ASecName;
+    DM.qrDifferent.ParamByName('type_directory').Value := AType;
+    DM.qrDifferent.ParamByName('parent_id').Value := AParent;
+    DM.qrDifferent.ExecSQL;
+
+    DM.qrDifferent.SQL.Text := 'Select LAST_INSERT_ID()';
+    DM.qrDifferent.Active := True;
+    try
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+  end
+end;
+
+procedure TSprLoaderForm.btnSverkaDevClick(Sender: TObject);
+var I, J: Integer;
+    Ca: string;
+    TmpCode,
+    TmpName,
+    TmpUnit: string;
+    AutoCommitValue: Boolean;
+    MatType: Byte;
+begin
+  Ca := Caption;
+  LoadUnits;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  try
+    Caption := 'Выполняется открытие справочника....';
+    q1.DatabaseName := edtDBFPath.Text;
+    q1.SQL.Text := 'select * from obrd';
+    q1.Open;
+    try
+      DM.Read.StartTransaction;
+      I := 0;
+      J := 0;
+      try
+        while not q1.Eof do
+        begin
+          Inc(I);
+          Caption := I.ToString;
+          TmpCode := Trim(q1.FieldByName('OBOSN').AsString);
+          TmpName := Trim(q1.FieldByName('NAIM').AsString);
+          TmpUnit := 'шт';
+
+          if ((Length(TmpCode) > 0) and CharInSet(TmpCode[1], ['1'..'6'])) then
+          begin
+            if Length(TmpName) > J then
+              J := Length(TmpName);
+
+            AddNewDev(TmpCode, TmpName, TmpUnit, False);
+          end;
+
+          if I mod 100 = 0 then
+            Application.ProcessMessages;
+          q1.Next;
+        end;
+        DM.Read.Commit;
+        ShowMessage('Сверка оборудования завершена.');
+      except
+        on e: Exception do
+        begin
+          DM.Read.Rollback;
+          raise Exception.Create('Ошибка на оборудование ' + TmpCode + ':' +
+            sLineBreak + e.Message);
+        end;
+      end;
+    finally
+      q1.Close;
+    end;
+  finally
+    Showmessage('Максимальная длиннта названия = ' + J.ToString);
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    Caption := Ca;
+  end;
+end;
+
+procedure TSprLoaderForm.btnSverkaMatClick(Sender: TObject);
+var I, J: Integer;
+    Ca: string;
+    TmpCode,
+    TmpName,
+    TmpUnit: string;
+    AutoCommitValue: Boolean;
+    MatType: Byte;
+begin
+  Ca := Caption;
+  LoadUnits;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  try
+    Caption := 'Выполняется открытие справочника....';
+    q1.DatabaseName := edtDBFPath.Text;
+    q1.SQL.Text := 'select * from Mat';
+    q1.Open;
+    try
+      DM.Read.StartTransaction;
+      I := 0;
+      J := 0;
+      try
+        while not q1.Eof do
+        begin
+          Inc(I);
+          Caption := I.ToString;
+          TmpCode := Trim(q1.FieldByName('OBOSN').AsString);
+          TmpName := Trim(q1.FieldByName('NAIM').AsString);
+          TmpUnit := Trim(q1.FieldByName('PRM1').AsString);
+          MatType := 1;
+          if (Length(TmpCode) > 0) and
+             (TmpCode[1] = '5') then
+            MatType := 2;
+
+          if Pos('#', TmpUnit) > 0 then
+            TmpUnit := trim(Copy(TmpUnit, 1, Pos('#', TmpUnit) - 1));
+
+          if Length(TmpName) > J then
+            J := Length(TmpName);
+
+          AddNewMat(TmpCode, TmpName, TmpUnit, 0, False, MatType);
+
+          if I mod 100 = 0 then
+            Application.ProcessMessages;
+          q1.Next;
+        end;
+        DM.Read.Commit;
+        ShowMessage('Сверка материалов завершена.');
+      except
+        on e: Exception do
+        begin
+          DM.Read.Rollback;
+          raise Exception.Create('Ошибка на материале ' + TmpCode + ':' +
+            sLineBreak + e.Message);
+        end;
+      end;
+    finally
+      q1.Close;
+    end;
+  finally
+    Showmessage('Максимальная длиннта названия = ' + J.ToString);
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    Caption := Ca;
+  end;
+end;
+
+procedure TSprLoaderForm.btnSverkaMechClick(Sender: TObject);
+var I, J: Integer;
+    Ca: string;
+    TmpStr,
+    TmpCode,
+    TmpName: string;
+    Tryd: Double;
+    AutoCommitValue: Boolean;
+    ds: Char;
+begin
+  Ca := Caption;
+  LoadUnits;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  ds := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    Caption := 'Выполняется открытие справочника....';
+    q1.DatabaseName := edtDBFPath.Text;
+    q1.SQL.Text := 'select * from Meh';
+    q1.Open;
+    try
+      DM.Read.StartTransaction;
+      I := 0;
+      J := 0;
+      try
+        while not q1.Eof do
+        begin
+          Inc(I);
+          Caption := I.ToString;
+          TmpCode := Trim(q1.FieldByName('OBOSN').AsString);
+          TmpName := Trim(q1.FieldByName('NAIM').AsString);
+          TmpStr := Trim(q1.FieldByName('PRM1').AsString);
+
+          TmpStr := Copy(TmpStr, 3, Length(TmpStr) - 2);
+          TmpStr := Copy(TmpStr, 1, Pos('#', TmpStr) - 1);
+          Tryd := StrToFloatDef(TmpStr, 0);
+
+          if Length(TmpName) > J then
+            J := Length(TmpName);
+
+          AddNewMech(TmpCode, TmpName, 'маш.-ч', 0, False, Tryd, True);
+
+          if I mod 100 = 0 then
+            Application.ProcessMessages;
+          q1.Next;
+        end;
+        DM.Read.Commit;
+        ShowMessage('Сверка механизмов завершена.');
+      except
+        on e: Exception do
+        begin
+          DM.Read.Rollback;
+          raise Exception.Create('Ошибка на механизме ' + TmpCode + ':' +
+            sLineBreak + e.Message);
+        end;
+      end;
+    finally
+      q1.Close;
+    end;
+  finally
+    Showmessage('Максимальная длиннта названия = ' + J.ToString);
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    Caption := Ca;
+    FormatSettings.DecimalSeparator := ds;
+  end;
+end;
+
+function TSprLoaderForm.GetRateID(ACode: string): Integer;
+begin
+  Result := -1;
+  //Проверяет есть ли такой уже в базе
+  DM.qrDifferent.SQL.Text :=
+    'Select NORMATIV_ID from normativg where ' +
+    '(NORM_NUM = :NORM_NUM) and (NORM_BASE = 0)';
+  DM.qrDifferent.ParamByName('NORM_NUM').Value := ACode;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+end;
+
+procedure TSprLoaderForm.AddRateWork(ARateID: Integer;
+  AZTRab, AZTMach, ARazrad: Double);
+var ZTRabID, ZTMachID, RazradID: Integer;
+
+procedure Upsert(AID, AWork: Integer; AValue: Double);
+begin
+  if AID > 0 then
+  begin
+    DM.qrDifferent.SQL.Text :=
+      'Update normativwork set NORMA = :NORMA where ID = :ID';
+    DM.qrDifferent.ParamByName('NORMA').Value := AValue;
+    DM.qrDifferent.ParamByName('ID').Value := AID;
+    DM.qrDifferent.ExecSQL;
+  end
+  else
+  begin
+    if AValue = 0 then
+      Exit;
+
+    DM.qrDifferent.SQL.Text := 'Select GetNewSprID(:TypeID, 0)';
+    DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_NORM_WORK;
+    DM.qrDifferent.Active := True;
+    try
+      AID := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+
+    DM.qrDifferent.SQL.Text :=
+      'Insert into normativwork ' +
+      '(ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
+      'values ' +
+      '(:ID, :NORMATIV_ID, :WORK_ID, :NORMA, 0)';
+    DM.qrDifferent.ParamByName('ID').Value := AID;
+    DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+    DM.qrDifferent.ParamByName('WORK_ID').Value := AWork;
+    DM.qrDifferent.ParamByName('NORMA').Value := AValue;
+    DM.qrDifferent.ExecSQL;
+  end;
+end;
+
+begin
+  ZTRabID := 0;
+  ZTMachID := 0;
+  RazradID := 0;
+
+  DM.qrDifferent.SQL.Text :=
+    'Select ID, WORK_ID from normativwork where ' +
+    '(NORMATIV_ID = :NORMATIV_ID) and (BASE = 0)';
+  DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+  DM.qrDifferent.Active := True;
+  try
+    while not DM.qrDifferent.Eof do
+    begin
+      case DM.qrDifferent.Fields[1].AsInteger of
+      1: RazradID := DM.qrDifferent.Fields[0].AsInteger;
+      2: ZTRabID := DM.qrDifferent.Fields[0].AsInteger;
+      3: ZTMachID := DM.qrDifferent.Fields[0].AsInteger;
+      end;
+      DM.qrDifferent.Next;
+    end;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+
+  Upsert(RazradID, 1, ARazrad);
+  Upsert(ZTRabID, 2, AZTRab);
+  Upsert(ZTMachID, 3, AZTMach);
+end;
+
+function TSprLoaderForm.GetMatNormID(ARateID, AMatID: Integer): Integer;
+begin
+  Result := -1;
+  //Проверяет есть ли такой уже в базе
+  DM.qrDifferent.SQL.Text :=
+    'Select ID from materialnorm where ' +
+    '(NORMATIV_ID = :NORMATIV_ID) and ' +
+    '(MATERIAL_ID = :MATERIAL_ID) and (BASE = 0)';
+  DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+  DM.qrDifferent.ParamByName('MATERIAL_ID').Value := AMatID;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+end;
+
+function TSprLoaderForm.GetMechNormID(ARateID, AMechID: Integer): Integer;
+begin
+  Result := -1;
+  //Проверяет есть ли такой уже в базе
+  DM.qrDifferent.SQL.Text :=
+    'Select ID from mechanizmnorm where ' +
+    '(NORMATIV_ID = :NORMATIV_ID) and ' +
+    '(MECHANIZM_ID = :MECHANIZM_ID) and (BASE = 0)';
+  DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+  DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := AMechID;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+end;
+
+procedure TSprLoaderForm.AddRateMat(ARateCode, AMatStr, APMatStr: string;
+  ARateID: Integer);
+var MatList: TStringList;
+    I: Integer;
+    Code,
+    MatName,
+    MatUnit: string;
+    MatNormaStr: string;
+    MatNorma: Double;
+    MatID, ID, UnitID: Integer;
+    MatIdStr: string;
+begin
+  MatList := TStringList.Create;
+  try
+    MatIdStr := '';
+
+    AMatStr := StringReplace(Copy(AMatStr, 1, Length(AMatStr) - 1),
+      '#', #13#10, [rfReplaceAll]);
+    MatList.Text := AMatStr;
+
+    for I := 0 to MatList.Count - 1 do
+    begin
+      Code := Copy(MatList[I], 1, Pos('~', MatList[I]) - 1);
+      MatNorma := StrToFloatDef(Copy(MatList[I], Pos('~', MatList[I]) + 1, 10), 0);
+      MatID := GetMatID(Code);
+
+      if MatIdStr <> '' then
+        MatIdStr := MatIdStr + ',';
+      MatIdStr := MatIdStr + MatID.ToString;
+
+      if MatID > 0 then
+      begin
+        ID := GetMatNormID(ARateID, MatID);
+        if ID > 0 then
+        begin
+          DM.qrDifferent.SQL.Text :=
+            'Update materialnorm set NORM_RAS = :NORM_RAS where ID = :ID';
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := FloatToStr(MatNorma);
+          DM.qrDifferent.ParamByName('ID').Value := ID;
+          DM.qrDifferent.ExecSQL;
+        end
+        else
+        begin
+          DM.qrDifferent.SQL.Text := 'Select GetNewSprID(:TypeID, 0)';
+          DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_NORM_MAT;
+          DM.qrDifferent.Active := True;
+          try
+            ID := DM.qrDifferent.Fields[0].AsInteger;
+          finally
+            DM.qrDifferent.Active := False;
+          end;
+
+          DM.qrDifferent.SQL.Text :=
+            'Insert into materialnorm ' +
+            '(ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
+            'values ' +
+            '(:ID, :NORMATIV_ID, :MATERIAL_ID, :NORM_RAS, 0)';
+          DM.qrDifferent.ParamByName('ID').Value := ID;
+          DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+          DM.qrDifferent.ParamByName('MATERIAL_ID').Value := MatID;
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := FloatToStr(MatNorma);
+          DM.qrDifferent.ExecSQL;
+        end;
+      end
+      else
+        memError.Lines.Add('Не найден материал ' + Code + ' в расценке ' + ARateCode);
+    end;
+
+    MatList.Clear;
+    AMatStr := StringReplace(Copy(APMatStr, 1, Length(APMatStr) - 1),
+      '#', #13#10, [rfReplaceAll]);
+    MatList.Text := AMatStr;
+
+    for I := 0 to MatList.Count - 1 do
+    begin
+
+      Code := Copy(MatList[I], 1, Pos('''', MatList[I]) - 1);
+      MatList[I] := Copy(MatList[I], Pos('''', MatList[I]) + 1,  250);
+      MatName := Copy(MatList[I], 1, Pos('''', MatList[I]) - 1);
+      MatList[I] := Copy(MatList[I], Pos('''', MatList[I]) + 1,  250);
+      MatUnit := Copy(MatList[I], 1, Pos('''', MatList[I]) - 1);
+      MatNormaStr := Copy(MatList[I], Pos('''', MatList[I]) + 1,  250);
+      MatNorma := StrToFloatDef(MatNormaStr, 0);
+
+      MatID := AddNewPMat(Code, MatName, MatUnit);
+
+      if MatIdStr <> '' then
+        MatIdStr := MatIdStr + ',';
+      MatIdStr := MatIdStr + MatID.ToString;
+
+      ID := GetMatNormID(ARateID, MatID);
+      if ID > 0 then
+      begin
+        DM.qrDifferent.SQL.Text :=
+          'Update materialnorm set NORM_RAS = :NORM_RAS where ID = :ID';
+        if MatNormaStr = 'П' then
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := MatNormaStr
+        else
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := FloatToStr(MatNorma);
+        DM.qrDifferent.ParamByName('ID').Value := ID;
+        DM.qrDifferent.ExecSQL;
+      end
+      else
+      begin
+        DM.qrDifferent.SQL.Text := 'Select GetNewSprID(:TypeID, 0)';
+        DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_NORM_MAT;
+        DM.qrDifferent.Active := True;
+        try
+          ID := DM.qrDifferent.Fields[0].AsInteger;
+        finally
+          DM.qrDifferent.Active := False;
+        end;
+
+        DM.qrDifferent.SQL.Text :=
+          'Insert into materialnorm ' +
+          '(ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
+          'values ' +
+          '(:ID, :NORMATIV_ID, :MATERIAL_ID, :NORM_RAS, 0)';
+        DM.qrDifferent.ParamByName('ID').Value := ID;
+        DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+        DM.qrDifferent.ParamByName('MATERIAL_ID').Value := MatID;
+        if MatNormaStr = 'П' then
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := MatNormaStr
+        else
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := FloatToStr(MatNorma);
+        DM.qrDifferent.ExecSQL;
+      end;
+    end;
+
+    if MatIdStr = '' then
+      DM.qrDifferent.SQL.Text :=
+        'Delete from materialnorm where (NORMATIV_ID = :NORMATIV_ID)'
+    else
+      DM.qrDifferent.SQL.Text :=
+        'Delete from materialnorm where (NORMATIV_ID = :NORMATIV_ID) and ' +
+        'not(MATERIAL_ID in (' + MatIdStr + '))';
+    DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+    DM.qrDifferent.ExecSQL;
+
+  finally
+    FreeAndNil(MatList);
+  end;
+end;
+
+procedure TSprLoaderForm.AddRateMech(ARateCode, AMechStr: string; ARateID: Integer);
+var MechList: TStringList;
+    I: Integer;
+    Code: String;
+    MechNorma: Double;
+    MechID, ID: Integer;
+    MechIdStr: string;
+begin
+  MechList := TStringList.Create;
+  try
+    AMechStr := StringReplace(Copy(AMechStr, 1, Length(AMechStr) - 1),
+      '#', #13#10, [rfReplaceAll]);
+    MechList.Text := AMechStr;
+    MechIdStr := '';
+    for I := 0 to MechList.Count - 1 do
+    begin
+      Code := Copy(MechList[I], 1, Pos('~', MechList[I]) - 1);
+
+      MechNorma := StrToFloatDef(Copy(MechList[I], Pos('~', MechList[I]) + 1, 10), 0);
+      MechID := GetMechID(Code);
+
+      if MechIdStr <> '' then
+        MechIdStr := MechIdStr + ',';
+      MechIdStr := MechIdStr + MechID.ToString;
+
+      if MechID > 0 then
+      begin
+        ID := GetMechNormID(ARateID, MechID);
+        if ID > 0 then
+        begin
+          DM.qrDifferent.SQL.Text :=
+            'Update mechanizmnorm set NORM_RAS = :NORM_RAS where ID = :ID';
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := FloatToStr(MechNorma);
+          DM.qrDifferent.ParamByName('ID').Value := ID;
+          DM.qrDifferent.ExecSQL;
+        end
+        else
+        begin
+          DM.qrDifferent.SQL.Text := 'Select GetNewSprID(:TypeID, 0)';
+          DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_NORM_MECH;
+          DM.qrDifferent.Active := True;
+          try
+            ID := DM.qrDifferent.Fields[0].AsInteger;
+          finally
+            DM.qrDifferent.Active := False;
+          end;
+
+          DM.qrDifferent.SQL.Text :=
+            'Insert into mechanizmnorm ' +
+            '(ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
+            'values ' +
+            '(:ID, :NORMATIV_ID, :MECHANIZM_ID, :NORM_RAS, 0)';
+          DM.qrDifferent.ParamByName('ID').Value := ID;
+          DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+          DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := MechID;
+          DM.qrDifferent.ParamByName('NORM_RAS').Value := FloatToStr(MechNorma);
+          DM.qrDifferent.ExecSQL;
+        end;
+      end
+      else
+        memError.Lines.Add('Не найден механизм ' + Code + ' в расценке ' + ARateCode);
+    end;
+
+    if MechIdStr = '' then
+      DM.qrDifferent.SQL.Text :=
+        'Delete from mechanizmnorm where (NORMATIV_ID = :NORMATIV_ID)'
+    else
+      DM.qrDifferent.SQL.Text :=
+        'Delete from mechanizmnorm where (NORMATIV_ID = :NORMATIV_ID) and ' +
+        'not(MECHANIZM_ID in (' + MechIdStr + '))';
+    DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+    DM.qrDifferent.ExecSQL;
+  finally
+    FreeAndNil(MechList);
+  end;
+end;
+
+procedure TSprLoaderForm.AddRateDesc(const ARateDesc: string; ARateID: Integer;
+  AIzmRec: PIzmRec);
+var ID: Integer;
+begin
+  ID := -1;
+  DM.qrDifferent.SQL.Text :=
+    'insert into normdesc ' +
+    '(NORMATIV_ID, WorkDesc, BASE, PBEGIN_NAME, PBEGIN_NOM, PBEGIN_DATE) values ' +
+    '(:NORMATIV_ID, :WorkDesc, 0, :PBEGIN_NAME, :PBEGIN_NOM, :PBEGIN_DATE) ' +
+    'ON DUPLICATE KEY UPDATE WorkDesc = :WorkDesc, PBEGIN_NAME = :PBEGIN_NAME, ' +
+    'PBEGIN_NOM = :PBEGIN_NOM, PBEGIN_DATE = :PBEGIN_DATE';
+  DM.qrDifferent.ParamByName('NORMATIV_ID').Value := ARateID;
+  DM.qrDifferent.ParamByName('WorkDesc').Value := ARateDesc;
+
+  if Assigned(AIzmRec) then
+  begin
+    DM.qrDifferent.ParamByName('PBEGIN_NAME').Value := AIzmRec.Prikaz;
+    DM.qrDifferent.ParamByName('PBEGIN_NOM').Value := AIzmRec.PNom;
+    if AIzmRec.PDate > 0 then
+      DM.qrDifferent.ParamByName('PBEGIN_DATE').Value := AIzmRec.PDate;
+  end
+  else
+  begin
+    DM.qrDifferent.ParamByName('PBEGIN_NAME').Value := Null;
+    DM.qrDifferent.ParamByName('PBEGIN_NOM').Value := Null;
+    DM.qrDifferent.ParamByName('PBEGIN_DATE').Value := Null;
+  end;
+  DM.qrDifferent.ExecSQL;
+end;
+
+procedure TSprLoaderForm.ParsRateIZM(AIzm: string; var AIzmArray: TIzmArray);
+var TmpList1, TmpList2: TStringList;
+    I, J: Integer;
+    DF: string;
+begin
+  TmpList1 := TStringList.Create;
+  TmpList2 := TStringList.Create;
+  DF := FormatSettings.ShortDateFormat;
+  try
+    FormatSettings.ShortDateFormat := 'dd.mm.yyyy';
+    AIzm := StringReplace(Copy(AIzm, 1, Length(AIzm)), '#', sLineBreak, [rfReplaceAll]);
+    TmpList1.Text := AIzm;
+    SetLength(AIzmArray, TmpList1.Count);
+    for I := 0 to TmpList1.Count - 1 do
+    begin
+      TmpList2.Text :=
+        StringReplace(Copy(TmpList1[I], 1, Length(TmpList1[I])), '''',
+         sLineBreak, [rfReplaceAll]);
+      for J := 0 to TmpList2.Count - 1 do
+        case J of
+        0: AIzmArray[I].IzmDate := StrToDateDef(TmpList2[J], 0);
+        1: AIzmArray[I].Prikaz := TmpList2[J];
+        2: AIzmArray[I].PNom := TmpList2[J];
+        3: AIzmArray[I].PDate := StrToDateDef(TmpList2[J], 0);
+        end;
+    end;
+  finally
+    FormatSettings.ShortDateFormat := DF;
+    FreeAndNil(TmpList1);
+    FreeAndNil(TmpList2);
+  end;
+end;
+
+function TSprLoaderForm.GetDirectoryID(ACode: string): Integer;
+var Str1,
+    Str2: string;
+    I: Integer;
+    MaimNode: string;
+begin
+  Result := -1;
+  I := Pos('-', ACode);
+  Str1 := Copy(ACode, 1, I - 1);
+  if Length(Str1) = 0 then
+    Exit;
+
+  if (Str1[1] = 'Е') then
+  begin
+    DM.qrDifferent.SQL.Text :=
+      'Select tree_data from normativ_directory where (first_name = :first_name)';
+    DM.qrDifferent.ParamByName('first_name').Value := Str1;
+    DM.qrDifferent.Active := True;
+    try
+      if not DM.qrDifferent.IsEmpty then
+        MaimNode := DM.qrDifferent.Fields[0].AsString
+      else
+        Exit;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+
+    Str2 := 'Таблица ' + Copy(ACode, 2, PosEx('-', ACode, I + 1) - 2);
+
+    DM.qrDifferent.SQL.Text :=
+      'Select normativ_directory_id from normativ_directory ' +
+      'where (first_name = :first_name) and (tree_data like ''' + MaimNode + '%'')';
+    DM.qrDifferent.ParamByName('first_name').Value := Str1;
+    DM.qrDifferent.Active := True;
+    try
+      if not DM.qrDifferent.IsEmpty then
+        Result := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+  end;
+
+  if (Str1[1] = 'Ц') then
+  begin
+    DM.qrDifferent.SQL.Text :=
+      'Select tree_data from normativ_directory where (first_name = :first_name)';
+    DM.qrDifferent.ParamByName('first_name').Value := Str1;
+    DM.qrDifferent.Active := True;
+    try
+      if not DM.qrDifferent.IsEmpty then
+        MaimNode := DM.qrDifferent.Fields[0].AsString
+      else
+        Exit;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+
+    Str2 := 'Группа ' + Copy(ACode, I + 1, PosEx('-', ACode, I + 1) - (I + 1));
+
+    DM.qrDifferent.SQL.Text :=
+      'Select normativ_directory_id from normativ_directory ' +
+      'where (first_name = :first_name) and (tree_data like ''' + MaimNode + '%'')';
+    DM.qrDifferent.ParamByName('first_name').Value := Str1;
+    DM.qrDifferent.Active := True;
+    try
+      if not DM.qrDifferent.IsEmpty then
+        Result := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+  end;
+end;
+
+procedure TSprLoaderForm.btnSverkaRateClick(Sender: TObject);
+var I, J, RateID: Integer;
+    Ca: string;
+    TmpCode,
+    TmpName,
+    TmpUnit,
+    TmpStr,
+    Izm,
+    SW: string;
+    AutoCommitValue: Boolean;
+    MatType: Byte;
+    ZTRab,
+    ZTMach,
+    Razrad: Double;
+    ds: Char;
+    TmpUnitID: Integer;
+    IzmArray: TIzmArray;
+    IzmRec: PIzmRec;
+    DateBegin: TDateTime;
+    Active: Byte;
+    DirID: Integer;
+    NormType: Integer;
+begin
+  Ca := Caption;
+  memError.Clear;
+  LoadUnits;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  ds := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    Caption := 'Выполняется открытие справочника....';
+    q1.DatabaseName := edtDBFPath.Text;
+    q1.SQL.Text := 'select * from RSCER';
+    q1.Open;
+    try
+      DM.Read.StartTransaction;
+      I := 0;
+      J := 0;
+      try
+        while not q1.Eof do
+        begin
+          Inc(I);
+          Caption := I.ToString;
+          TmpCode := Trim(q1.FieldByName('OBOSN').AsString).ToUpper;
+          RateID := GetRateID(TmpCode);
+          TmpName := Trim(q1.FieldByName('NAIM').AsString).ToUpper;
+          ParsRateIZM(Trim(q1.FieldByName('IZM').AsString), IzmArray);
+          SW := Trim(q1.FieldByName('TXT').AsString);
+
+          TmpStr := Trim(q1.FieldByName('PRM').AsString);
+          TmpUnit := Trim(Copy(TmpStr, 1, Pos('#', TmpStr) - 1));
+          TmpStr := Copy(TmpStr, Pos('#', TmpStr) + 2,  250);
+          ZTRab := StrToFloatDef(Copy(TmpStr, 1, Pos('#', TmpStr) - 1), 0);
+          TmpStr := Copy(TmpStr, Pos('#', TmpStr) + 1,  250);
+          Razrad := StrToFloatDef(Copy(TmpStr, 1, Pos('#', TmpStr) - 1), 0);
+          TmpStr := Copy(TmpStr, Pos('#', TmpStr) + 3,  250);
+          ZTMach := StrToFloatDef(Copy(TmpStr, 1, Pos('#', TmpStr) - 1), 0);
+
+          if Length(TmpName) > J then
+            J := Length(TmpName);
+
+          TmpUnitID := GetUnitID(TmpUnit);
+
+          DateBegin := EncodeDate(2012, 1, 1);
+          IzmRec := nil;
+          if Length(IzmArray) > 0 then
+          begin
+            IzmRec := @IzmArray[0];
+            DateBegin := IzmArray[0].IzmDate;
+          end;
+
+          Active := 1; //Активна
+          if (Length(TmpCode) > 0) and
+             (TmpCode[Length(TmpCode)] = '*') then
+            Active := 2;
+
+          if RateID > -1 then
+          begin
+            DM.qrDifferent.SQL.Text :=
+              'Update normativg set NORM_CAPTION = :NORM_CAPTION, ' +
+              'UNIT_ID = :UNIT_ID, date_beginer = :date_beginer, ' +
+              'NORM_ACTIVE = :NORM_ACTIVE ' +
+              'where NORMATIV_ID = :NORMATIV_ID';
+            DM.qrDifferent.ParamByName('NORM_CAPTION').Value := TmpName;
+            DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+            DM.qrDifferent.ParamByName('date_beginer').Value := DateBegin;
+            DM.qrDifferent.ParamByName('NORM_ACTIVE').Value := Active;
+            DM.qrDifferent.ParamByName('NORMATIV_ID').Value := RateID;
+            DM.qrDifferent.ExecSQL;
+          end
+          else
+          begin
+            DirID := GetDirectoryID(TmpCode);
+            RateID := GetNewID(C_MANID_NORM, 0);
+            NormType := 0;
+
+            if (Length(TmpCode) > 0) and
+               (TmpCode[1] =  '0') then
+              NormType := 1;
+
+            if (Length(TmpCode) > 3) and
+               (Copy(TmpCode, 1, 3) =  'УНР') then
+              NormType := 2;
+
+            DM.qrDifferent.SQL.Text :=
+              'INSERT INTO normativg(NORMATIV_ID, NORM_NUM, NORM_CAPTION, ' +
+              'UNIT_ID, NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, ' +
+              'date_beginer) values (:NORMATIV_ID, :NORM_NUM, :NORM_CAPTION, ' +
+              ':UNIT_ID, :NORM_ACTIVE, :normativ_directory_id, 0, :NORM_TYPE, ' +
+              ':date_beginer)';
+            DM.qrDifferent.ParamByName('NORMATIV_ID').Value := RateID;
+            DM.qrDifferent.ParamByName('NORM_NUM').Value := TmpCode;
+            DM.qrDifferent.ParamByName('NORM_CAPTION').Value := TmpName;
+            DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+            DM.qrDifferent.ParamByName('NORM_ACTIVE').Value := Active;
+            if DirID > 0 then
+              DM.qrDifferent.ParamByName('normativ_directory_id').Value := DirID
+            else
+              DM.qrDifferent.ParamByName('normativ_directory_id').Value := Null;
+            DM.qrDifferent.ParamByName('NORM_TYPE').Value := NormType;
+            DM.qrDifferent.ParamByName('date_beginer').Value := DateBegin;
+            DM.qrDifferent.ExecSQL;
+          end;
+
+          AddRateWork(RateID, ZTRab, ZTMach, Razrad);
+          AddRateMat(TmpCode, Trim(q1.FieldByName('MAT').AsString).ToUpper,
+            Trim(q1.FieldByName('RNMAT').AsString).ToUpper, RateID);
+          AddRateMech(TmpCode, Trim(q1.FieldByName('MEH').AsString).ToUpper, RateID);
+          AddRateDesc(SW, RateID, IzmRec);
+
+          if I mod 100 = 0 then
+            Application.ProcessMessages;
+          q1.Next;
+        end;
+
+     //   DM.qrDifferent.SQL.Text := 'CALL `UpdateNormSortField`()';
+     //   DM.qrDifferent.ExecSQL;
+
+        DM.Read.Commit;
+        ShowMessage('Сверка расценок завершена.');
+      except
+        on e: Exception do
+        begin
+          DM.Read.Rollback;
+          raise Exception.Create('Ошибка на расценке ' + TmpCode + ':' +
+            sLineBreak + e.Message);
+        end;
+      end;
+    finally
+      q1.Close;
+    end;
+  finally
+    Showmessage('Максимальная длинна названия = ' + J.ToString);
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    Caption := Ca;
+    FormatSettings.DecimalSeparator := ds;
+  end;
+end;
+
+procedure TSprLoaderForm.btnUpdRatesClick(Sender: TObject);
+var ExlApp,
+    WorkSheet1,
+    WorkSheet2,
+    WorkSheet3: OleVariant;
+    FRateData,
+    FMatData,
+    FMechData: OleVariant;
+    I, J, N,
+    Rows1, Rows2, Rows3: Integer;
+    Cols1, Cols2, Cols3: Integer;
+    AutoCommitValue: Boolean;
+    TmpStr: string;
+    SborChar: Char;
+    Act, MatType: Byte;
+    RateCode: string;
+    RateDate: TDateTime;
+    newID, newID1: Variant;
+    TmpUnitID: Integer;
+    MatID, MechID: Integer;
+    SborID1, SborID2: Integer;
+
+procedure DeactivateRate(ARateNum: string; AEndDate: TDateTime);
+begin
+  DM.qrDifferent.SQL.Text :=
+    'Update normativg set NORM_ACTIVE = 2, date_end = :date_end ' +
+    'where NORM_NUM = :NORM_NUM and  NORM_BASE = 0';
+  DM.qrDifferent.ParamByName('date_end').Value := AEndDate;
+  DM.qrDifferent.ParamByName('NORM_NUM').Value := ARateNum;
+  DM.qrDifferent.ExecSQL;
+end;
+
+function ChackRateExist(ARateNum: string; ABeginDate: TDateTime): Boolean;
+begin
+  DM.qrDifferent.SQL.Text := 'select NORM_NUM from normativg where ' +
+    'NORM_NUM = :NORM_NUM and NORM_ACTIVE = 1 and date_beginer = :date_beginer';
+  DM.qrDifferent.ParamByName('NORM_NUM').Value := ARateNum;
+  DM.qrDifferent.ParamByName('date_beginer').Value := ABeginDate;
+  DM.qrDifferent.Active := True;
+  Result := not DM.qrDifferent.IsEmpty;
+  DM.qrDifferent.Active := False;
+end;
+
+begin
+  if Application.MessageBox(
+    PChar('Обновить справочник расценок из ''' + edtUpdRates.Text + '''?'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+  ChackFileExsist(edtUpdRates.Text);
+
+  LoadUnits;
+  CoInitialize(nil);
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+
+  try
+    Screen.Cursor := crHourGlass;
+    ExlApp := Unassigned;
+    try
+      ExlApp := CreateOleObject('Excel.Application');
+      ExlApp.Visible:=false;
+      ExlApp.DisplayAlerts := False;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка инициализации Excel:' + e.Message);
+    end;
+
+    try
+      ExlApp.WorkBooks.Open(edtUpdRates.Text);
+      WorkSheet1 := ExlApp.ActiveWorkbook.Sheets.Item[1];
+      WorkSheet2 := ExlApp.ActiveWorkbook.Sheets.Item[2];
+      WorkSheet3 := ExlApp.ActiveWorkbook.Sheets.Item[3];
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка открытия Excel документа:' + e.Message);
+    end;
+
+    Rows1 := WorkSheet1.UsedRange.Rows.Count;
+    Rows2 := WorkSheet2.UsedRange.Rows.Count;
+    Rows3 := WorkSheet2.UsedRange.Rows.Count;
+
+    Cols1 := WorkSheet1.UsedRange.Rows.Count;
+    Cols2 := WorkSheet2.UsedRange.Rows.Count;
+    Cols3 := WorkSheet3.UsedRange.Rows.Count;
+
+    FRateData :=
+      WorkSheet1.Range[WorkSheet1.Cells[2, 1].Address,
+      WorkSheet1.Cells[Rows1, Cols1].Address].Value;
+
+    FMechData :=
+      WorkSheet2.Range[WorkSheet2.Cells[2, 1].Address,
+      WorkSheet2.Cells[Rows2, Cols2].Address].Value;
+
+    FMatData :=
+      WorkSheet3.Range[WorkSheet3.Cells[2, 1].Address,
+      WorkSheet3.Cells[Rows3, Cols3].Address].Value;
+
+    DM.Read.StartTransaction;
+    try
+      for I := 1 to Rows1 - 1 do
+      begin
+        TmpStr := VarToStr(FRateData[I, 4]).ToLower;
+        Act := 0;
+        if TmpStr = 'new' then Act := 1
+        else if TmpStr = 'zam' then Act := 2
+        else if TmpStr = 'null' then Act := 3
+        else
+        begin
+          memUpdRateRes.Lines.Add('Строка ' + I.ToString +
+            ': Неизвестный тип действия по строке');
+          Continue;
+        end;
+
+        RateCode := VarToStr(FRateData[I, 1]);
+        RateDate :=  ConvertStrToDate(VarToStr(FRateData[I, 5]));
+
+        case Act of
+        1, 2:
+        begin
+          if ChackRateExist(RateCode, RateDate) then
+          begin
+            memUpdRateRes.Lines.Add('Строка ' + I.ToString +
+              ': Акстивная расценка ' + RateCode + ' от ' + DateToStr(RateDate) +
+              ' уже существует');
+            Continue;
+          end;
+          DeactivateRate(RateCode, RateDate - 1);
+
+          SborChar := #0;
+          TmpStr := VarToStr(FRateData[I, 12]);
+          if Length(TmpStr) > 0 then
+            SborChar := TmpStr[1];
+
+          SborID1 := -1;
+          DM.qrDifferent.SQL.Text :=
+            'Select normativ_directory_id from normativ_directory ' +
+            'where (first_name = :first_name) and (type_directory = :type_directory)';
+          DM.qrDifferent.ParamByName('first_name').Value := VarToStr(FRateData[I, 12]);
+          DM.qrDifferent.ParamByName('type_directory').Value := 2;
+          DM.qrDifferent.Active := True;
+          try
+            if not DM.qrDifferent.IsEmpty then
+              SborID1 := DM.qrDifferent.Fields[0].AsInteger;
+          finally
+            DM.qrDifferent.Active := False;
+          end;
+
+          if SborID1 = -1 then
+          begin
+            memUpdRateRes.Lines.Add('Строка ' + I.ToString + ': Неизветсный сборник');
+            Continue;
+          end;
+
+          if SborChar = 'Е' then
+          begin
+            SborID1 := AddNewNormDir(VarToStr(FRateData[I, 12]),
+              VarToStr(FRateData[I, 18]), SborID1, 3, True);
+
+            SborID1 := AddNewNormDir(VarToStr(FRateData[I, 19]),
+              VarToStr(FRateData[I, 21]), SborID1, 4, True);
+
+          end
+          else if SborChar = 'Ц' then
+          begin
+            SborID1 := AddNewNormDir(VarToStr(FRateData[I, 13]),
+              VarToStr(FRateData[I, 15]), SborID1, 3, True);
+
+            SborID1 := AddNewNormDir(VarToStr(FRateData[I, 16]),
+              VarToStr(FRateData[I, 18]), SborID1, 4, True);
+
+            SborID1 := AddNewNormDir(VarToStr(FRateData[I, 19]),
+              VarToStr(FRateData[I, 21]), SborID1, 5, True);
+
+            if VarToStr(FRateData[I, 22]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 22]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 23]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 23]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 24]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 24]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 25]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 25]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 26]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 26]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 27]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 27]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 28]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 28]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 29]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 29]), Null, SborID1, 6, True);
+            if VarToStr(FRateData[I, 30]) <> '' then
+              AddNewNormDir(VarToStr(FRateData[I, 30]), Null, SborID1, 6, True);
+          end
+          else
+          begin
+            memUpdRateRes.Lines.Add('Строка ' + I.ToString + ': Неизветсный тип сборника');
+            Continue;
+          end;
+
+          N := FUnitsName.IndexOf(VarToStr(FRateData[I, 3]).ToLower);
+          if N > -1 then
+            TmpUnitID := StrToInt(FUnitsID[N])
+          else
+            TmpUnitID := AddNewUnit(VarToStr(FRateData[I, 3]));
+
+          newID := GetNewID(C_MANID_NORM, 0);
+
+          DM.qrDifferent.SQL.Text :=
+            'INSERT INTO normativg(NORMATIV_ID, NORM_NUM, NORM_CAPTION, ' +
+            'UNIT_ID, NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, ' +
+            'date_beginer) values (:NORMATIV_ID, :NORM_NUM, :NORM_CAPTION, ' +
+            ':UNIT_ID, 1, :normativ_directory_id, 0, 0, :date_beginer)';
+          DM.qrDifferent.ParamByName('NORMATIV_ID').Value := newID;
+          DM.qrDifferent.ParamByName('NORM_NUM').Value := RateCode;
+          DM.qrDifferent.ParamByName('NORM_CAPTION').Value := VarToStr(FRateData[I, 2]);
+          DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+          DM.qrDifferent.ParamByName('normativ_directory_id').Value := SborID1;
+          DM.qrDifferent.ParamByName('date_beginer').Value := RateDate;
+          DM.qrDifferent.ExecSQL;
+
+          DM.qrDifferent.SQL.Text :=
+            'INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) values ' +
+            '(:ID, :NORMATIV_ID, :WORK_ID, :NORMA, 0)';
+
+          newID1 := GetNewID(C_MANID_NORM_WORK, 0);
+          DM.qrDifferent.ParamByName('ID').Value := newID1;
+          DM.qrDifferent.ParamByName('NORMATIV_ID').Value := newID;
+          DM.qrDifferent.ParamByName('WORK_ID').Value := 1;
+          DM.qrDifferent.ParamByName('NORMA').Value := VarToFloat(FRateData[I, 8]);
+          DM.qrDifferent.ExecSQL;
+
+          newID1 := GetNewID(C_MANID_NORM_WORK, 0);
+          DM.qrDifferent.ParamByName('ID').Value := newID1;
+          DM.qrDifferent.ParamByName('NORMATIV_ID').Value := newID;
+          DM.qrDifferent.ParamByName('WORK_ID').Value := 2;
+          DM.qrDifferent.ParamByName('NORMA').Value := VarToFloat(FRateData[I, 9]);
+          DM.qrDifferent.ExecSQL;
+
+          newID1 := GetNewID(C_MANID_NORM_WORK, 0);
+          DM.qrDifferent.ParamByName('ID').Value := newID1;
+          DM.qrDifferent.ParamByName('NORMATIV_ID').Value := newID;
+          DM.qrDifferent.ParamByName('WORK_ID').Value := 3;
+          DM.qrDifferent.ParamByName('NORMA').Value := VarToFloat(FRateData[I, 10]);
+          DM.qrDifferent.ExecSQL;
+
+          for J := 1 to Rows2 - 1 do
+          begin
+            if VarToStr(FMechData[J, 1]) = RateCode then
+            begin
+              newID1 := GetNewID(C_MANID_NORM_MECH, 0);
+              MechID := AddNewMech(VarToStr(FMechData[J, 2]),
+                VarToStr(FMechData[J, 3]), VarToStr(FMechData[J, 4]),
+                RateDate, False, 0, False);
+
+              DM.qrDifferent.SQL.Text :=
+                'INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) values ' +
+                '(:ID, :NORMATIV_ID, :MECHANIZM_ID, :NORM_RAS, 0)';
+              DM.qrDifferent.ParamByName('ID').Value := newID1;
+              DM.qrDifferent.ParamByName('NORMATIV_ID').Value := newID;
+              DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := MechID;
+              DM.qrDifferent.ParamByName('NORM_RAS').Value :=
+                StringReplace(FMechData[J, 5], ',', '.', []);
+              DM.qrDifferent.ExecSQL;
+            end;
+          end;
+
+          for J := 1 to Rows3 - 1 do
+          begin
+            if VarToStr(FMechData[J, 1]) = RateCode then
+            begin
+              newID1 := GetNewID(C_MANID_NORM_MAT, 0);
+              MatType := 1;
+              if VarToStr(FMatData[J, 5]) = 'П' then
+                MatType := 0;
+
+              MatID := AddNewMat(VarToStr(FMatData[J, 2]),
+                VarToStr(FMatData[J, 3]), VarToStr(FMatData[J, 4]),
+                RateDate, False, MatType);
+
+              DM.qrDifferent.SQL.Text :=
+                'INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) values ' +
+                '(:ID, :NORMATIV_ID, :MATERIAL_ID, :NORM_RAS, 0)';
+              DM.qrDifferent.ParamByName('ID').Value := newID1;
+              DM.qrDifferent.ParamByName('NORMATIV_ID').Value := newID;
+              DM.qrDifferent.ParamByName('MATERIAL_ID').Value := MatID;
+              DM.qrDifferent.ParamByName('NORM_RAS').Value :=
+                StringReplace(FMatData[J, 5], ',', '.', []);
+              DM.qrDifferent.ExecSQL;
+            end;
+          end;
+        end;
+        3:
+          DeactivateRate(RateCode, RateDate);
+        end;
+      end;
+
+     // DM.qrDifferent.SQL.Text := 'CALL `UpdateNormSortField`()';
+     // DM.qrDifferent.ExecSQL;
+
+      DM.qrDifferent.SQL.Text := 'CALL `tmp_update_tree`(Null)';
+      DM.qrDifferent.ExecSQL;
+
+      DM.Read.Rollback;
+      ShowMessage('Загрузка успешно завершена.');
+    except
+      on e: Exception do
+      begin
+        DM.Read.Rollback;
+        raise Exception.Create('Ошибка на строке ' + (I + 1).ToString + ':' +
+          sLineBreak + e.Message);
+      end;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    if not VarIsEmpty(ExlApp) then
+    begin
+      ExlApp.ActiveWorkbook.Close;
+      ExlApp.Quit;
+    end;
+    Screen.Cursor := crDefault;
+    WorkSheet1 := Unassigned;
+    WorkSheet2 := Unassigned;
+    WorkSheet3 := Unassigned;
+    ExlApp := Unassigned;
+    CoUninitialize;
+  end;
 end;
 
 procedure TSprLoaderForm.actUpdCargoBoardExecute(Sender: TObject);
@@ -769,7 +2053,7 @@ begin
         begin
           TmpMatID :=
             AddNewMat(TmpCode, Trim(GroupStr + ' ' + TmpName), TmpUnit, TmpDate,
-              True, not cboxUpdJBIName.Checked);
+              not cboxUpdJBIName.Checked, 2);
 
           DM.qrDifferent1.ParamByName('MATERIAL_ID').Value := TmpMatID;
           DM.qrDifferent1.ParamByName('YEAR').Value := edtYearJBI.Value;
@@ -819,14 +2103,14 @@ begin
   end;
 end;
 
-function TSprLoaderForm.AddNewMech(ACode, AName: string; ADate: TDateTime;
-  ANoUpdate: Boolean): Integer;
+function TSprLoaderForm.GetMechID(AMatCode: string): Integer;
 begin
   //Проверяет есть ли такой уже в базе
   DM.qrDifferent.SQL.Text :=
-    'Select MECHANIZM_ID from mechanizm where (MECH_CODE = :MECH_CODE) and (BASE = 0)';
+    'Select MECHANIZM_ID from mechanizm where ' +
+    '(MECH_CODE = :MECH_CODE) and (BASE = 0)';
   Result := -1;
-  DM.qrDifferent.ParamByName('MECH_CODE').Value := ACode;
+  DM.qrDifferent.ParamByName('MECH_CODE').Value := AMatCode;
   DM.qrDifferent.Active := True;
   try
     if not DM.qrDifferent.IsEmpty then
@@ -834,6 +2118,20 @@ begin
   finally
     DM.qrDifferent.Active := False;
   end;
+end;
+
+function TSprLoaderForm.AddNewMech(ACode, AName, AUnit: string; ADate: TDateTime;
+  ANoUpdate: Boolean; ATrud: Double; AUpdateTrud: Boolean): Integer;
+var TmpUnitID: Integer;
+    TmpStr: string;
+begin
+  //Получает код ед. изм.
+  TmpUnitID := GetUnitID(AUnit);
+
+  ACode := Trim(ACode).ToUpper;
+  AName := Trim(AName).ToUpper;
+
+  Result := GetMechID(ACode);
 
   if Result = -1 then
   begin
@@ -848,13 +2146,79 @@ begin
 
     DM.qrDifferent.SQL.Text :=
       'Insert into mechanizm ' +
-      '(MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID) ' +
+      '(MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID, MECH_PH, BASE) ' +
       'values ' +
-      '(:MECHANIZM_ID, :MECH_CODE, :MECH_NAME, :UNIT_ID)';
+      '(:MECHANIZM_ID, :MECH_CODE, :MECH_NAME, :UNIT_ID, :MECH_PH, 0)';
     DM.qrDifferent.ParamByName('MECH_CODE').Value := ACode;
     DM.qrDifferent.ParamByName('MECH_NAME').Value := AName;
     DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := Result;
-    DM.qrDifferent.ParamByName('UNIT_ID').Value := 0;
+    DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+    DM.qrDifferent.ParamByName('MECH_PH').Value := ATrud;
+    DM.qrDifferent.ExecSQL;
+  end
+  else
+  begin
+    if not ANoUpdate then
+    begin
+      TmpStr := '';
+      if AUpdateTrud then
+        TmpStr := ', MECH_PH = :MECH_PH';
+
+      DM.qrDifferent.SQL.Text :=
+        'Update mechanizm set MECH_NAME = :MECH_NAME, UNIT_ID = :UNIT_ID' +
+        TmpStr + ' where MECHANIZM_ID = :MECHANIZM_ID';
+      DM.qrDifferent.ParamByName('MECH_NAME').Value := AName;
+      DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+      DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := Result;
+      if AUpdateTrud then
+        DM.qrDifferent.ParamByName('MECH_PH').Value := ATrud;
+      DM.qrDifferent.ExecSQL;
+    end;
+  end;
+end;
+
+function TSprLoaderForm.AddNewDev(ACode, AName, AUnit: string;
+  ANoUpdate: Boolean): Integer;
+var TmpUnitID: Integer;
+begin
+  //Получает код ед. изм.
+  TmpUnitID := GetUnitID(AUnit);
+  ACode := Trim(ACode).ToUpper;
+  AName := Trim(AName).ToUpper;
+
+  //Проверяет есть ли такой уже в базе
+  DM.qrDifferent.SQL.Text :=
+    'Select DEVICE_ID from devices where (DEVICE_CODE1 = :DEVICE_CODE1) and (BASE = 0)';
+  Result := -1;
+  DM.qrDifferent.ParamByName('DEVICE_CODE1').Value := ACode;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+
+  if Result = -1 then
+  begin
+    DM.qrDifferent.SQL.Text := 'Select GetNewSprID(:TypeID, 0)';
+    DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_DEV;
+    DM.qrDifferent.Active := True;
+    try
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+
+    DM.qrDifferent.SQL.Text :=
+      'Insert into devices ' +
+      '(DEVICE_ID, DEVICE_CODE1, NAME, UNIT, BASE) ' +
+      'values ' +
+      '(:DEVICE_ID, :DEVICE_CODE1, :NAME, :UNIT, 0)';
+    DM.qrDifferent.ParamByName('DEVICE_CODE1').Value := ACode;
+    DM.qrDifferent.ParamByName('NAME').Value := AName;
+    DM.qrDifferent.ParamByName('DEVICE_ID').Value := Result;
+    DM.qrDifferent.ParamByName('UNIT').Value := TmpUnitID;
     DM.qrDifferent.ExecSQL;
   end
   else
@@ -862,32 +2226,56 @@ begin
     if not ANoUpdate then
     begin
       DM.qrDifferent.SQL.Text :=
-        'Update mechanizm set MECH_NAME = :MECH_NAME where MECHANIZM_ID = :MECHANIZM_ID';
-      DM.qrDifferent.ParamByName('MECH_NAME').Value := AName;
-      DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := Result;
+        'Update devices set NAME = :NAME, UNIT = :UNIT where DEVICE_ID = :DEVICE_ID';
+      DM.qrDifferent.ParamByName('NAME').Value := AName;
+      DM.qrDifferent.ParamByName('UNIT').Value := TmpUnitID;
+      DM.qrDifferent.ParamByName('DEVICE_ID').Value := Result;
       DM.qrDifferent.ExecSQL;
     end;
   end;
 end;
 
-function TSprLoaderForm.AddNewMat(ACode, AName, AUnit: string; ADate: TDateTime;
-    AJBI, ANoUpdate: Boolean): Integer;
-var J,
-    TmpUnitID,
-    MType: Integer;
+function TSprLoaderForm.GetUnitID(AUnitName: string): Integer;
+var J: Integer;
 begin
-  //Получает код ед. изм.
-  J := FUnitsName.IndexOf(AUnit.ToLower);
+  AUnitName := Trim(AUnitName);
+  J := FUnitsName.IndexOf(AUnitName.ToLower);
   if J > -1 then
-    TmpUnitID := StrToInt(FUnitsID[J])
+    Result := StrToInt(FUnitsID[J])
   else
-    TmpUnitID := AddNewUnit(AUnit);
+    Result := AddNewUnit(AUnitName);
+end;
 
+function TSprLoaderForm.GetMatID(AMatCode: string): Integer;
+begin
   //Проверяет есть ли такой уже в базе
   DM.qrDifferent.SQL.Text :=
-    'Select MATERIAL_ID from material where (MAT_CODE = :MAT_CODE) and (BASE = 0)';
+    'Select MATERIAL_ID from material where ' +
+    '(MAT_CODE = :MAT_CODE) and (BASE = 0)';
+  Result := -1;
+  DM.qrDifferent.ParamByName('MAT_CODE').Value := AMatCode;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+end;
+
+function TSprLoaderForm.AddNewPMat(ACode, AName, AUnit: string): Integer;
+var TmpUnitID: Integer;
+begin
+  TmpUnitID := GetUnitID(AUnit);
+  ACode := Trim(ACode).ToUpper;
+  AName := Trim(AName).ToUpper;
+
+  DM.qrDifferent.SQL.Text :=
+    'Select MATERIAL_ID from material where ' +
+    '(MAT_CODE = :MAT_CODE) and (MAT_NAME = :MAT_NAME) and (BASE = 0)';
   Result := -1;
   DM.qrDifferent.ParamByName('MAT_CODE').Value := ACode;
+  DM.qrDifferent.ParamByName('MAT_NAME').Value := AName;
   DM.qrDifferent.Active := True;
   try
     if not DM.qrDifferent.IsEmpty then
@@ -907,9 +2295,41 @@ begin
       DM.qrDifferent.Active := False;
     end;
 
-    MType := 1;
-    if AJBI then
-      MType := 2;
+    DM.qrDifferent.SQL.Text :=
+      'Insert into material ' +
+      '(MATERIAL_ID, MAT_CODE, MAT_NAME, MAT_TYPE, UNIT_ID, BASE) ' +
+      'values ' +
+      '(:MATERIAL_ID, :MAT_CODE, :MAT_NAME, :TYPE, :UNIT_ID, 0)';
+    DM.qrDifferent.ParamByName('MAT_CODE').Value := ACode;
+    DM.qrDifferent.ParamByName('MAT_NAME').Value := AName;
+    DM.qrDifferent.ParamByName('MATERIAL_ID').Value := Result;
+    DM.qrDifferent.ParamByName('TYPE').Value := 0;
+    DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+    DM.qrDifferent.ExecSQL;
+  end
+end;
+
+function TSprLoaderForm.AddNewMat(ACode, AName, AUnit: string; ADate: TDateTime;
+    ANoUpdate: Boolean; AMatType: Byte): Integer;
+var TmpUnitID: Integer;
+begin
+  //Получает код ед. изм.
+  TmpUnitID := GetUnitID(AUnit);
+  ACode := Trim(ACode).ToUpper;
+  AName := Trim(AName).ToUpper;
+
+  Result := GetMatID(ACode);
+
+  if Result = -1 then
+  begin
+    DM.qrDifferent.SQL.Text := 'Select GetNewSprID(:TypeID, 0)';
+    DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MAT;
+    DM.qrDifferent.Active := True;
+    try
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
 
     DM.qrDifferent.SQL.Text :=
       'Insert into material ' +
@@ -919,8 +2339,8 @@ begin
     DM.qrDifferent.ParamByName('MAT_CODE').Value := ACode;
     DM.qrDifferent.ParamByName('MAT_NAME').Value := AName;
     DM.qrDifferent.ParamByName('MATERIAL_ID').Value := Result;
-    DM.qrDifferent.ParamByName('TYPE').Value := MType;
-    DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID.ToString;
+    DM.qrDifferent.ParamByName('TYPE').Value := AMatType;
+    DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
     DM.qrDifferent.ParamByName('date_beginer').Value := ADate;
     DM.qrDifferent.ExecSQL;
   end
@@ -932,7 +2352,7 @@ begin
         'Update material set MAT_NAME = :MAT_NAME, UNIT_ID = :UNIT_ID, ' +
         'date_beginer = :date_beginer where MATERIAL_ID = :MATERIAL_ID';
       DM.qrDifferent.ParamByName('MAT_NAME').Value := AName;
-      DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID.ToString;
+      DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
       DM.qrDifferent.ParamByName('date_beginer').Value := ADate;
       DM.qrDifferent.ParamByName('MATERIAL_ID').Value := Result;
       DM.qrDifferent.ExecSQL;
@@ -942,15 +2362,10 @@ end;
 
 function TSprLoaderForm.AddNewDump(AName, AUnit: string; ACode, OblID: Integer;
   ANoUpdate: Boolean): Integer;
-var J,
-    TmpUnitID: Integer;
+var TmpUnitID: Integer;
 begin
   //Получает код ед. изм.
-  J := FUnitsName.IndexOf(AUnit.ToLower);
-  if J > -1 then
-    TmpUnitID := StrToInt(FUnitsID[J])
-  else
-    TmpUnitID := AddNewUnit(AUnit);
+  TmpUnitID := GetUnitID(AUnit);
 
   //Проверяет есть ли такой уже в базе
   DM.qrDifferent.SQL.Text :=
@@ -1060,7 +2475,7 @@ begin
         TmpName := trim(VarToStr(FData[I,2]));
         TmpUnit := trim(VarToStr(FData[I,3]));
         if (TmpCode <> '') and (TmpName <> '') then
-          AddNewMat(TmpCode, TmpName, TmpUnit, TmpDate, False, False);
+          AddNewMat(TmpCode, TmpName, TmpUnit, TmpDate, False, 1);
       end;
       DM.Read.Commit;
       ShowMessage('Загрузка успешно завершена.');
@@ -1144,7 +2559,7 @@ begin
 
         if (TmpCode <> '') then
         begin
-          TmpMatID := AddNewMat(TmpCode, TmpName, TmpUnit, TmpDate, False, False);
+          TmpMatID := AddNewMat(TmpCode, TmpName, TmpUnit, TmpDate, False, 1);
           J := -1;
           DM.qrDifferent.SQL.Text :=
             'Select ID from materialnocoast where ' +
@@ -1388,7 +2803,7 @@ begin
         begin
           TmpMatID :=
             AddNewMat(TmpCode, TmpName, TmpUnit, TmpDate,
-              False, not cboxUpdMatName.Checked);
+              not cboxUpdMatName.Checked, 1);
 
           DM.qrDifferent1.ParamByName('MATERIAL_ID').Value := TmpMatID;
           DM.qrDifferent1.ParamByName('YEAR').Value := edtYearMatPrice.Value;
@@ -1504,7 +2919,8 @@ begin
         if (TmpCode <> '') then
         begin
           TmpMechID :=
-            AddNewMech(TmpCode, TmpName, TmpDate, not cboxUpdMechName.Checked);
+            AddNewMech(TmpCode, TmpName, 'маш.-ч', TmpDate,
+              not cboxUpdMechName.Checked, 0, False);
 
           DM.qrDifferent1.ParamByName('MECHANIZM_ID').Value := TmpMechID;
           DM.qrDifferent1.ParamByName('YEAR').Value := edtYearMech.Value;
