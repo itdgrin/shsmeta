@@ -10,7 +10,7 @@ uses
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Mask, Vcl.DBCtrls,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.ExtCtrls,
   System.Actions, Vcl.ActnList, Vcl.ComCtrls, Vcl.Samples.Spin, Vcl.Grids,
-  Vcl.DBGrids, JvExDBGrids, JvDBGrid;
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, SmReportPreview;
 
 const
   OwnActCount = 15;
@@ -81,17 +81,11 @@ type
     mtLeftManthActsCount: TFloatField;
     mtLeftManthActsTotalPrice: TCurrencyField;
     mtLeftRestPrice: TCurrencyField;
-    pnlGrids: TPanel;
-    grLeft: TJvDBGrid;
-    grRight: TJvDBGrid;
     lbShowTypeTitle: TLabel;
     cbShowType: TDBLookupComboBox;
     mtRightAllSumm: TCurrencyField;
     mtRightManthSumm: TCurrencyField;
     mtRightNum: TIntegerField;
-    pnlMemos: TPanel;
-    memLeft: TDBMemo;
-    memRight: TDBMemo;
     pnlRegActs: TPanel;
     pnlRegActsDate: TPanel;
     lbRegActsDataTitle: TLabel;
@@ -133,6 +127,14 @@ type
     mtRegActsSubAct9: TCurrencyField;
     mtRegActsSubAct10: TCurrencyField;
     mtRegActsSubActs: TCurrencyField;
+    btnShowResources: TButton;
+    pnlView: TPanel;
+    pnlMemos: TPanel;
+    memLeft: TDBMemo;
+    memRight: TDBMemo;
+    pnlGrids: TPanel;
+    grLeft: TJvDBGrid;
+    grRight: TJvDBGrid;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -146,6 +148,7 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure FormResize(Sender: TObject);
     procedure DateChange(Sender: TObject);
+    procedure btnShowResourcesClick(Sender: TObject);
   private const
     CaptionButton = 'Отчет С2-Б';
     HintButton = 'Окно отчета С2-Б';
@@ -164,6 +167,8 @@ type
     FCurMonth,
     FCurYear: Word;
 
+    FRS: TfSmReportPreview;
+
     procedure BuildReport();
     { Private declarations }
   public
@@ -179,7 +184,11 @@ var
 implementation
 
 uses
-  System.DateUtils, Main, DataModule, CardObject, GlobsAndConst;
+  System.DateUtils,
+  Main,
+  DataModule,
+  CardObject,
+  GlobsAndConst;
 
 {$R *.dfm}
 
@@ -383,14 +392,16 @@ end;
 procedure TFormReportC2B.pcReportTypeChange(Sender: TObject);
 var ev: TNotifyEvent;
 begin
+  if btnShowResources.Tag = 1 then
+    btnShowResourcesClick(btnShowResources);
+
   grLeft.Columns[1].Visible := False;
   grLeft.Columns[2].Visible := False;
   if pcReportType.ActivePage = tsRepObj then
   begin
     lbShowTypeTitle.Parent := pnlRepObjDate;
     cbShowType.Parent := pnlRepObjDate;
-    pnlGrids.Parent := pnlRepObj;
-    pnlMemos.Parent := pnlRepObj;
+    pnlView.Parent := pnlRepObj;
 
     grLeft.Columns[4].Visible := False;
     grLeft.Columns[5].Visible := False;
@@ -419,8 +430,7 @@ begin
   begin
     lbShowTypeTitle.Parent := pnlRepActDate;
     cbShowType.Parent := pnlRepActDate;
-    pnlGrids.Parent := pnlRepAct;
-    pnlMemos.Parent := pnlRepAct;
+    pnlView.Parent := pnlRepAct;
 
     grLeft.Columns[4].Visible := False;//True;
     grLeft.Columns[5].Visible := True;
@@ -485,6 +495,8 @@ var //RepType: Integer;
     I, J: Integer;
     TmpCol: TColumn;
 begin
+  if btnShowResources.Tag = 1 then
+    btnShowResourcesClick(btnShowResources);
 
   CurYearDateBegin := EncodeDate(FCurYear, 1, 1);
   CurManthDateBegin := EncodeDate(FCurYear, FCurMonth, 1);
@@ -1786,6 +1798,30 @@ begin
     finally
       mtRegActs.EndBatch;
     end;
+  end;
+end;
+
+procedure TFormReportC2B.btnShowResourcesClick(Sender: TObject);
+begin
+  if (cbActs.KeyValue = null) then
+  begin
+    ShowMessage('Не выбран акт.');
+    Exit;
+  end;
+
+  if btnShowResources.Tag = 0 then
+  begin
+    btnShowResources.Tag := 1;
+    btnShowResources.Caption := 'Закрыть расчет затрат';
+    FreeAndNil(FRS);
+    FRS := ShowReport(1, VarArrayOf([VarArrayOf(['SM_ID', cbActs.KeyValue]),
+    VarArrayOf(['OBJ_ID', FObjectID])]), pnlView);
+  end
+  else
+  begin
+    btnShowResources.Tag := 0;
+    btnShowResources.Caption := 'Показать расчет затрат';
+    FreeAndNil(FRS);
   end;
 end;
 

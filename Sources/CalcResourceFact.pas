@@ -475,132 +475,136 @@ var
   TempBookmark: TBookMark;
   X: Integer;
   Script: TStringList;
+  fCalcResourceEdit: TfCalcResourceEdit;
 begin
-  if (not Assigned(fCalcResourceEdit)) then
-    fCalcResourceEdit := TfCalcResourceEdit.Create(Self, pgc.ActivePageIndex);
-  if fCalcResourceEdit.ShowModal = mrOk then
-  begin
-    Script := TStringList.Create;
-    case pgc.ActivePageIndex of
+  fCalcResourceEdit := TfCalcResourceEdit.Create(Self, pgc.ActivePageIndex);
+  try
+    if fCalcResourceEdit.ShowModal = mrOk then
+    begin
+      Script := TStringList.Create;
+      case pgc.ActivePageIndex of
 
-      // Расчет материалов
-      1:
-        begin
-          grMaterial.DataSource.DataSet.DisableControls;
-          TempBookmark := grMaterial.DataSource.DataSet.GetBookmark;
-          try
-            if grMaterial.SelectedRows.Count = 0 then
-              grMaterial.SelectedRows.CurrentRowSelected := True;
+        // Расчет материалов
+        1:
+          begin
+            grMaterial.DataSource.DataSet.DisableControls;
+            TempBookmark := grMaterial.DataSource.DataSet.GetBookmark;
+            try
+              if grMaterial.SelectedRows.Count = 0 then
+                grMaterial.SelectedRows.CurrentRowSelected := True;
 
-            for X := 0 to grMaterial.SelectedRows.Count - 1 do
-            begin
-              if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
+              for X := 0 to grMaterial.SelectedRows.Count - 1 do
               begin
-                grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
-                Script.Add('UPDATE fact_data SET fact_data_id=fact_data_id' +
-                  IIF(fCalcResourceEdit.chkMatCoast.Checked,
-                  ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMatCoast.Text +
-                  ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
-                  IIF(fCalcResourceEdit.chkMatTransp.Checked,
-                  ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
-                  IIF(fCalcResourceEdit.chkMatNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
-                  fCalcResourceEdit.dtpMatNaklDate.Date) + '''', '') +
-                  IIF(fCalcResourceEdit.chkMatNakl.Checked, ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text
-                  + '''', '') + IIF(fCalcResourceEdit.chkMatZakPodr.Checked,
-                  ',PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',PROC_ZAC=' +
-                  fCalcResourceEdit.edtMatZak.Text, '') + IIF(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
-                  ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
-                  fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE fact_data_id=' +
-                  qrMainData.FieldByName('fact_data_id').AsString + ';');
+                if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
+                begin
+                  grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
+                  Script.Add('UPDATE fact_data SET fact_data_id=fact_data_id' +
+                    IIF(fCalcResourceEdit.chkMatCoast.Checked,
+                    ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMatCoast.Text +
+                    ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
+                    IIF(fCalcResourceEdit.chkMatTransp.Checked,
+                    ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
+                    IIF(fCalcResourceEdit.chkMatNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
+                    fCalcResourceEdit.dtpMatNaklDate.Date) + '''', '') +
+                    IIF(fCalcResourceEdit.chkMatNakl.Checked, ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text
+                    + '''', '') + IIF(fCalcResourceEdit.chkMatZakPodr.Checked,
+                    ',PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',PROC_ZAC=' +
+                    fCalcResourceEdit.edtMatZak.Text, '') + IIF(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
+                    ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                    fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE fact_data_id=' +
+                    qrMainData.FieldByName('fact_data_id').AsString + ';');
+                end;
               end;
+              fdScript.ExecuteScript(TStrings(Script));
+            finally
+              grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
+              grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
+              grMaterial.DataSource.DataSet.EnableControls;
             end;
-            fdScript.ExecuteScript(TStrings(Script));
-          finally
-            grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
-            grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
-            grMaterial.DataSource.DataSet.EnableControls;
           end;
-        end;
 
-      // Расчет механизмов
-      2:
-        begin
-          grMech.DataSource.DataSet.DisableControls;
-          TempBookmark := grMech.DataSource.DataSet.GetBookmark;
-          try
-            if grMech.SelectedRows.Count = 0 then
-              grMech.SelectedRows.CurrentRowSelected := True;
+        // Расчет механизмов
+        2:
+          begin
+            grMech.DataSource.DataSet.DisableControls;
+            TempBookmark := grMech.DataSource.DataSet.GetBookmark;
+            try
+              if grMech.SelectedRows.Count = 0 then
+                grMech.SelectedRows.CurrentRowSelected := True;
 
-            for X := 0 to grMech.SelectedRows.Count - 1 do
-            begin
-              if grMech.SelectedRows.IndexOf(grMech.SelectedRows.Items[X]) > -1 then
+              for X := 0 to grMech.SelectedRows.Count - 1 do
               begin
-                grMech.DataSource.DataSet.GotoBookmark(Pointer(grMech.SelectedRows.Items[X]));
-                Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
-                  IIF(fCalcResourceEdit.chkMechCoast.Checked,
-                  ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMechCoast.Text +
-                  ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
-                  IIF(fCalcResourceEdit.chkMechZPMash.Checked,
-                  ',COAST_ZP=' + fCalcResourceEdit.edtMechZPMash.Text +
-                  ', PRICE_ZP=ROUND(CNT*COAST_ZP*IFNULL(forecast_cost_index, 1))', '') +
-                  IIF(fCalcResourceEdit.chkMechNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
-                  fCalcResourceEdit.dtpMechNaklDate.Date) + '''', '') +
-                  IIF(fCalcResourceEdit.chkMechNakl.Checked,
-                  ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
-                  IIF(fCalcResourceEdit.chkMechZakPodr.Checked,
-                  ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
-                  fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE fact_data_id=' +
-                  qrMainData.FieldByName('fact_data_id').AsString + ';');
+                if grMech.SelectedRows.IndexOf(grMech.SelectedRows.Items[X]) > -1 then
+                begin
+                  grMech.DataSource.DataSet.GotoBookmark(Pointer(grMech.SelectedRows.Items[X]));
+                  Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
+                    IIF(fCalcResourceEdit.chkMechCoast.Checked,
+                    ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMechCoast.Text +
+                    ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
+                    IIF(fCalcResourceEdit.chkMechZPMash.Checked,
+                    ',COAST_ZP=' + fCalcResourceEdit.edtMechZPMash.Text +
+                    ', PRICE_ZP=ROUND(CNT*COAST_ZP*IFNULL(forecast_cost_index, 1))', '') +
+                    IIF(fCalcResourceEdit.chkMechNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
+                    fCalcResourceEdit.dtpMechNaklDate.Date) + '''', '') +
+                    IIF(fCalcResourceEdit.chkMechNakl.Checked,
+                    ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
+                    IIF(fCalcResourceEdit.chkMechZakPodr.Checked,
+                    ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
+                    fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE fact_data_id=' +
+                    qrMainData.FieldByName('fact_data_id').AsString + ';');
+                end;
               end;
+              fdScript.ExecuteScript(TStrings(Script));
+            finally
+              grMech.DataSource.DataSet.GotoBookmark(TempBookmark);
+              grMech.DataSource.DataSet.FreeBookmark(TempBookmark);
+              grMech.DataSource.DataSet.EnableControls;
             end;
-            fdScript.ExecuteScript(TStrings(Script));
-          finally
-            grMech.DataSource.DataSet.GotoBookmark(TempBookmark);
-            grMech.DataSource.DataSet.FreeBookmark(TempBookmark);
-            grMech.DataSource.DataSet.EnableControls;
           end;
-        end;
 
-      // Расчет оборудования
-      3:
-        begin
-          grDev.DataSource.DataSet.DisableControls;
-          TempBookmark := grDev.DataSource.DataSet.GetBookmark;
-          try
-            if grDev.SelectedRows.Count = 0 then
-              grDev.SelectedRows.CurrentRowSelected := True;
+        // Расчет оборудования
+        3:
+          begin
+            grDev.DataSource.DataSet.DisableControls;
+            TempBookmark := grDev.DataSource.DataSet.GetBookmark;
+            try
+              if grDev.SelectedRows.Count = 0 then
+                grDev.SelectedRows.CurrentRowSelected := True;
 
-            for X := 0 to grDev.SelectedRows.Count - 1 do
-            begin
-              if grDev.SelectedRows.IndexOf(grDev.SelectedRows.Items[X]) > -1 then
+              for X := 0 to grDev.SelectedRows.Count - 1 do
               begin
-                grDev.DataSource.DataSet.GotoBookmark(Pointer(grDev.SelectedRows.Items[X]));
-                Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
-                  IIF(fCalcResourceEdit.chkDevCoast.Checked,
-                  ',FCOAST=1, COAST=' + fCalcResourceEdit.edtDevCoast.Text +
-                  ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
-                  IIF(fCalcResourceEdit.chkDevTransp.Checked,
-                  ',TRANSP=' + fCalcResourceEdit.edtDevTransp.Text, '') +
-                  IIF(fCalcResourceEdit.chkDevNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
-                  fCalcResourceEdit.dtpDevNaklDate.Date) + '''', '') +
-                  IIF(fCalcResourceEdit.chkDevNakl.Checked, ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text
-                  + '''', '') + IIF(fCalcResourceEdit.chkDevZakPodr.Checked,
-                  ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
-                  fCalcResourceEdit.edtDevZak.Text, '') + IIF(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
-                  ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
-                  fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE fact_data_id=' +
-                  qrMainData.FieldByName('fact_data_id').AsString + ';');
+                if grDev.SelectedRows.IndexOf(grDev.SelectedRows.Items[X]) > -1 then
+                begin
+                  grDev.DataSource.DataSet.GotoBookmark(Pointer(grDev.SelectedRows.Items[X]));
+                  Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
+                    IIF(fCalcResourceEdit.chkDevCoast.Checked,
+                    ',FCOAST=1, COAST=' + fCalcResourceEdit.edtDevCoast.Text +
+                    ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
+                    IIF(fCalcResourceEdit.chkDevTransp.Checked,
+                    ',TRANSP=' + fCalcResourceEdit.edtDevTransp.Text, '') +
+                    IIF(fCalcResourceEdit.chkDevNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
+                    fCalcResourceEdit.dtpDevNaklDate.Date) + '''', '') +
+                    IIF(fCalcResourceEdit.chkDevNakl.Checked, ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text
+                    + '''', '') + IIF(fCalcResourceEdit.chkDevZakPodr.Checked,
+                    ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
+                    fCalcResourceEdit.edtDevZak.Text, '') + IIF(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
+                    ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                    fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE fact_data_id=' +
+                    qrMainData.FieldByName('fact_data_id').AsString + ';');
+                end;
               end;
+              fdScript.ExecuteScript(TStrings(Script));
+            finally
+              grDev.DataSource.DataSet.GotoBookmark(TempBookmark);
+              grDev.DataSource.DataSet.FreeBookmark(TempBookmark);
+              grDev.DataSource.DataSet.EnableControls;
             end;
-            fdScript.ExecuteScript(TStrings(Script));
-          finally
-            grDev.DataSource.DataSet.GotoBookmark(TempBookmark);
-            grDev.DataSource.DataSet.FreeBookmark(TempBookmark);
-            grDev.DataSource.DataSet.EnableControls;
           end;
-        end;
+      end;
+      pgcChange(nil);
     end;
-    pgcChange(nil);
+  finally
+    FreeAndNil(fCalcResourceEdit);
   end;
 end;
 

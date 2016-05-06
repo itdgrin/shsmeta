@@ -1636,7 +1636,7 @@ begin
           Break;
 
         FReportSSRPI.Line9013 := Line9013;
-        FReportSSRPI.Line0802 := Line0802;
+        FReportSSRPI.Line0802 := VozvLine;
         FReportSSRPI.CalcPIIndex();
         TmpLine := default(TRepSSRLine);
         NullLine();
@@ -1655,7 +1655,7 @@ begin
         if mtSSR.Eof or (mtSSRCNum.AsString <> '9019') then
           Break;
 
-        AssignLineIfNoNull(Line0802);
+        AssignLineIfNoNull(VozvLine);
 
         mtSSR.Next;
         if mtSSR.Eof then

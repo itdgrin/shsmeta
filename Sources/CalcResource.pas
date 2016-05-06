@@ -279,15 +279,23 @@ type
     ExcelApp: OLEVariant;
     FOldGridProc: TWndMethod;
     fRS: TfSmReportPreview;
+    FOwnPointer: Pointer;
+
     procedure GridProc(var Message: TMessage);
     procedure GetRSReport;
 
     function CanEditField(Field: TField): Boolean;
   public
+    property OwnPointer: Pointer read FOwnPointer write FOwnPointer;
   end;
 
 var
   fCalcResource: TfCalcResource;
+
+procedure ShowCalcResourceEx(var ACalcResource: TfCalcResource;
+  const ID_ESTIMATE: Variant; const APage: Integer = 0;
+  AOwner: TWinControl = nil; AEditable: Boolean = True;
+  AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
   AEditable: Boolean = True; AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
@@ -302,6 +310,15 @@ uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule, CalcSetup, Ca
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
   AEditable: Boolean = True; AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
+begin
+  ShowCalcResourceEx(fCalcResource, ID_ESTIMATE, APage, AOwner, AEditable,
+    AShowFullObject, AShowTabs);
+end;
+
+procedure ShowCalcResourceEx(var ACalcResource: TfCalcResource;
+  const ID_ESTIMATE: Variant; const APage: Integer = 0;
+  AOwner: TWinControl = nil; AEditable: Boolean = True;
+  AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
 var
   pageID: Integer;
   fl: Boolean;
@@ -309,50 +326,51 @@ begin
   fl := False;
   if VarIsNull(ID_ESTIMATE) then
     Exit;
-  if (not Assigned(fCalcResource)) then
+  if (not Assigned(ACalcResource)) then
   begin
-    fCalcResource := TfCalcResource.Create(AOwner);
+    ACalcResource := TfCalcResource.Create(AOwner);
+    ACalcResource.OwnPointer := @ACalcResource;
     fl := True;
   end;
 
   if AOwner <> nil then
   begin
-    fCalcResource.Parent := AOwner;
-    fCalcResource.Align := alClient;
-    fCalcResource.BorderStyle := bsNone;
+    ACalcResource.Parent := AOwner;
+    ACalcResource.Align := alClient;
+    ACalcResource.BorderStyle := bsNone;
   end
   else
     // Создаём кнопку от этого окна (на главной форме внизу)
     FormMain.CreateButtonOpenWindow('Расчет стоимости ресурсов', 'Расчет стоимости ресурсов',
-      fCalcResource, 1);
+      ACalcResource, 1);
 
-  fCalcResource.flLoaded := False;
-  fCalcResource.IDEstimate := ID_ESTIMATE;
-  fCalcResource.OBJ_ID := FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0',
+  ACalcResource.flLoaded := False;
+  ACalcResource.IDEstimate := ID_ESTIMATE;
+  ACalcResource.OBJ_ID := FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0',
     VarArrayOf([ID_ESTIMATE]));
-  fCalcResource.Editable := AEditable;
-  fCalcResource.ShowFullObject := AShowFullObject;
-  fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
-  fCalcResource.qrEstimate.Active := True;
-  fCalcResource.cbbFromMonth.ItemIndex := fCalcResource.qrEstimate.FieldByName('MONTH').AsInteger - 1;
-  fCalcResource.edtEstimateName.Text := fCalcResource.qrEstimate.FieldByName('NAME').AsString;
-  fCalcResource.seFromYear.Value := fCalcResource.qrEstimate.FieldByName('YEAR').AsInteger;
-  fCalcResource.cbbNDS.ItemIndex := fCalcResource.qrEstimate.FieldByName('NDS').AsInteger;
+  ACalcResource.Editable := AEditable;
+  ACalcResource.ShowFullObject := AShowFullObject;
+  ACalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
+  ACalcResource.qrEstimate.Active := True;
+  ACalcResource.cbbFromMonth.ItemIndex := ACalcResource.qrEstimate.FieldByName('MONTH').AsInteger - 1;
+  ACalcResource.edtEstimateName.Text := ACalcResource.qrEstimate.FieldByName('NAME').AsString;
+  ACalcResource.seFromYear.Value := ACalcResource.qrEstimate.FieldByName('YEAR').AsInteger;
+  ACalcResource.cbbNDS.ItemIndex := ACalcResource.qrEstimate.FieldByName('NDS').AsInteger;
 
   // Если вызвали с доп параметром (на что положить) , то скрываем все вкладки
-  for pageID := 0 to fCalcResource.pgc.PageCount - 1 do
-    fCalcResource.pgc.Pages[pageID].TabVisible := AShowTabs;
+  for pageID := 0 to ACalcResource.pgc.PageCount - 1 do
+    ACalcResource.pgc.Pages[pageID].TabVisible := AShowTabs;
 
-  fCalcResource.pnlTop.Visible := AOwner = nil;
-  fCalcResource.pgc.ActivePageIndex := APage;
+  ACalcResource.pnlTop.Visible := AOwner = nil;
+  ACalcResource.pgc.ActivePageIndex := APage;
 
   if AOwner = nil then
-    fCalcResource.WindowState := wsMaximized;
+    ACalcResource.WindowState := wsMaximized;
 
-  fCalcResource.flLoaded := True;
+  ACalcResource.flLoaded := True;
 
-  fCalcResource.pgcChange(nil);
-  with fCalcResource do
+  ACalcResource.pgcChange(nil);
+  with ACalcResource do
     if fl then
       case pgc.ActivePageIndex of
         // Расчет материалов
@@ -369,8 +387,8 @@ begin
           qrRates.First;
       end;
   if AOwner <> nil then
-    fCalcResource.Width := AOwner.ClientWidth;
-  fCalcResource.Show;
+    ACalcResource.Width := AOwner.ClientWidth;
+  ACalcResource.Show;
 end;
 
 procedure TfCalcResource.btnCalcSetupClick(Sender: TObject);
@@ -513,7 +531,8 @@ procedure TfCalcResource.FormDestroy(Sender: TObject);
 begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow('Расчет стоимости ресурсов');
-  fCalcResource := nil;
+  if Assigned(FOwnPointer) then
+    Pointer(FOwnPointer^) := nil;
 end;
 
 procedure TfCalcResource.FormShow(Sender: TObject);
@@ -1292,164 +1311,168 @@ var
   TempBookmark: TBookMark;
   X: Integer;
   Script: TStringList;
+  fCalcResourceEdit: TfCalcResourceEdit;
 begin
-  if (not Assigned(fCalcResourceEdit)) then
-    fCalcResourceEdit := TfCalcResourceEdit.Create(Self, pgc.ActivePageIndex);
-  if fCalcResourceEdit.ShowModal = mrOk then
-  begin
-    Script := TStringList.Create;
-    case pgc.ActivePageIndex of
+  fCalcResourceEdit := TfCalcResourceEdit.Create(Self, pgc.ActivePageIndex);
+  try
+    if fCalcResourceEdit.ShowModal = mrOk then
+    begin
+      Script := TStringList.Create;
+      case pgc.ActivePageIndex of
 
-      // Расчет материалов
-      1:
-        begin
-          grMaterial.DataSource.DataSet.DisableControls;
-          qrMaterialDetail.DisableControls;
-          TempBookmark := grMaterial.DataSource.DataSet.GetBookmark;
-          try
-            if grMaterial.SelectedRows.Count = 0 then
-              grMaterial.SelectedRows.CurrentRowSelected := True;
+        // Расчет материалов
+        1:
+          begin
+            grMaterial.DataSource.DataSet.DisableControls;
+            qrMaterialDetail.DisableControls;
+            TempBookmark := grMaterial.DataSource.DataSet.GetBookmark;
+            try
+              if grMaterial.SelectedRows.Count = 0 then
+                grMaterial.SelectedRows.CurrentRowSelected := True;
 
-            for X := 0 to grMaterial.SelectedRows.Count - 1 do
-            begin
-              if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
+              for X := 0 to grMaterial.SelectedRows.Count - 1 do
               begin
-                grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
-                qrMaterialDetail.Active := False;
-                qrMaterialDetail.Active := True;
-                qrMaterialDetail.First;
-                while not qrMaterialDetail.Eof do
+                if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
                 begin
-                  Script.Add('UPDATE materialcard_temp set ID=ID' + IIF(fCalcResourceEdit.chkMatCoast.Checked,
-                    ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMatCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
-                    + IIF(fCalcResourceEdit.chkMatTransp.Checked,
-                    ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
-                    IIF(fCalcResourceEdit.chkMatNaklDate.Checked,
-                    ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMatNaklDate.Date) +
-                    '''', '') + IIF(fCalcResourceEdit.chkMatNakl.Checked,
-                    ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text + '''', '') +
-                    IIF(fCalcResourceEdit.chkMatZakPodr.Checked,
-                    ',MAT_PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',MAT_PROC_ZAC=' +
-                    fCalcResourceEdit.edtMatZak.Text, '') + IIF(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
-                    ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
-                    fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE ID=' +
-                    qrMaterialDetail.FieldByName('ID').AsString + ';');
+                  grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
+                  qrMaterialDetail.Active := False;
+                  qrMaterialDetail.Active := True;
+                  qrMaterialDetail.First;
+                  while not qrMaterialDetail.Eof do
+                  begin
+                    Script.Add('UPDATE materialcard_temp set ID=ID' + IIF(fCalcResourceEdit.chkMatCoast.Checked,
+                      ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMatCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
+                      + IIF(fCalcResourceEdit.chkMatTransp.Checked,
+                      ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
+                      IIF(fCalcResourceEdit.chkMatNaklDate.Checked,
+                      ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMatNaklDate.Date) +
+                      '''', '') + IIF(fCalcResourceEdit.chkMatNakl.Checked,
+                      ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text + '''', '') +
+                      IIF(fCalcResourceEdit.chkMatZakPodr.Checked,
+                      ',MAT_PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',MAT_PROC_ZAC=' +
+                      fCalcResourceEdit.edtMatZak.Text, '') + IIF(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
+                      ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                      fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE ID=' +
+                      qrMaterialDetail.FieldByName('ID').AsString + ';');
 
-                  qrMaterialDetail.Next;
+                    qrMaterialDetail.Next;
+                  end;
                 end;
               end;
+              fdScript.ExecuteScript(TStrings(Script));
+            finally
+              grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
+              grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
+              grMaterial.DataSource.DataSet.EnableControls;
+              qrMaterialDetail.EnableControls;
+              FormCalculationEstimate.RecalcEstimate;
+              pgcChange(nil);
             end;
-            fdScript.ExecuteScript(TStrings(Script));
-          finally
-            grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
-            grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
-            grMaterial.DataSource.DataSet.EnableControls;
-            qrMaterialDetail.EnableControls;
-            FormCalculationEstimate.RecalcEstimate;
-            pgcChange(nil);
           end;
-        end;
 
-      // Расчет механизмов
-      2:
-        begin
-          grMech.DataSource.DataSet.DisableControls;
-          qrMechDetail.DisableControls;
-          TempBookmark := grMech.DataSource.DataSet.GetBookmark;
-          try
-            if grMech.SelectedRows.Count = 0 then
-              grMech.SelectedRows.CurrentRowSelected := True;
+        // Расчет механизмов
+        2:
+          begin
+            grMech.DataSource.DataSet.DisableControls;
+            qrMechDetail.DisableControls;
+            TempBookmark := grMech.DataSource.DataSet.GetBookmark;
+            try
+              if grMech.SelectedRows.Count = 0 then
+                grMech.SelectedRows.CurrentRowSelected := True;
 
-            for X := 0 to grMech.SelectedRows.Count - 1 do
-            begin
-              if grMech.SelectedRows.IndexOf(grMech.SelectedRows.Items[X]) > -1 then
+              for X := 0 to grMech.SelectedRows.Count - 1 do
               begin
-                grMech.DataSource.DataSet.GotoBookmark(Pointer(grMech.SelectedRows.Items[X]));
-                qrMechDetail.Active := False;
-                qrMechDetail.Active := True;
-                qrMechDetail.First;
-                while not qrMechDetail.Eof do
+                if grMech.SelectedRows.IndexOf(grMech.SelectedRows.Items[X]) > -1 then
                 begin
-                  Script.Add('UPDATE mechanizmcard_temp set ID=ID' +
-                    IIF(fCalcResourceEdit.chkMechCoast.Checked,
-                    ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMechCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
-                    + IIF(fCalcResourceEdit.chkMechZPMash.Checked,
-                    ',FZP_MACH_NO_NDS=' + fCalcResourceEdit.edtMechZPMash.Text +
-                    ',FZP_MACH_NDS=FZP_MACH_NO_NDS', '') + IIF(fCalcResourceEdit.chkMechNaklDate.Checked,
-                    ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMechNaklDate.Date) +
-                    '''', '') + IIF(fCalcResourceEdit.chkMechNakl.Checked,
-                    ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
-                    IIF(fCalcResourceEdit.chkMechZakPodr.Checked,
-                    ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
-                    fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE ID=' + qrMechDetail.FieldByName('ID')
-                    .AsString + ';');
+                  grMech.DataSource.DataSet.GotoBookmark(Pointer(grMech.SelectedRows.Items[X]));
+                  qrMechDetail.Active := False;
+                  qrMechDetail.Active := True;
+                  qrMechDetail.First;
+                  while not qrMechDetail.Eof do
+                  begin
+                    Script.Add('UPDATE mechanizmcard_temp set ID=ID' +
+                      IIF(fCalcResourceEdit.chkMechCoast.Checked,
+                      ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMechCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
+                      + IIF(fCalcResourceEdit.chkMechZPMash.Checked,
+                      ',FZP_MACH_NO_NDS=' + fCalcResourceEdit.edtMechZPMash.Text +
+                      ',FZP_MACH_NDS=FZP_MACH_NO_NDS', '') + IIF(fCalcResourceEdit.chkMechNaklDate.Checked,
+                      ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMechNaklDate.Date) +
+                      '''', '') + IIF(fCalcResourceEdit.chkMechNakl.Checked,
+                      ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
+                      IIF(fCalcResourceEdit.chkMechZakPodr.Checked,
+                      ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
+                      fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE ID=' + qrMechDetail.FieldByName('ID')
+                      .AsString + ';');
 
-                  qrMechDetail.Next;
+                    qrMechDetail.Next;
+                  end;
                 end;
               end;
+              fdScript.ExecuteScript(TStrings(Script));
+            finally
+              grMech.DataSource.DataSet.GotoBookmark(TempBookmark);
+              grMech.DataSource.DataSet.FreeBookmark(TempBookmark);
+              grMech.DataSource.DataSet.EnableControls;
+              qrMechDetail.EnableControls;
+              FormCalculationEstimate.RecalcEstimate;
+              pgcChange(nil);
             end;
-            fdScript.ExecuteScript(TStrings(Script));
-          finally
-            grMech.DataSource.DataSet.GotoBookmark(TempBookmark);
-            grMech.DataSource.DataSet.FreeBookmark(TempBookmark);
-            grMech.DataSource.DataSet.EnableControls;
-            qrMechDetail.EnableControls;
-            FormCalculationEstimate.RecalcEstimate;
-            pgcChange(nil);
           end;
-        end;
 
-      // Расчет оборудования
-      3:
-        begin
-          grDev.DataSource.DataSet.DisableControls;
-          qrDevicesDetail.DisableControls;
-          TempBookmark := grDev.DataSource.DataSet.GetBookmark;
-          try
-            if grDev.SelectedRows.Count = 0 then
-              grDev.SelectedRows.CurrentRowSelected := True;
+        // Расчет оборудования
+        3:
+          begin
+            grDev.DataSource.DataSet.DisableControls;
+            qrDevicesDetail.DisableControls;
+            TempBookmark := grDev.DataSource.DataSet.GetBookmark;
+            try
+              if grDev.SelectedRows.Count = 0 then
+                grDev.SelectedRows.CurrentRowSelected := True;
 
-            for X := 0 to grDev.SelectedRows.Count - 1 do
-            begin
-              if grDev.SelectedRows.IndexOf(grDev.SelectedRows.Items[X]) > -1 then
+              for X := 0 to grDev.SelectedRows.Count - 1 do
               begin
-                grDev.DataSource.DataSet.GotoBookmark(Pointer(grDev.SelectedRows.Items[X]));
-                qrDevicesDetail.Active := False;
-                qrDevicesDetail.Active := True;
-                qrDevicesDetail.First;
-                while not qrDevicesDetail.Eof do
+                if grDev.SelectedRows.IndexOf(grDev.SelectedRows.Items[X]) > -1 then
                 begin
-                  Script.Add('UPDATE devicescard_temp set ID=ID' + IIF(fCalcResourceEdit.chkDevCoast.Checked,
-                    ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtDevCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
-                    + IIF(fCalcResourceEdit.chkDevTransp.Checked,
-                    ',DEVICE_TRANSP_NO_NDS=' + fCalcResourceEdit.edtDevTransp.Text +
-                    ', DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS', '') +
-                    IIF(fCalcResourceEdit.chkDevNaklDate.Checked,
-                    ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpDevNaklDate.Date) +
-                    '''', '') + IIF(fCalcResourceEdit.chkDevNakl.Checked,
-                    ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text + '''', '') +
-                    IIF(fCalcResourceEdit.chkDevZakPodr.Checked,
-                    ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
-                    fCalcResourceEdit.edtDevZak.Text, '') + IIF(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
-                    ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
-                    fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE ID=' +
-                    qrDevicesDetail.FieldByName('ID').AsString + ';');
+                  grDev.DataSource.DataSet.GotoBookmark(Pointer(grDev.SelectedRows.Items[X]));
+                  qrDevicesDetail.Active := False;
+                  qrDevicesDetail.Active := True;
+                  qrDevicesDetail.First;
+                  while not qrDevicesDetail.Eof do
+                  begin
+                    Script.Add('UPDATE devicescard_temp set ID=ID' + IIF(fCalcResourceEdit.chkDevCoast.Checked,
+                      ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtDevCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
+                      + IIF(fCalcResourceEdit.chkDevTransp.Checked,
+                      ',DEVICE_TRANSP_NO_NDS=' + fCalcResourceEdit.edtDevTransp.Text +
+                      ', DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS', '') +
+                      IIF(fCalcResourceEdit.chkDevNaklDate.Checked,
+                      ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpDevNaklDate.Date) +
+                      '''', '') + IIF(fCalcResourceEdit.chkDevNakl.Checked,
+                      ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text + '''', '') +
+                      IIF(fCalcResourceEdit.chkDevZakPodr.Checked,
+                      ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
+                      fCalcResourceEdit.edtDevZak.Text, '') + IIF(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
+                      ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                      fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE ID=' +
+                      qrDevicesDetail.FieldByName('ID').AsString + ';');
 
-                  qrDevicesDetail.Next;
+                    qrDevicesDetail.Next;
+                  end;
                 end;
               end;
+              fdScript.ExecuteScript(TStrings(Script));
+            finally
+              grDev.DataSource.DataSet.GotoBookmark(TempBookmark);
+              grDev.DataSource.DataSet.FreeBookmark(TempBookmark);
+              grDev.DataSource.DataSet.EnableControls;
+              qrDevicesDetail.EnableControls;
+              FormCalculationEstimate.RecalcEstimate;
+              pgcChange(nil);
             end;
-            fdScript.ExecuteScript(TStrings(Script));
-          finally
-            grDev.DataSource.DataSet.GotoBookmark(TempBookmark);
-            grDev.DataSource.DataSet.FreeBookmark(TempBookmark);
-            grDev.DataSource.DataSet.EnableControls;
-            qrDevicesDetail.EnableControls;
-            FormCalculationEstimate.RecalcEstimate;
-            pgcChange(nil);
           end;
-        end;
+      end;
     end;
+  finally
+    FreeAndNil(fCalcResourceEdit);
   end;
 end;
 
@@ -1768,14 +1791,14 @@ begin
       Tag := 0;
       Color := clRed;
       Caption := 'Расчёты запрещены';
-      fCalcResource.Caption := 'Расчет стоимости ресурсов [редактирование запрещено]';
+      Self.Caption := 'Расчет стоимости ресурсов [редактирование запрещено]';
     end
     else
     begin
       Tag := 1;
       Color := clLime;
       Caption := 'Расчёты разрешены';
-      fCalcResource.Caption := 'Расчет стоимости ресурсов [редактирование разрешено]';
+      Self.Caption := 'Расчет стоимости ресурсов [редактирование разрешено]';
     end;
 
   case pgc.ActivePageIndex of

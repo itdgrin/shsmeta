@@ -906,6 +906,7 @@ var
   sb: TSpeedButton;
 begin
   sb := TSpeedButton(Sender);
+  sb.Down := True;
   if Assigned(TForm(sb.Tag)) then
     FormShowEvent1(TForm(sb.Tag));
 end;
@@ -915,6 +916,7 @@ var
   sb: TSpeedButton;
 begin
   sb := TSpeedButton(Sender);
+  sb.Down := True;
   if Assigned(TForm(sb.Tag)) then
     FormShowEvent2(TForm(sb.Tag));
 end;

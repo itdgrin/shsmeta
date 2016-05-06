@@ -335,10 +335,6 @@ object FormReportC2B: TFormReportC2B
       Font.Style = []
       ImageIndex = 2
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlRepAct: TPanel
         Left = 0
         Top = 0
@@ -372,11 +368,11 @@ object FormReportC2B: TFormReportC2B
             845
             36)
           object lbRepActTitle: TLabel
-            Left = 13
+            Left = 5
             Top = 10
-            Width = 157
+            Width = 84
             Height = 13
-            Caption = #1056#1072#1073#1086#1090#1099' '#1074#1099#1087#1086#1083#1085#1077#1085#1085#1099#1077' '#1087#1086' '#1072#1082#1090#1091':'
+            Caption = #1056#1072#1073#1086#1090#1099' '#1087#1086' '#1072#1082#1090#1091':'
           end
           object lbShowTypeTitle: TLabel
             Left = 605
@@ -388,10 +384,11 @@ object FormReportC2B: TFormReportC2B
             ExplicitLeft = 531
           end
           object cbActs: TDBLookupComboBox
-            Left = 176
+            Left = 93
             Top = 7
-            Width = 377
+            Width = 340
             Height = 21
+            Anchors = [akLeft, akTop, akRight]
             KeyField = 'SM_ID'
             ListField = 'NAME'
             ListSource = dsActs
@@ -410,278 +407,307 @@ object FormReportC2B: TFormReportC2B
             TabOrder = 1
             OnClick = cbShowTypeClick
           end
+          object btnShowResources: TButton
+            Left = 448
+            Top = 5
+            Width = 143
+            Height = 25
+            Anchors = [akTop, akRight]
+            Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1088#1072#1089#1095#1077#1090' '#1079#1072#1090#1088#1072#1090
+            TabOrder = 2
+            OnClick = btnShowResourcesClick
+          end
         end
-        object pnlGrids: TPanel
+        object pnlView: TPanel
           Left = 0
           Top = 36
           Width = 845
-          Height = 285
+          Height = 318
           Align = alClient
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
+          BevelOuter = bvNone
+          Caption = 'pnlView'
           TabOrder = 1
-          object grLeft: TJvDBGrid
-            Left = 1
-            Top = 1
-            Width = 587
-            Height = 283
-            Align = alLeft
-            DataSource = dsLeft
-            DefaultDrawing = False
-            DrawingStyle = gdsClassic
+          ExplicitLeft = 67
+          ExplicitTop = 42
+          ExplicitWidth = 302
+          ExplicitHeight = 87
+          object pnlMemos: TPanel
+            Left = 0
+            Top = 285
+            Width = 845
+            Height = 33
+            Align = alBottom
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ParentFont = False
             TabOrder = 0
-            TitleFont.Charset = DEFAULT_CHARSET
-            TitleFont.Color = clWindowText
-            TitleFont.Height = -11
-            TitleFont.Name = 'Tahoma'
-            TitleFont.Style = []
-            OnDrawColumnCell = grLeftDrawColumnCell
-            AutoAppend = False
-            AutoSort = False
-            AutoSizeColumns = True
-            AutoSizeColumnIndex = 0
-            SelectColumnsDialogStrings.Caption = 'Select columns'
-            SelectColumnsDialogStrings.OK = '&OK'
-            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-            CanDelete = False
-            EditControls = <>
-            RowsHeight = 17
-            TitleRowHeight = 17
-            Columns = <
-              item
-                Expanded = False
-                FieldName = 'SmName'
-                Title.Alignment = taCenter
-                Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1101#1083#1077#1084#1077#1085#1090#1072
-                Width = 184
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'Unit'
-                Title.Alignment = taCenter
-                Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-                Width = 58
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'SmCount'
-                Title.Alignment = taCenter
-                Title.Caption = #1050#1086#1083'-'#1074#1086
-                Width = 80
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'SmTotalPrice'
-                Title.Alignment = taCenter
-                Title.Caption = #1042#1089#1077#1075#1086
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'ActCount'
-                Title.Alignment = taCenter
-                Title.Caption = #1050#1086#1083'-'#1074#1086
-                Width = 80
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'ActTotalPrice'
-                Title.Alignment = taCenter
-                Title.Caption = #1055#1086' '#1072#1082#1090#1091
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'AllActsCount'
-                Title.Alignment = taCenter
-                Title.Caption = #1050#1086#1083'-'#1074#1086
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'AllActsTotalPrice'
-                Title.Alignment = taCenter
-                Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'ManthActsCount'
-                Title.Alignment = taCenter
-                Title.Caption = #1050#1086#1083'-'#1074#1086
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'ManthActsTotalPrice'
-                Title.Alignment = taCenter
-                Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'RestPrice'
-                Title.Alignment = taCenter
-                Title.Caption = #1054#1089#1090#1072#1090#1086#1082
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'DevFromBeg'
-                Title.Alignment = taCenter
-                Title.Caption = #1054#1090#1082#1083'. '#1089' '#1085#1072#1095'. '#1089#1090#1088'-'#1074#1072
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'DevForMonth'
-                Title.Alignment = taCenter
-                Title.Caption = #1054#1090#1082#1083'. '#1079#1072' '#1084#1077#1089#1103#1094
-                Width = 100
-                Visible = True
-              end>
+            ExplicitLeft = -543
+            ExplicitTop = 54
+            object memLeft: TDBMemo
+              Left = 1
+              Top = 1
+              Width = 587
+              Height = 31
+              Align = alLeft
+              DataField = 'SmName'
+              DataSource = dsLeft
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ReadOnly = True
+              TabOrder = 0
+            end
+            object memRight: TDBMemo
+              AlignWithMargins = True
+              Left = 590
+              Top = 1
+              Width = 254
+              Height = 31
+              Margins.Left = 2
+              Margins.Top = 0
+              Margins.Right = 0
+              Margins.Bottom = 0
+              Align = alClient
+              DataField = 'DevItem'
+              DataSource = dsRight
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ReadOnly = True
+              TabOrder = 1
+            end
           end
-          object grRight: TJvDBGrid
-            AlignWithMargins = True
-            Left = 590
-            Top = 1
-            Width = 254
-            Height = 283
-            Margins.Left = 2
-            Margins.Top = 0
-            Margins.Right = 0
-            Margins.Bottom = 0
+          object pnlGrids: TPanel
+            Left = 0
+            Top = 0
+            Width = 845
+            Height = 285
             Align = alClient
-            DataSource = dsRight
-            DrawingStyle = gdsClassic
-            ReadOnly = True
-            TabOrder = 1
-            TitleFont.Charset = DEFAULT_CHARSET
-            TitleFont.Color = clWindowText
-            TitleFont.Height = -11
-            TitleFont.Name = 'Tahoma'
-            TitleFont.Style = []
-            AutoSort = False
-            AutoSizeColumns = True
-            AutoSizeColumnIndex = 1
-            SelectColumnsDialogStrings.Caption = 'Select columns'
-            SelectColumnsDialogStrings.OK = '&OK'
-            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-            EditControls = <>
-            RowsHeight = 17
-            TitleRowHeight = 17
-            Columns = <
-              item
-                Expanded = False
-                FieldName = 'Num'
-                Title.Caption = #8470
-                Width = 20
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'DevItem'
-                Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1072#1090#1100#1080' '#1086#1090#1082#1083#1086#1085#1077#1085#1080#1081
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'ActSumm'
-                Title.Alignment = taCenter
-                Title.Caption = #1057#1091#1084#1084#1072
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'AllSumm'
-                Title.Alignment = taCenter
-                Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'ManthSumm'
-                Title.Alignment = taCenter
-                Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
-                Width = 100
-                Visible = True
-              end>
-          end
-        end
-        object pnlMemos: TPanel
-          Left = 0
-          Top = 321
-          Width = 845
-          Height = 33
-          Align = alBottom
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 2
-          object memLeft: TDBMemo
-            Left = 1
-            Top = 1
-            Width = 587
-            Height = 31
-            Align = alLeft
-            DataField = 'SmName'
-            DataSource = dsLeft
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            ReadOnly = True
-            TabOrder = 0
-          end
-          object memRight: TDBMemo
-            AlignWithMargins = True
-            Left = 590
-            Top = 1
-            Width = 254
-            Height = 31
-            Margins.Left = 2
-            Margins.Top = 0
-            Margins.Right = 0
-            Margins.Bottom = 0
-            Align = alClient
-            DataField = 'DevItem'
-            DataSource = dsRight
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
             TabOrder = 1
+            ExplicitLeft = -543
+            ExplicitTop = -82
+            ExplicitHeight = 169
+            object grLeft: TJvDBGrid
+              Left = 1
+              Top = 1
+              Width = 587
+              Height = 283
+              Align = alLeft
+              DataSource = dsLeft
+              DefaultDrawing = False
+              DrawingStyle = gdsClassic
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+              ParentFont = False
+              TabOrder = 0
+              TitleFont.Charset = DEFAULT_CHARSET
+              TitleFont.Color = clWindowText
+              TitleFont.Height = -11
+              TitleFont.Name = 'Tahoma'
+              TitleFont.Style = []
+              OnDrawColumnCell = grLeftDrawColumnCell
+              AutoAppend = False
+              AutoSort = False
+              AutoSizeColumns = True
+              AutoSizeColumnIndex = 0
+              SelectColumnsDialogStrings.Caption = 'Select columns'
+              SelectColumnsDialogStrings.OK = '&OK'
+              SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+              CanDelete = False
+              EditControls = <>
+              RowsHeight = 17
+              TitleRowHeight = 17
+              Columns = <
+                item
+                  Expanded = False
+                  FieldName = 'SmName'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1101#1083#1077#1084#1077#1085#1090#1072
+                  Width = 184
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'Unit'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                  Width = 58
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'SmCount'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1050#1086#1083'-'#1074#1086
+                  Width = 80
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'SmTotalPrice'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1042#1089#1077#1075#1086
+                  Width = 100
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'ActCount'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1050#1086#1083'-'#1074#1086
+                  Width = 80
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'ActTotalPrice'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1055#1086' '#1072#1082#1090#1091
+                  Width = 100
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'AllActsCount'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1050#1086#1083'-'#1074#1086
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'AllActsTotalPrice'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
+                  Width = 100
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'ManthActsCount'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1050#1086#1083'-'#1074#1086
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'ManthActsTotalPrice'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
+                  Width = 100
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'RestPrice'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1054#1089#1090#1072#1090#1086#1082
+                  Width = 100
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'DevFromBeg'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1054#1090#1082#1083'. '#1089' '#1085#1072#1095'. '#1089#1090#1088'-'#1074#1072
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'DevForMonth'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1054#1090#1082#1083'. '#1079#1072' '#1084#1077#1089#1103#1094
+                  Width = 100
+                  Visible = True
+                end>
+            end
+            object grRight: TJvDBGrid
+              AlignWithMargins = True
+              Left = 590
+              Top = 1
+              Width = 254
+              Height = 283
+              Margins.Left = 2
+              Margins.Top = 0
+              Margins.Right = 0
+              Margins.Bottom = 0
+              Align = alClient
+              DataSource = dsRight
+              DrawingStyle = gdsClassic
+              ReadOnly = True
+              TabOrder = 1
+              TitleFont.Charset = DEFAULT_CHARSET
+              TitleFont.Color = clWindowText
+              TitleFont.Height = -11
+              TitleFont.Name = 'Tahoma'
+              TitleFont.Style = []
+              AutoSort = False
+              AutoSizeColumns = True
+              AutoSizeColumnIndex = 1
+              SelectColumnsDialogStrings.Caption = 'Select columns'
+              SelectColumnsDialogStrings.OK = '&OK'
+              SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+              EditControls = <>
+              RowsHeight = 17
+              TitleRowHeight = 17
+              Columns = <
+                item
+                  Expanded = False
+                  FieldName = 'Num'
+                  Title.Caption = #8470
+                  Width = 20
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'DevItem'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1057#1090#1072#1090#1100#1080' '#1086#1090#1082#1083#1086#1085#1077#1085#1080#1081
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'ActSumm'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1057#1091#1084#1084#1072
+                  Width = 100
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'AllSumm'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
+                  Width = 100
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'ManthSumm'
+                  Title.Alignment = taCenter
+                  Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
+                  Width = 100
+                  Visible = True
+                end>
+            end
           end
         end
       end
@@ -695,10 +721,6 @@ object FormReportC2B: TFormReportC2B
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlRepObj: TPanel
         Left = 0
         Top = 0

@@ -61,7 +61,6 @@ type
     edtMechZPMash: TEdit;
     edtDevTransp: TEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormDestroy(Sender: TObject);
     procedure edtMatPodrChange(Sender: TObject);
     procedure edtMatZakChange(Sender: TObject);
     procedure edtMatTranspPodrChange(Sender: TObject);
@@ -90,9 +89,6 @@ type
   public
     { Public declarations }
   end;
-
-var
-  fCalcResourceEdit: TfCalcResourceEdit;
 
 implementation
 
@@ -181,11 +177,6 @@ begin
   tsMechanizm.TabVisible := False;
   tsDevice.TabVisible := False;
   pgc1.ActivePageIndex := InitParams - 1;
-end;
-
-procedure TfCalcResourceEdit.FormDestroy(Sender: TObject);
-begin
-  fCalcResourceEdit := nil;
 end;
 
 procedure TfCalcResourceEdit.edtMatTranspPodrChange(Sender: TObject);
