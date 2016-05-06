@@ -316,7 +316,7 @@ object FormReportC2B: TFormReportC2B
     Top = 96
     Width = 857
     Height = 386
-    ActivePage = tsRegActs
+    ActivePage = tsRepAct
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
