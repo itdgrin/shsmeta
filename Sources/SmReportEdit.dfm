@@ -157,7 +157,6 @@ object fSmReportEdit: TfSmReportEdit
             TitleFont.Height = -11
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
-            AutoSizeColumns = True
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -169,8 +168,8 @@ object fSmReportEdit: TfSmReportEdit
                 Expanded = False
                 FieldName = 'POS'
                 Title.Alignment = taCenter
-                Title.Caption = #1055#1086#1079#1080#1094#1080#1103
-                Width = 51
+                Title.Caption = #8470#1087#1087
+                Width = 35
                 Visible = True
               end
               item
@@ -178,7 +177,7 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'REPORT_ROW_NAME'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1080#1089#1090#1086#1095#1085#1080#1082#1072
-                Width = 353
+                Width = 300
                 Visible = True
               end
               item
@@ -186,7 +185,7 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'LK_TYPE'
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1080#1087
-                Width = 53
+                Width = 90
                 Visible = True
               end
               item
@@ -194,7 +193,7 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'LK_LIST_NAME'
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1087#1080#1089#1086#1082
-                Width = 58
+                Width = 100
                 Visible = True
               end
               item
@@ -202,7 +201,7 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'FL_SHOW'
                 Title.Alignment = taCenter
                 Title.Caption = #1042#1099#1074#1086#1076#1080#1090#1100
-                Width = 52
+                Width = 60
                 Visible = True
               end>
           end
@@ -258,7 +257,6 @@ object fSmReportEdit: TfSmReportEdit
             TitleFont.Height = -11
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
-            AutoSizeColumns = True
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -270,8 +268,8 @@ object fSmReportEdit: TfSmReportEdit
                 Expanded = False
                 FieldName = 'POS'
                 Title.Alignment = taCenter
-                Title.Caption = #1055#1086#1079#1080#1094#1080#1103
-                Width = 52
+                Title.Caption = #8470#1087#1087
+                Width = 35
                 Visible = True
               end
               item
@@ -279,7 +277,7 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'REPORT_COL_LABEL'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-                Width = 344
+                Width = 300
                 Visible = True
               end
               item
@@ -287,7 +285,40 @@ object fSmReportEdit: TfSmReportEdit
                 FieldName = 'FL_PRINT_ROW_NAME'
                 Title.Alignment = taCenter
                 Title.Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077' '#1080#1089#1090#1086#1095#1085#1080#1082#1072
-                Width = 173
+                Width = 30
+                Visible = True
+              end
+              item
+                Alignment = taCenter
+                Expanded = False
+                FieldName = 'REPORT_COL_WIDTH'
+                Title.Alignment = taCenter
+                Title.Caption = #1064#1080#1088#1080#1085#1072
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'LK_TYPE'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1080#1087
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'LK_LIST_NAME'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1087#1080#1089#1086#1082
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FL_SAVE'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+                Width = 60
                 Visible = True
               end>
           end
@@ -640,6 +671,97 @@ object fSmReportEdit: TfSmReportEdit
         ParamType = ptInput
         Value = Null
       end>
+    object qrColsREPORT_COL_ID: TFDAutoIncField
+      FieldName = 'REPORT_COL_ID'
+      Origin = 'REPORT_COL_ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrColsREPORT_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_ID'
+      Origin = 'REPORT_ID'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrColsCOL_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'COL_ID'
+      Origin = 'COL_ID'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrColsPOS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'POS'
+      Origin = 'POS'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrColsREPORT_COL_DATA: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_COL_DATA'
+      Origin = 'REPORT_COL_DATA'
+      Size = 1024
+    end
+    object qrColsREPORT_COL_LABEL: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_COL_LABEL'
+      Origin = 'REPORT_COL_LABEL'
+      Size = 100
+    end
+    object qrColsFL_PRINT_ROW_NAME: TBooleanField
+      AutoGenerateValue = arDefault
+      FieldName = 'FL_PRINT_ROW_NAME'
+      Origin = 'FL_PRINT_ROW_NAME'
+    end
+    object qrColsREPORT_COL_WIDTH: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_COL_WIDTH'
+      Origin = 'REPORT_COL_WIDTH'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrColsREPORT_COL_TYPE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_COL_TYPE'
+      Origin = 'REPORT_COL_TYPE'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrColsREPORT_LIST_SQL_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPORT_LIST_SQL_ID'
+      Origin = 'REPORT_LIST_SQL_ID'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrColsLK_TYPE: TStringField
+      FieldKind = fkLookup
+      FieldName = 'LK_TYPE'
+      LookupDataSet = qrRowType
+      LookupKeyFields = 'ROW_TYPE_ID'
+      LookupResultField = 'ROW_TYPE_NAME'
+      KeyFields = 'REPORT_COL_TYPE'
+      Size = 200
+      Lookup = True
+    end
+    object qrColsLK_LIST_NAME: TStringField
+      FieldKind = fkLookup
+      FieldName = 'LK_LIST_NAME'
+      LookupDataSet = qrReportListSql
+      LookupKeyFields = 'REPORT_LIST_SQL_ID'
+      LookupResultField = 'REPORT_LIST_SQL_NAME'
+      KeyFields = 'REPORT_LIST_SQL_ID'
+      Size = 254
+      Lookup = True
+    end
+    object qrColsFL_SAVE: TBooleanField
+      AutoGenerateValue = arDefault
+      FieldName = 'FL_SAVE'
+      Origin = 'FL_SAVE'
+    end
   end
   object dsCols: TDataSource
     DataSet = qrCols
@@ -755,6 +877,10 @@ object fSmReportEdit: TfSmReportEdit
       item
         NameMask = 'F_*'
         TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
       end>
     Left = 214
     Top = 98

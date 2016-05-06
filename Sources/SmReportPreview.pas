@@ -73,7 +73,7 @@ function ShowReport(const AREPORT_ID: Variant; const AReportParams: TfSmReportPa
 var
   f: TfSmReportPreview;
   res: Variant;
-  i: Integer;
+  i, j, colId: Integer;
 begin
   Result := nil;
   f := TfSmReportPreview.Create(AOwner, AREPORT_ID);
@@ -87,10 +87,18 @@ begin
     end;
     f.qrMain.SQL.Text := res[0];
     f.qrMain.Active := True;
-    for i := 0 to f.grMain.Columns.Count - 1 do
+    // for i := 0 to f.grMain.Columns.Count - 1 do
+    colId := 0;
+    for i := 0 to VarArrayHighBound(res[1], 1) do
     begin
-      f.grMain.Columns[i].Title.Caption := res[1][i];
-      f.grMain.Columns[i].Title.Alignment := taCenter;
+      for j := 0 to VarArrayHighBound(res[1][i], 1) do
+      begin
+        f.grMain.Columns[colId].Title.Caption := (res[1][i])[j][1];
+        f.grMain.Columns[colId].Width := res[2][i];
+        f.grMain.Columns[colId].Title.Alignment := taCenter;
+        f.grMain.Columns[colId].Visible := True;
+        Inc(colId);
+      end;
     end;
 
     f.pnlBott.Visible := AOwner = nil;
@@ -124,7 +132,7 @@ function ShowReport(const AREPORT_ID: Variant; const AReportParams: Variant; con
 var
   f: TfSmReportPreview;
   res: Variant;
-  i: Integer;
+  i, j, colId: Integer;
   ParamName: string;
 begin
   Result := nil;
@@ -148,10 +156,18 @@ begin
     end;
     f.qrMain.SQL.Text := res[0];
     f.qrMain.Active := True;
-    for i := 0 to f.grMain.Columns.Count - 1 do
+    // for i := 0 to f.grMain.Columns.Count - 1 do
+    colId := 0;
+    for i := 0 to VarArrayHighBound(res[1], 1) do
     begin
-      f.grMain.Columns[i].Title.Caption := res[1][i];
-      f.grMain.Columns[i].Title.Alignment := taCenter;
+      for j := 0 to VarArrayHighBound(res[1][i], 1) do
+      begin
+        f.grMain.Columns[colId].Title.Caption := (res[1][i])[j][1];
+        f.grMain.Columns[colId].Width := res[2][i];
+        f.grMain.Columns[colId].Title.Alignment := taCenter;
+        f.grMain.Columns[colId].Visible := True;
+        Inc(colId);
+      end;
     end;
 
     f.pnlBott.Visible := AOwner = nil;
@@ -212,8 +228,8 @@ var
 begin
   cnt := 0;
   REPORT_ID := InitParams;
-  Caption := FastSelectSQLOne('SELECT REPORT_NAME FROM REPORT WHERE REPORT_ID=:0',
-    VarArrayOf([REPORT_ID])) + IIF(cnt > 1, '(' + IntToStr(cnt) + ')', '');
+  Caption := FastSelectSQLOne('SELECT REPORT_NAME FROM REPORT WHERE REPORT_ID=:0', VarArrayOf([REPORT_ID])) +
+    IIF(cnt > 1, '(' + IntToStr(cnt) + ')', '');
 end;
 
 end.

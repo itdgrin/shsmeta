@@ -74,6 +74,19 @@ type
     qrReportListSql: TFDQuery;
     qrRowsREPORT_LIST_SQL_ID: TIntegerField;
     qrRowsLK_LIST_NAME: TStringField;
+    qrColsREPORT_COL_ID: TFDAutoIncField;
+    qrColsREPORT_ID: TIntegerField;
+    qrColsCOL_ID: TIntegerField;
+    qrColsPOS: TIntegerField;
+    qrColsREPORT_COL_DATA: TStringField;
+    qrColsREPORT_COL_LABEL: TStringField;
+    qrColsFL_PRINT_ROW_NAME: TBooleanField;
+    qrColsREPORT_COL_WIDTH: TIntegerField;
+    qrColsREPORT_COL_TYPE: TIntegerField;
+    qrColsREPORT_LIST_SQL_ID: TIntegerField;
+    qrColsLK_TYPE: TStringField;
+    qrColsLK_LIST_NAME: TStringField;
+    qrColsFL_SAVE: TBooleanField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -99,13 +112,19 @@ type
   /// </summary>
   /// <returns>
   /// <para>
-  /// Возвращает массив [0..1]:
+  /// Возвращает массив [0..3]:
   /// </para>
   /// <para>
   /// [0] - запрос на выборку;
   /// </para>
   /// <para>
-  /// [1] - массив с подписями полей.
+  /// [1][0..x][0..1] - массив с [0] - ID, [1] - подписями полей;
+  /// </para>
+  /// <para>
+  /// [2][0..x] - массив с размерами колонок;.
+  /// </para>
+  /// <para>
+  /// [3][0..x] - массив с типами колонок;.
   /// </para>
   /// </returns>
 function BuildReport(const AREPORT_ID: Integer): Variant;
@@ -151,9 +170,9 @@ end;
 function BuildReport(const AREPORT_ID: Integer): Variant;
 var
   fullQuery, qr, SELECT, INTO, TABLE, FORMUL: string;
-  OLD_REPORT_VAR_TYPE, formulCache, ColNames: Variant;
+  OLD_REPORT_VAR_TYPE, formulCache, ColData, ColWidth, ColType, ColID: Variant;
   q, qrCol: TFDQuery;
-  cnt: Integer;
+  cnt, i, j, printRowNameID: Integer;
 
   procedure InitVariableType(const AREPORT_VAR_TYPE: Integer);
   begin
@@ -195,82 +214,47 @@ var
     INTO := '';
   end;
 
-  function GetFormul(const R_ID, C_ID: Variant): string;
-  var
-    L, H, I, C: Integer;
-  begin
-    Result := '';
-
-    L := 0;
-    H := VarArrayHighBound(formulCache, 1) - 1;
-    while L <= H do
+// Функция парсинга формулы
+  function ParseFormul(): string;
+  { Функция поиска значения/фломулы в кеше ячеек очтета }
+    function GetFormul(const R_ID, C_ID: Variant; var AID: Integer): string;
+    var
+      L, H, i, C: Integer;
     begin
-      I := (L + H) shr 1;
-      if (formulCache[I][0] = R_ID) and (formulCache[I][1] = C_ID) then
-        C := 0
-      else if (formulCache[I][0] * 10000 + formulCache[I][1]) <= (R_ID * 10000 + C_ID) then
-        C := -1
-      else
-        C := 1;
-      if C < 0 then
-        L := I + 1
-      else
+      Result := '';
+
+      L := 0;
+      H := VarArrayHighBound(formulCache, 1);
+      while L <= H do
       begin
-        H := I - 1;
-        if C = 0 then
+        i := (L + H) shr 1;
+        if (formulCache[i][0] = R_ID) and (formulCache[i][1] = C_ID) then
+          C := 0
+        else if (formulCache[i][0] * 10000 + formulCache[i][1]) <= (R_ID * 10000 + C_ID) then
+          C := -1
+        else
+          C := 1;
+        if C < 0 then
+          L := i + 1
+        else
         begin
-          Result := formulCache[I][2];
-          Break;
+          H := i - 1;
+          if C = 0 then
+          begin
+            AID := i;
+            Result := formulCache[i][2];
+            Break;
+          end;
         end;
       end;
     end;
-  end;
 
-  function SetFormul(const R_ID, C_ID: Variant; var AFormul: string): Boolean;
   var
-    L, H, I, C: Integer;
+    ROW_ID, COL_ID, sp, fp, offset, ID: Integer;
+    SubLinkFormul: string;
     tmp: Variant;
   begin
-    Result := False;
-
-    L := 0;
-    H := VarArrayHighBound(formulCache, 1) - 1;
-    while L <= H do
-    begin
-      I := (L + H) shr 1;
-      if (formulCache[I][0] = R_ID) and (formulCache[I][1] = C_ID) then
-        C := 0
-      else if (formulCache[I][0] * 10000 + formulCache[I][1]) <= (R_ID * 10000 + C_ID) then
-        C := -1
-      else
-        C := 1;
-      if C < 0 then
-        L := I + 1
-      else
-      begin
-        H := I - 1;
-        if C = 0 then
-        begin
-          Result := True;
-          tmp := formulCache[I];
-          tmp[2] := FastSelectSQLOne('SELECT ' + AFormul, VarArrayOf([]));
-          if VarIsNull(tmp[2]) or (VarToStr(tmp[2]) = '') then
-            tmp[2] := 'NULL';
-          AFormul := tmp[2];
-          formulCache[I] := tmp;
-          Break;
-        end;
-      end;
-    end;
-  end;
-
-// Функция парсинга формулы
-  function ParseFormul(const AFormul: string): string;
-  var
-    ROW_ID, COL_ID, sp, fp, offset: Integer;
-    SubLinkFormul: string;
-  begin
-    Result := AFormul;
+    Result := GetFormul(q.FieldByName('ROW_ID').Value, ColID[i], ID);
     offset := 1;
     while Pos('[', Result, offset) > 0 do
     begin
@@ -279,19 +263,35 @@ var
       SubLinkFormul := Copy(Result, sp + 1, fp - sp - 1);
       ROW_ID := StrToInt(Copy(SubLinkFormul, 0, Pos(':', SubLinkFormul) - 1));
       COL_ID := StrToInt(Copy(SubLinkFormul, Pos(':', SubLinkFormul) + 1, length(SubLinkFormul) - 1));
-      SubLinkFormul := GetFormul(ROW_ID, COL_ID);
+      SubLinkFormul := GetFormul(ROW_ID, COL_ID, ROW_ID);
       if SubLinkFormul <> '' then
         SubLinkFormul := '(' + SubLinkFormul + ')';
       Result := Copy(Result, 0, sp - 1) + SubLinkFormul + Copy(Result, fp + 1, length(Result) - 1);
       offset := sp;
     end;
-    if (Result <> '') and (Pos('t.', Result) = 0) then
-      SetFormul(q.FieldByName('ROW_ID').Value, qrCol.FieldByName('COL_ID').Value, Result);
+
+    Result := StringReplace(Result, '#COL#', VarToStr(IIF(VarIsNull((ColData[i][j])[0]), 'NULL',
+      (ColData[i][j])[0])), [rfReplaceAll, rfIgnoreCase]);
+
+    if (Result <> '') and (Pos('t.', Result) = 0) and (ColType[i] = 1) then
+    begin
+      // Если значение уже вычислено, то пропускаем
+      if VarIsFloat(Result) or VarIsNumeric(Result) or (Result = 'NULL') then
+        Exit;
+      // Записываем предвычисленную часть
+      tmp := formulCache[ID];
+      tmp[2] := FastSelectSQLOne('SELECT ' + Result, VarArrayOf([]));
+      if VarIsNull(tmp[2]) or (VarToStr(tmp[2]) = '') then
+        tmp[2] := 'NULL';
+      Result := tmp[2];
+      formulCache[ID] := tmp;
+    end;
   end;
 
 begin
   Result := Null;
   // Процедуда постройки отчета
+  // Кеширование ячеек отчета
   formulCache := FastSelectSQL
     ('SELECT ROW_ID, COL_ID, REPORT_CELL_VAL, NULL FROM report_cell WHERE REPORT_ID=:0 ORDER BY ROW_ID, COL_ID',
     VarArrayOf([AREPORT_ID]));
@@ -325,7 +325,8 @@ begin
     q.Next;
   end;
   q.Active := False;
-  InitVariableType(OLD_REPORT_VAR_TYPE);
+  if not VarIsNull(OLD_REPORT_VAR_TYPE) then
+    InitVariableType(OLD_REPORT_VAR_TYPE);
   // <--Инициализация переменных отчета
 
   // Сборка общего запроса на вывод отчета-->
@@ -339,52 +340,75 @@ begin
   q.Active := True;
   q.First;
   // Колонки отчета
-  qrCol.SQL.Text := 'SELECT *'#13 + 'FROM report_col'#13 + 'WHERE REPORT_ID = :REPORT_ID'#13 + 'ORDER BY POS';
+  qrCol.SQL.Text := 'SELECT report_col.*, REPORT_LIST_SQL.REPORT_LIST_SQL_SRC'#13 +
+    'FROM report_col LEFT JOIN REPORT_LIST_SQL ON REPORT_LIST_SQL.REPORT_LIST_SQL_ID=report_col.REPORT_LIST_SQL_ID'#13
+    + 'WHERE REPORT_ID = :REPORT_ID'#13 + 'ORDER BY POS';
   qrCol.ParamByName('REPORT_ID').Value := AREPORT_ID;
   qrCol.Active := True;
 
   // Формируем шапку таблицы
   qrCol.First;
   cnt := 0;
-  ColNames := VarArrayCreate([0, qrCol.RecordCount], varVariant);
+  printRowNameID := -1;
+  ColData := VarArrayCreate([0, qrCol.RecordCount - 1], varVariant);
+  ColWidth := VarArrayCreate([0, qrCol.RecordCount - 1], varVariant);
+  ColType := VarArrayCreate([0, qrCol.RecordCount - 1], varVariant);
+  ColID := VarArrayCreate([0, qrCol.RecordCount - 1], varVariant);
   while not qrCol.Eof do
   begin
-    ColNames[cnt] := qrCol.FieldByName('REPORT_COL_LABEL').AsString;
+    if qrCol.FieldByName('FL_PRINT_ROW_NAME').Value = 1 then
+      printRowNameID := cnt;
+    ColWidth[cnt] := qrCol.FieldByName('REPORT_COL_WIDTH').AsInteger;
+    ColType[cnt] := qrCol.FieldByName('REPORT_COL_TYPE').AsInteger;
+    ColID[cnt] := qrCol.FieldByName('COL_ID').Value;
+    case ColType[cnt] of
+      // Фиксированная
+      1:
+        begin
+          ColData[cnt] := VarArrayOf([VarArrayOf([Null, qrCol.FieldByName('REPORT_COL_LABEL').AsString])]);
+        end;
+      // Список
+      2:
+        begin
+          ColData[cnt] := FastSelectSQL(qrCol.FieldByName('REPORT_LIST_SQL_SRC').AsString, VarArrayOf([]));
+        end;
+    end;
+
     qrCol.Next;
     Inc(cnt);
   end;
-
+  qrCol.Active := False;
   // Проходим все источники строк отчета
   while not q.Eof do
   begin
     if fullQuery <> '' then
       fullQuery := fullQuery + 'UNION ALL'#13;
 
-    qrCol.First;
     SELECT := '';
     // Проходим все колонки отчета
-    while not qrCol.Eof do
+    for i := 0 to cnt - 1 do
     begin
-      if qrCol.FieldByName('FL_PRINT_ROW_NAME').Value = 1 then
+      for j := 0 to VarArrayHighBound(ColData[i], 1) do
       begin
-        case q.FieldByName('REPORT_ROW_TYPE').AsInteger of
-          // Фиксированная строка
-          1:
-            FORMUL := '"' + q.FieldByName('REPORT_ROW_NAME').AsString + '"';
-          // Список
-          2:
-            FORMUL := 't.VALUE';
-        end;
-      end
-      else
-        FORMUL := ParseFormul(GetFormul(q.FieldByName('ROW_ID').Value, qrCol.FieldByName('COL_ID').Value));
-      SELECT := IIF(SELECT = '', '', SELECT + ', ') + IIF(FORMUL = '', 'NULL', FORMUL);
+        if i = printRowNameID then
+        begin
+          case q.FieldByName('REPORT_ROW_TYPE').AsInteger of
+            // Фиксированная строка
+            1:
+              FORMUL := '"' + q.FieldByName('REPORT_ROW_NAME').AsString + '"';
+            // Список
+            2:
+              FORMUL := 't.VALUE';
+          end;
+        end
+        else
+          FORMUL := ParseFormul();
 
-      if q.RecNo = 1 then
-        SELECT := SELECT + ' AS F' { + qrCol.FieldByName
-          ('REPORT_COL_LABEL').AsString + '"' };
+        SELECT := IIF(SELECT = '', '', SELECT + ', ') + IIF(FORMUL = '', 'NULL', FORMUL);
 
-      qrCol.Next;
+        if q.RecNo = 1 then
+          SELECT := SELECT + ' AS F';
+      end;
     end;
     case q.FieldByName('REPORT_ROW_TYPE').AsInteger of
       // Фиксированная строка
@@ -398,11 +422,8 @@ begin
     q.Next;
   end;
   q.Active := False;
-  qrCol.Active := False;
   // <--Сборка общего запроса на вывод отчета
-
-  Result := VarArrayOf([fullQuery, ColNames]);
-  // VarClear(formulCache);
+  Result := VarArrayOf([fullQuery, ColData, ColWidth, ColType]);
 end;
 
 procedure TfSmReportEdit.FormClose(Sender: TObject; var Action: TCloseAction);

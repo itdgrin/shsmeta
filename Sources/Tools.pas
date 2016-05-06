@@ -704,8 +704,8 @@ begin
     // qr.Params.Items[i].Value := AParams[i];
     qr.Active := True;
     qr.First;
-    res := VarArrayCreate([0, qr.RecordCount], varVariant);
-    row := VarArrayCreate([0, qr.FieldCount], varVariant);
+    res := VarArrayCreate([0, qr.RecordCount - 1], varVariant);
+    row := VarArrayCreate([0, qr.FieldCount - 1], varVariant);
     recNum := 0;
     while not qr.Eof do
     begin
