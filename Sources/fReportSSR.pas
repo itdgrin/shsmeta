@@ -113,7 +113,7 @@ uses Main, DataModule, CardObject, SSR;
 
 {$R *.dfm}
 
-const SSRItems: array[0..12, 0..3] of string =
+const SSRItems: array[0..14, 0..3] of string =
   (('90.10','9010','япедярбю мю меопедбхдеммше пюанрш х гюрпюрш','0'),
    ('90.11','9011','хрнцн я свернл меопедбхдеммшу','1'),
    ('90.12','9012','мюкнцх х нрвхякемхъ б яннрберярбхх я деиярбсчыхл гюйнмндюрекэярбнл мю дюрс пюгпюанрйх ялермни днйслемрюжхх','0'),
@@ -121,12 +121,14 @@ const SSRItems: array[0..12, 0..3] of string =
    ('90.12.0.2','901202','.   мЮКНЦ НР БШПСВЙХ ОПХ СОПНЫЕММНИ ЯХЯРЕЛЕ МЮКНЦННАКНФЕМХЪ','0'),
    ('90.12.0.3','901203','.   мдя (ДКЪ НАЗЕЙРНБ МЕ НЯБНАНФДЕММШУ НР мдя)','0'),
    ('90.12.0.4','901204','.   цНЯОНЬКХМЮ','0'),
-   ('90.13','9013','хрнцн я свернл мюкнцнб','1'),
-   ('90.14','9014','япедярбю, свхршбючыхе опхлемемхе опнцмнгмшу хмдейянб жем б ярпнхрекэярбе','0'),
-   ('90.15','9015','хрнцн он ябндмнлс ялермнлс пюяверс','1'),
+   ('90.13','9013','хрнцн мю дюрс пюгпюанрйх ялермни днйслемрюжхх','1'),
+   ('90.14','9014','япедярбю, свхршбючыхе опхлемемхе опнцмнгмшу хмдейянб жем б ярпнхрекэярбе мю дюрс мювюкю ярпнхрекэярбю','0'),
+   ('90.15','9015','хрнцн мю дюрс мювюкю ярпнхрекэярбю','1'),
+   ('90.16','9016','япедярбю, свхршбючыхе опхлемемхе опнцмнгмшу хмдейянб жем б ярпнхрекэярбе б мнплюрхбмши япнй ярпнхрекэярбю','0'),
+   ('90.17','9017','хрнцн он ябндмнлс ялермнлс пюяверс','1'),
    ('90.19','9019','бнгбпюрмше ясллш','0'),
-   ('90.20','9020','ялермюъ ярнхлнярэ днкебнцн свюярхъ б ярпнхрекэярбе назейрнб хкх ху вюяреи бяонлнцюрекэмнцн опнхгбндярбю х мюгмювемхъ, опедмюгмювеммшу дкъ наяксфхбюмхъ меяйнкэйху гюйюгвхйнб, гюярпниыхйнб','0'),
-   ('90.30','9030','бяецн й србепфдемхч','1'));
+   ('90.20','9020','днкебне свюярхе б ярпнхрекэярбе','0'),
+   ('90.30','9030','бяецн он ябндмнлс ялермнлс пюяверс','1'));
       VozvratMatStr = '          БНГБПЮРМШЕ ЛЮРЕПХЮКШ';
 
 
@@ -525,7 +527,8 @@ begin
   pmRazRaboti.Visible := mtSSRCNum.AsString = '0903';
   pmEdinZakaz.Visible := mtSSRCNum.AsString = '1001';
   pmNepredvid.Visible := mtSSRCNum.AsString = '9010';
-  pmSSRIndex.Visible := mtSSRCNum.AsString = '9014';
+  pmSSRIndex.Visible := (mtSSRCNum.AsString = '9014') or
+                        (mtSSRCNum.AsString = '9016');
 end;
 
 procedure TFormReportSSR.pmTempBuildsClick(Sender: TObject);
@@ -1069,12 +1072,12 @@ end;
 
 procedure AssignLineIfNoNull(const ALine: TRepSSRLine);
 begin
-  if (ALine.Total <> 0) or (ALine.Trud <> 0) then
-  begin
+ // if (ALine.Total <> 0) or (ALine.Trud <> 0) then
+ // begin
     mtSSR.Edit;
     AssignLine(ALine);
     mtSSR.Post;
-  end;
+//  end;
 end;
 
 procedure SummToLine(var ALine: TRepSSRLine);
@@ -1638,6 +1641,23 @@ begin
         FReportSSRPI.Line9013 := Line9013;
         FReportSSRPI.Line0802 := VozvLine;
         FReportSSRPI.CalcPIIndex();
+        TmpLine1 := default(TRepSSRLine);
+        NullLine();
+        TmpLine1.Other := SmRound(FReportSSRPI.SummBegin);
+        TmpLine1.CalcTotal;
+        AssignLineIfNoNull(TmpLine1);
+
+        mtSSR.Next;
+        if mtSSR.Eof or (mtSSRCNum.AsString <> '9015') then
+          Break;
+
+        TmpLine1.Summ(Line9013);
+        AssignLineIfNoNull(TmpLine1);
+
+        mtSSR.Next;
+        if mtSSR.Eof or (mtSSRCNum.AsString <> '9016') then
+          Break;
+
         TmpLine := default(TRepSSRLine);
         NullLine();
         TmpLine.Other := SmRound(FReportSSRPI.Result);
@@ -1645,16 +1665,18 @@ begin
         AssignLineIfNoNull(TmpLine);
 
         mtSSR.Next;
-        if mtSSR.Eof or (mtSSRCNum.AsString <> '9015') then
+        if mtSSR.Eof or (mtSSRCNum.AsString <> '9017') then
           Break;
 
-        TmpLine.Summ(Line9013);
+        TmpLine.Summ(TmpLine1);
         AssignLineIfNoNull(TmpLine);
 
         mtSSR.Next;
         if mtSSR.Eof or (mtSSRCNum.AsString <> '9019') then
           Break;
 
+        VozvLine.Other := VozvLine.Other + FReportSSRPI.SummVozvrat;
+        VozvLine.CalcTotal;
         AssignLineIfNoNull(VozvLine);
 
         mtSSR.Next;

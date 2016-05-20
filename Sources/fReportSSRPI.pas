@@ -124,12 +124,16 @@ type
     FLine0802: TRepSSRLine;
     FChange: Boolean;
     FCalc: Integer;
+    FSummBegin: Double;
+    FSummVozvrat: Double;
     FResult: Double;
     procedure SetObjectID(AValue: Integer);
   public
     property Line9013: TRepSSRLine write FLine9013;
     property Line0802: TRepSSRLine write FLine0802;
     property Result: Double read FResult;
+    property SummBegin: Double read FSummBegin;
+    property SummVozvrat: Double read FSummVozvrat;
     procedure CalcPIIndex();
   end;
 
@@ -295,6 +299,7 @@ begin
         (1 + G_NDS/100));
       mtLineTotalIndex.Value := SmRound(mtLineTotalWithNal.Value - mtLineNoIndex.Value);
       mtLineTotal.Value := SmRound(mtLineTotalIndex.Value * mtLinePIOnBegin.Value);
+      FSummBegin := mtLineTotal.Value - mtLineDevWithNDS.Value;
       mtLine.Post;
     finally
       mtLine.EnableControls;
@@ -491,7 +496,8 @@ begin
         mtTab.Next;
       end;
     finally
-      FResult := mtLineIndex2.Value;
+      FResult := mtLineIndex1.Value;
+      FSummVozvrat := mtLineIndex3.Value;
       mtTab.GotoBookmark(TmpBookmark);
       mtTab.FreeBookmark(TmpBookmark);
       mtTab.EnableControls;
