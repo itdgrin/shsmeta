@@ -1072,12 +1072,9 @@ end;
 
 procedure AssignLineIfNoNull(const ALine: TRepSSRLine);
 begin
- // if (ALine.Total <> 0) or (ALine.Trud <> 0) then
- // begin
-    mtSSR.Edit;
-    AssignLine(ALine);
-    mtSSR.Post;
-//  end;
+  mtSSR.Edit;
+  AssignLine(ALine);
+  mtSSR.Post;
 end;
 
 procedure SummToLine(var ALine: TRepSSRLine);
