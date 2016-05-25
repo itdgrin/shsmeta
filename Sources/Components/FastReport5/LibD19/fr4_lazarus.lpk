@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="4">
+    <Name Value="fr4_lazarus"/>
+    <Author Value="FastReports Inc."/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="ExportPack"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <SyntaxMode Value="Delphi"/>
+          <UseAnsiStrings Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <CompilerMessages>
+          <IgnoredMessages idx5024="True"/>
+          <UseMsgFile Value="True"/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="FastReport 4 components"/>
+    <License Value="Commercial"/>
+    <Version Major="4" Minor="12" Release="1" Build="1"/>
+    <Files Count="25">
+      <Item1>
+        <Filename Value="frxClass.lfm"/>
+        <Type Value="LFM"/>
+      </Item1>
+      <Item2>
+        <Filename Value="frxClass.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxClass"/>
+      </Item2>
+      <Item3>
+        <Filename Value="frxBarcode.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxBarcode"/>
+      </Item3>
+      <Item4>
+        <Filename Value="frxPrinter.pas"/>
+        <UnitName Value="frxPrinter"/>
+      </Item4>
+      <Item5>
+        <Filename Value="frxCtrls.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxCtrls"/>
+      </Item5>
+      <Item6>
+        <Filename Value="frxUtils.pas"/>
+        <UnitName Value="frxUtils"/>
+      </Item6>
+      <Item7>
+        <Filename Value="frxDock.lfm"/>
+        <Type Value="LFM"/>
+      </Item7>
+      <Item8>
+        <Filename Value="frxDock.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxDock"/>
+      </Item8>
+      <Item9>
+        <Filename Value="frxDBSet.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxDBSet"/>
+      </Item9>
+      <Item10>
+        <Filename Value="frxChBox.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxChBox"/>
+      </Item10>
+      <Item11>
+        <Filename Value="frxGradient.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxGradient"/>
+      </Item11>
+      <Item12>
+        <Filename Value="frxCross.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxCross"/>
+      </Item12>
+      <Item13>
+        <Filename Value="frxDesgnCtrls.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxDesgnCtrls"/>
+      </Item13>
+      <Item14>
+        <Filename Value="frxBarcod.pas"/>
+        <UnitName Value="frxBarcod"/>
+      </Item14>
+      <Item15>
+        <Filename Value="frxDCtrl.pas"/>
+        <UnitName Value="frxDCtrl"/>
+      </Item15>
+      <Item16>
+        <Filename Value="frxDesgn.lfm"/>
+        <Type Value="LFM"/>
+      </Item16>
+      <Item17>
+        <Filename Value="frxDesgn.lrs"/>
+        <Type Value="LRS"/>
+      </Item17>
+      <Item18>
+        <Filename Value="frxDesgn.pas"/>
+        <UnitName Value="frxDesgn"/>
+      </Item18>
+      <Item19>
+        <Filename Value="frxPreview.lfm"/>
+        <Type Value="LFM"/>
+      </Item19>
+      <Item20>
+        <Filename Value="frxPreview.lrs"/>
+        <Type Value="LRS"/>
+      </Item20>
+      <Item21>
+        <Filename Value="frxPreview.pas"/>
+        <UnitName Value="frxPreview"/>
+      </Item21>
+      <Item22>
+        <Filename Value="frxXML.pas"/>
+        <UnitName Value="frxXML"/>
+      </Item22>
+      <Item23>
+        <Filename Value="frxXMLSerializer.pas"/>
+        <UnitName Value="frxXMLSerializer"/>
+      </Item23>
+      <Item25>
+        <Filename Value="frxLazarusComponentEditors.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="frxLazarusComponentEditors"/>
+      </Item25>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="6">
+      <Item1>
+        <PackageName Value="IDEIntf"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="ImagesForLazarus"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="Printer4Lazarus"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="fs_lazarus"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="FCL"/>
+      </Item6>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>

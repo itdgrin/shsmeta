@@ -1,0 +1,348 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{B248B6E2-F3C2-4E41-A4CC-C7CAE343CDBA}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="FastQB\fqb220.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\fs22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\fsDB22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\fsADO22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\fsIBX22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\fsTee22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\frx22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\frxDB22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\ADO\frxADO22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\IBX\frxIBX22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\DBX\frxDBX22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\frxTee22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\ExportPack\frxe22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\ClientServer\frxcs22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\dclfs22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\dclfsDB22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\dclfsADO22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\dclfsIBX22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FastScript\dclfsTee22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\dclfrx22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\dclfrxDB22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\ADO\dclfrxADO22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\IBX\dclfrxIBX22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\DBX\dclfrxDBX22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\dclfrxTee22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\ExportPack\dclfrxe22.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\ClientServer\dclfrxcs22.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="fqb220">
+        <MSBuild Projects="FastQB\fqb220.dproj"/>
+    </Target>
+    <Target Name="fqb220:Clean">
+        <MSBuild Projects="FastQB\fqb220.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fqb220:Make">
+        <MSBuild Projects="FastQB\fqb220.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="fs22">
+        <MSBuild Projects="FastScript\fs22.dproj"/>
+    </Target>
+    <Target Name="fs22:Clean">
+        <MSBuild Projects="FastScript\fs22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fs22:Make">
+        <MSBuild Projects="FastScript\fs22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="fsDB22">
+        <MSBuild Projects="FastScript\fsDB22.dproj"/>
+    </Target>
+    <Target Name="fsDB22:Clean">
+        <MSBuild Projects="FastScript\fsDB22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fsDB22:Make">
+        <MSBuild Projects="FastScript\fsDB22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="fsADO22">
+        <MSBuild Projects="FastScript\fsADO22.dproj"/>
+    </Target>
+    <Target Name="fsADO22:Clean">
+        <MSBuild Projects="FastScript\fsADO22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fsADO22:Make">
+        <MSBuild Projects="FastScript\fsADO22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="fsIBX22">
+        <MSBuild Projects="FastScript\fsIBX22.dproj"/>
+    </Target>
+    <Target Name="fsIBX22:Clean">
+        <MSBuild Projects="FastScript\fsIBX22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fsIBX22:Make">
+        <MSBuild Projects="FastScript\fsIBX22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="fsTee22">
+        <MSBuild Projects="FastScript\fsTee22.dproj"/>
+    </Target>
+    <Target Name="fsTee22:Clean">
+        <MSBuild Projects="FastScript\fsTee22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fsTee22:Make">
+        <MSBuild Projects="FastScript\fsTee22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frx22">
+        <MSBuild Projects="Source\frx22.dproj"/>
+    </Target>
+    <Target Name="frx22:Clean">
+        <MSBuild Projects="Source\frx22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frx22:Make">
+        <MSBuild Projects="Source\frx22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frxDB22">
+        <MSBuild Projects="Source\frxDB22.dproj"/>
+    </Target>
+    <Target Name="frxDB22:Clean">
+        <MSBuild Projects="Source\frxDB22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frxDB22:Make">
+        <MSBuild Projects="Source\frxDB22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frxADO22">
+        <MSBuild Projects="Source\ADO\frxADO22.dproj"/>
+    </Target>
+    <Target Name="frxADO22:Clean">
+        <MSBuild Projects="Source\ADO\frxADO22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frxADO22:Make">
+        <MSBuild Projects="Source\ADO\frxADO22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frxIBX22">
+        <MSBuild Projects="Source\IBX\frxIBX22.dproj"/>
+    </Target>
+    <Target Name="frxIBX22:Clean">
+        <MSBuild Projects="Source\IBX\frxIBX22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frxIBX22:Make">
+        <MSBuild Projects="Source\IBX\frxIBX22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frxDBX22">
+        <MSBuild Projects="Source\DBX\frxDBX22.dproj"/>
+    </Target>
+    <Target Name="frxDBX22:Clean">
+        <MSBuild Projects="Source\DBX\frxDBX22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frxDBX22:Make">
+        <MSBuild Projects="Source\DBX\frxDBX22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frxTee22">
+        <MSBuild Projects="Source\frxTee22.dproj"/>
+    </Target>
+    <Target Name="frxTee22:Clean">
+        <MSBuild Projects="Source\frxTee22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frxTee22:Make">
+        <MSBuild Projects="Source\frxTee22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frxe22">
+        <MSBuild Projects="Source\ExportPack\frxe22.dproj"/>
+    </Target>
+    <Target Name="frxe22:Clean">
+        <MSBuild Projects="Source\ExportPack\frxe22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frxe22:Make">
+        <MSBuild Projects="Source\ExportPack\frxe22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="frxcs22">
+        <MSBuild Projects="Source\ClientServer\frxcs22.dproj"/>
+    </Target>
+    <Target Name="frxcs22:Clean">
+        <MSBuild Projects="Source\ClientServer\frxcs22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="frxcs22:Make">
+        <MSBuild Projects="Source\ClientServer\frxcs22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfs22">
+        <MSBuild Projects="FastScript\dclfs22.dproj"/>
+    </Target>
+    <Target Name="dclfs22:Clean">
+        <MSBuild Projects="FastScript\dclfs22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfs22:Make">
+        <MSBuild Projects="FastScript\dclfs22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfsDB22">
+        <MSBuild Projects="FastScript\dclfsDB22.dproj"/>
+    </Target>
+    <Target Name="dclfsDB22:Clean">
+        <MSBuild Projects="FastScript\dclfsDB22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfsDB22:Make">
+        <MSBuild Projects="FastScript\dclfsDB22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfsADO22">
+        <MSBuild Projects="FastScript\dclfsADO22.dproj"/>
+    </Target>
+    <Target Name="dclfsADO22:Clean">
+        <MSBuild Projects="FastScript\dclfsADO22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfsADO22:Make">
+        <MSBuild Projects="FastScript\dclfsADO22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfsIBX22">
+        <MSBuild Projects="FastScript\dclfsIBX22.dproj"/>
+    </Target>
+    <Target Name="dclfsIBX22:Clean">
+        <MSBuild Projects="FastScript\dclfsIBX22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfsIBX22:Make">
+        <MSBuild Projects="FastScript\dclfsIBX22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfsTee22">
+        <MSBuild Projects="FastScript\dclfsTee22.dproj"/>
+    </Target>
+    <Target Name="dclfsTee22:Clean">
+        <MSBuild Projects="FastScript\dclfsTee22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfsTee22:Make">
+        <MSBuild Projects="FastScript\dclfsTee22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrx22">
+        <MSBuild Projects="Source\dclfrx22.dproj"/>
+    </Target>
+    <Target Name="dclfrx22:Clean">
+        <MSBuild Projects="Source\dclfrx22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrx22:Make">
+        <MSBuild Projects="Source\dclfrx22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrxDB22">
+        <MSBuild Projects="Source\dclfrxDB22.dproj"/>
+    </Target>
+    <Target Name="dclfrxDB22:Clean">
+        <MSBuild Projects="Source\dclfrxDB22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrxDB22:Make">
+        <MSBuild Projects="Source\dclfrxDB22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrxADO22">
+        <MSBuild Projects="Source\ADO\dclfrxADO22.dproj"/>
+    </Target>
+    <Target Name="dclfrxADO22:Clean">
+        <MSBuild Projects="Source\ADO\dclfrxADO22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrxADO22:Make">
+        <MSBuild Projects="Source\ADO\dclfrxADO22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrxIBX22">
+        <MSBuild Projects="Source\IBX\dclfrxIBX22.dproj"/>
+    </Target>
+    <Target Name="dclfrxIBX22:Clean">
+        <MSBuild Projects="Source\IBX\dclfrxIBX22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrxIBX22:Make">
+        <MSBuild Projects="Source\IBX\dclfrxIBX22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrxDBX22">
+        <MSBuild Projects="Source\DBX\dclfrxDBX22.dproj"/>
+    </Target>
+    <Target Name="dclfrxDBX22:Clean">
+        <MSBuild Projects="Source\DBX\dclfrxDBX22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrxDBX22:Make">
+        <MSBuild Projects="Source\DBX\dclfrxDBX22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrxTee22">
+        <MSBuild Projects="Source\dclfrxTee22.dproj"/>
+    </Target>
+    <Target Name="dclfrxTee22:Clean">
+        <MSBuild Projects="Source\dclfrxTee22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrxTee22:Make">
+        <MSBuild Projects="Source\dclfrxTee22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrxe22">
+        <MSBuild Projects="Source\ExportPack\dclfrxe22.dproj"/>
+    </Target>
+    <Target Name="dclfrxe22:Clean">
+        <MSBuild Projects="Source\ExportPack\dclfrxe22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrxe22:Make">
+        <MSBuild Projects="Source\ExportPack\dclfrxe22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclfrxcs22">
+        <MSBuild Projects="Source\ClientServer\dclfrxcs22.dproj"/>
+    </Target>
+    <Target Name="dclfrxcs22:Clean">
+        <MSBuild Projects="Source\ClientServer\dclfrxcs22.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclfrxcs22:Make">
+        <MSBuild Projects="Source\ClientServer\dclfrxcs22.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="fqb220;fs22;fsDB22;fsADO22;fsIBX22;fsTee22;frx22;frxDB22;frxADO22;frxIBX22;frxDBX22;frxTee22;frxe22;frxcs22;dclfs22;dclfsDB22;dclfsADO22;dclfsIBX22;dclfsTee22;dclfrx22;dclfrxDB22;dclfrxADO22;dclfrxIBX22;dclfrxDBX22;dclfrxTee22;dclfrxe22;dclfrxcs22"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="fqb220:Clean;fs22:Clean;fsDB22:Clean;fsADO22:Clean;fsIBX22:Clean;fsTee22:Clean;frx22:Clean;frxDB22:Clean;frxADO22:Clean;frxIBX22:Clean;frxDBX22:Clean;frxTee22:Clean;frxe22:Clean;frxcs22:Clean;dclfs22:Clean;dclfsDB22:Clean;dclfsADO22:Clean;dclfsIBX22:Clean;dclfsTee22:Clean;dclfrx22:Clean;dclfrxDB22:Clean;dclfrxADO22:Clean;dclfrxIBX22:Clean;dclfrxDBX22:Clean;dclfrxTee22:Clean;dclfrxe22:Clean;dclfrxcs22:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="fqb220:Make;fs22:Make;fsDB22:Make;fsADO22:Make;fsIBX22:Make;fsTee22:Make;frx22:Make;frxDB22:Make;frxADO22:Make;frxIBX22:Make;frxDBX22:Make;frxTee22:Make;frxe22:Make;frxcs22:Make;dclfs22:Make;dclfsDB22:Make;dclfsADO22:Make;dclfsIBX22:Make;dclfsTee22:Make;dclfrx22:Make;dclfrxDB22:Make;dclfrxADO22:Make;dclfrxIBX22:Make;dclfrxDBX22:Make;dclfrxTee22:Make;dclfrxe22:Make;dclfrxcs22:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

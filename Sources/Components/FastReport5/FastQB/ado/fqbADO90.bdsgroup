@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{7AE581CA-0062-4A2F-AF5D-EE9F8EC68E1E}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    <Projects>
+      <Projects Name="fqbADO90.bpl">fqbADO90.bdsproj</Projects>
+      <Projects Name="dclfqbADO90.bpl">dclfqbADO90.bdsproj</Projects>
+      <Projects Name="Targets">fqbADO90.bpl dclfqbADO90.bpl</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>
