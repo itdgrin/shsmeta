@@ -171,7 +171,6 @@ end;
 
 procedure TfCalcTravelWork.qrMainNewRecord(DataSet: TDataSet);
 begin
-  qrMain.FieldByName('travel_work_id').Value := FastSelectSQLOne('SELECT GetNewID(:0)', VarArrayOf([C_ID_TRWORK]));
   qrMain.FieldByName('OBJ_ID').Value := OBJ_ID;
   qrMain.FieldByName('SM_ID').Value := SM_ID;
   ReloadMain;

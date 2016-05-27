@@ -19,7 +19,6 @@ type
     dsMain: TDataSource;
     edtSearch: TEdit;
     btnSearch: TSpeedButton;
-    procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure qrMainNewRecord(DataSet: TDataSet);
@@ -65,11 +64,6 @@ begin
   Action := caFree;
 end;
 
-procedure TfSuppAgreement.FormCreate(Sender: TObject);
-begin
-  inherited;
-end;
-
 procedure TfSuppAgreement.FormDestroy(Sender: TObject);
 begin
   fSuppAgreement := nil;
@@ -89,18 +83,7 @@ begin
 end;
 
 procedure TfSuppAgreement.qrMainNewRecord(DataSet: TDataSet);
-var NewId: Integer;
 begin
-  DM.qrDifferent.Active := False;
-  DM.qrDifferent.SQL.Text := 'SELECT GetNewID(:IDType)';
-  DM.qrDifferent.ParamByName('IDType').Value := C_ID_SUPPAG;
-  DM.qrDifferent.Active := True;
-  NewId := 0;
-  if not DM.qrDifferent.Eof then
-    NewId := DM.qrDifferent.Fields[0].AsInteger;
-  DM.qrDifferent.Active := False;
-
-  qrMain.FieldByName('supp_agreement_id').value := NewId;
   qrMain.FieldByName('OBJ_ID').Value := OBJ_ID;
   qrMain.FieldByName('onDate').Value := Now;
 end;

@@ -97,7 +97,7 @@ begin
 end;
 
 //Формирует строку запроса
-function GetQueryStr(AQuery: TFDQuery; ATabName: string): string;
+function GetQueryStr(AQuery: TFDQuery; ATabName: string; AIgnoredField: string = ''): string;
 var i: Integer;
     As1, As2: string;
 begin
@@ -105,6 +105,10 @@ begin
   As2 := '';
   for i := 0 to AQuery.Fields.Count - 1 do
   begin
+    if (AIgnoredField <> '') and
+       (AIgnoredField.ToLower = AQuery.Fields[i].FieldName.ToLower) then
+      Continue;
+
     if As1 <> '' then As1 := As1 + ',';
     if As2 <> '' then As2 := As2 + ',';
 
@@ -114,18 +118,27 @@ begin
   Result := 'Insert into ' + ATabName + ' (' + As1 + ') values (' + As2 + ')';
 end;
 
+function DropQuotes(const AStr: string): string;
+begin
+  if (Length(AStr) > 1) and
+     (AStr[1] = '"') and (AStr[Length(AStr)] = '"') then
+    Result := Copy(AStr, 2, Length(AStr) - 2)
+  else
+    Result := AStr;
+end;
+
 ////////////////////////////////////////////////////////////////////////////////
 function ImportObject(const AFileName: string): Boolean;
 var XML : IXMLDocument;
     MainNode, Node1, Node2: IXMLNode;
-    i, j: Integer;
+    i, j, k: Integer;
     IdConvert: TIDConvertArray;
     ManIdConvert: TManIDConvertArray;
     ds: char;
     AutoCommitValue: Boolean;
     IgnoreRates: TStringList;
 
-  procedure GetStrAndExcec(ANode: IXMLNode; ATabName: string);
+  procedure GetStrAndExcec(ANode: IXMLNode; ATabName: string; AIgnoredField: string = '');
   var i: Integer;
       As1, As2: string;
       FieldName: string;
@@ -135,6 +148,10 @@ var XML : IXMLDocument;
     As2 := '';
     for i := 0 to ANode.ChildNodes.Count - 1 do
     begin
+      if (AIgnoredField <> '') and
+         (AIgnoredField.ToLower = ANode.ChildNodes.Nodes[i].NodeName.ToLower) then
+        Continue;
+
       if As1 <> '' then As1 := As1 + ',';
       if As2 <> '' then As2 := As2 + ',';
 
@@ -148,11 +165,18 @@ var XML : IXMLDocument;
 
     for i := 0 to ANode.ChildNodes.Count - 1 do
     begin
-      //Добавлено для удобства отладки
+      if (AIgnoredField <> '') and
+         (AIgnoredField.ToLower = ANode.ChildNodes.Nodes[i].NodeName.ToLower) then
+        Continue;
+
       FieldName := ANode.ChildNodes.Nodes[i].NodeName;
       FieldValue := ANode.ChildNodes.Nodes[i].NodeValue;
 
-      DM.qrDifferent.ParamByName(FieldName).Value := FieldValue;
+      if ((VarType(FieldValue) and VarTypeMask) = varString) or
+         ((VarType(FieldValue) and VarTypeMask) = varOleStr) then
+        DM.qrDifferent.ParamByName(FieldName).AsString :=
+          DropQuotes(VarToStr(FieldValue))
+      else  DM.qrDifferent.ParamByName(FieldName).Value := FieldValue;
     end;
 
     DM.qrDifferent.ExecSQL;
@@ -199,7 +223,7 @@ begin
               DM.qrDifferent2.SQL.Text :=
                 'SELECT UNIT_ID from units where lower(UNIT_NAME) = lower(:NAME)';
               DM.qrDifferent2.ParamByName('NAME').Value :=
-                Node1.ChildNodes.Nodes['UNIT_NAME'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['UNIT_NAME'].NodeValue));
               DM.qrDifferent2.Active := True;
               if not DM.qrDifferent2.Eof then
               begin
@@ -237,11 +261,11 @@ begin
                 '(MAT_CODE = :MAT_CODE) and (MAT_TYPE = :MAT_TYPE) and ' +
                 '(MAT_NAME = :MAT_NAME)';
               DM.qrDifferent2.ParamByName('MAT_CODE').Value :=
-                Node1.ChildNodes.Nodes['MAT_CODE'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['MAT_CODE'].NodeValue));
               DM.qrDifferent2.ParamByName('MAT_TYPE').Value :=
                 Node1.ChildNodes.Nodes['MAT_TYPE'].NodeValue;
               DM.qrDifferent2.ParamByName('MAT_NAME').Value :=
-                Node1.ChildNodes.Nodes['MAT_NAME'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['MAT_NAME'].NodeValue));
               DM.qrDifferent2.Active := True;
               if not DM.qrDifferent2.Eof then
               begin
@@ -278,9 +302,9 @@ begin
                 'SELECT MECHANIZM_ID from mechanizm where ' +
                 '(MECH_CODE = :MECH_CODE) and (MECH_NAME = :MECH_NAME)';
               DM.qrDifferent2.ParamByName('MECH_CODE').Value :=
-                Node1.ChildNodes.Nodes['MECH_CODE'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['MECH_CODE'].NodeValue));
               DM.qrDifferent2.ParamByName('MECH_NAME').Value :=
-                Node1.ChildNodes.Nodes['MECH_NAME'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['MECH_NAME'].NodeValue));
               DM.qrDifferent2.Active := True;
               if not DM.qrDifferent2.Eof then
               begin
@@ -317,9 +341,9 @@ begin
                 'SELECT DEVICE_ID from devices where ' +
                 '(DEVICE_CODE1 = :DEVICE_CODE1) and (NAME = :NAME)';
               DM.qrDifferent2.ParamByName('DEVICE_CODE1').Value :=
-                Node1.ChildNodes.Nodes['DEVICE_CODE1'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['DEVICE_CODE1'].NodeValue));
               DM.qrDifferent2.ParamByName('NAME').Value :=
-                Node1.ChildNodes.Nodes['NAME'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['NAME'].NodeValue));
               DM.qrDifferent2.Active := True;
               if not DM.qrDifferent2.Eof then
               begin
@@ -359,9 +383,9 @@ begin
                 '(normativ_directory_id = :normativ_directory_id) and ' +
                 '(NORM_BASE = 1)';
               DM.qrDifferent2.ParamByName('NORM_NUM').Value :=
-                Node1.ChildNodes.Nodes['NORM_NUM'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['NORM_NUM'].NodeValue));
               DM.qrDifferent2.ParamByName('NORM_CAPTION').Value :=
-                Node1.ChildNodes.Nodes['NORM_CAPTION'].NodeValue;
+                DropQuotes(VarTostr(Node1.ChildNodes.Nodes['NORM_CAPTION'].NodeValue));
               DM.qrDifferent2.ParamByName('NORM_TYPE').Value :=
                 Node1.ChildNodes.Nodes['NORM_TYPE'].NodeValue;
               DM.qrDifferent2.ParamByName('normativ_directory_id').Value :=
@@ -465,30 +489,105 @@ begin
       DM.qrDifferent.SQL.Text := 'SET @DISABLE_TRIGGERS := 1;';
       DM.qrDifferent.ExecSQL;
 
-      //загрузка объекта
-      Node1 := MainNode.ChildNodes.FindNode('Data_object');
+      //загрузка справочника организаций
+      Node2 := MainNode.ChildNodes.FindNode('Clients');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
 
+          DM.qrDifferent2.Active := False;
+          DM.qrDifferent2.SQL.Text :=
+            'Select CLIENT_ID from clients ' +
+            'where FULL_NAME = :FULL_NAME';
+          DM.qrDifferent2.ParamByName('FULL_NAME').Value :=
+            DropQuotes(VarTostr(Node1.ChildNodes.Nodes['FULL_NAME'].NodeValue));
+          DM.qrDifferent2.Active := True;
+          if not DM.qrDifferent2.Eof then
+          begin
+            SetLength(IdConvert[C_ID_CLIENT][0],
+              Length(IdConvert[C_ID_CLIENT][0]) + 1);
+            SetLength(IdConvert[C_ID_CLIENT][1],
+              Length(IdConvert[C_ID_CLIENT][1]) + 1);
+
+            IdConvert[C_ID_CLIENT][0][Length(IdConvert[C_ID_CLIENT][0]) - 1] :=
+              Node1.ChildNodes.Nodes['CLIENT_ID'].NodeValue;
+            IdConvert[C_ID_CLIENT][1][Length(IdConvert[C_ID_CLIENT][1]) - 1] :=
+              DM.qrDifferent2.Fields[0].AsInteger;
+
+            Continue;
+          end;
+          DM.qrDifferent2.Active := False;
+
+        Node1.ChildNodes.Nodes['CLIENT_ID'].NodeValue :=
+          GetNewId(Node1.ChildNodes.Nodes['CLIENT_ID'].NodeValue, C_ID_CLIENT, IdConvert);
+        GetStrAndExcec(Node1, 'clients');
+      end;
+
+      //загрузка справочника прорабов
+      Node2 := MainNode.ChildNodes.FindNode('Foreman');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          DM.qrDifferent2.Active := False;
+          DM.qrDifferent2.SQL.Text :=
+            'Select foreman_id from foreman ' +
+            'where (foreman_name = :foreman_name) and ' +
+            '(foreman_first_name = :foreman_first_name) and ' +
+            '(foreman_second_name = :foreman_second_name)';
+          DM.qrDifferent2.ParamByName('foreman_name').Value :=
+            DropQuotes(VarTostr(Node1.ChildNodes.Nodes['foreman_name'].NodeValue));
+          DM.qrDifferent2.ParamByName('foreman_first_name').Value :=
+            DropQuotes(VarTostr(Node1.ChildNodes.Nodes['foreman_first_name'].NodeValue));
+          DM.qrDifferent2.ParamByName('foreman_second_name').Value :=
+            DropQuotes(VarTostr(Node1.ChildNodes.Nodes['foreman_second_name'].NodeValue));
+          DM.qrDifferent2.Active := True;
+          if not DM.qrDifferent2.Eof then
+          begin
+            SetLength(IdConvert[ С_ID_FOREMAN][0],
+              Length(IdConvert[ С_ID_FOREMAN][0]) + 1);
+            SetLength(IdConvert[ С_ID_FOREMAN][1],
+              Length(IdConvert[ С_ID_FOREMAN][1]) + 1);
+
+            IdConvert[ С_ID_FOREMAN][0][Length(IdConvert[ С_ID_FOREMAN][0]) - 1] :=
+              Node1.ChildNodes.Nodes['foreman_id'].NodeValue;
+            IdConvert[ С_ID_FOREMAN][1][Length(IdConvert[ С_ID_FOREMAN][1]) - 1] :=
+              DM.qrDifferent2.Fields[0].AsInteger;
+
+            Continue;
+          end;
+          DM.qrDifferent2.Active := False;
+
+          Node1.ChildNodes.Nodes['foreman_id'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['foreman_id'].NodeValue,  С_ID_FOREMAN, IdConvert);
+          GetStrAndExcec(Node1, 'foreman');
+        end;
+
+      Node1 := MainNode.ChildNodes.FindNode('Data_object');
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
         GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
       GetStrAndExcec(Node1, 'objcards');
 
       //загрузка смет и актов
       Node2 := MainNode.ChildNodes.FindNode('Smety');
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
-        Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
-        Node1.ChildNodes.Nodes['SOURCE_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['SOURCE_ID'].NodeValue, C_ID_SM, IdConvert);
-        Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue, C_ID_SM, IdConvert);
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
+          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
+          Node1.ChildNodes.Nodes['SOURCE_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SOURCE_ID'].NodeValue, C_ID_SM, IdConvert);
+          Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue, C_ID_SM, IdConvert);
 
-        GetStrAndExcec(Node1, 'smetasourcedata');
-      end;
+          GetStrAndExcec(Node1, 'smetasourcedata');
+        end;
 
       //загрузка Data_row смет
       Node2 := MainNode.ChildNodes.FindNode('Smeta_data_row');
@@ -672,66 +771,6 @@ begin
           GetStrAndExcec(Node1, 'calculation_coef');
         end;
 
-      //загрузка Object_suppagreement
-      Node2 := MainNode.ChildNodes.FindNode('Object_suppagreement');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-
-          Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue, C_ID_SUPPAG, IdConvert);
-          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
-
-          GetStrAndExcec(Node1, 'supp_agreement');
-        end;
-
-      //загрузка Travel
-      Node2 := MainNode.ChildNodes.FindNode('Travel');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-
-          Node1.ChildNodes.Nodes['TRAVEL_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['TRAVEL_ID'].NodeValue, C_ID_TRAVEL, IdConvert);
-          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
-
-          GetStrAndExcec(Node1, 'travel');
-        end;
-
-      //загрузка Travel_work
-      Node2 := MainNode.ChildNodes.FindNode('Travel_work');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-
-          Node1.ChildNodes.Nodes['TRAVEL_WORK_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['TRAVEL_WORK_ID'].NodeValue, C_ID_TRWORK, IdConvert);
-          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
-
-          GetStrAndExcec(Node1, 'travel_work');
-        end;
-
-      //загрузка Worker_deartment
-      Node2 := MainNode.ChildNodes.FindNode('Worker_deartment');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-
-          Node1.ChildNodes.Nodes['WORKER_DEPARTMENT_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['WORKER_DEPARTMENT_ID'].NodeValue, C_ID_WORKDEP, IdConvert);
-          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
-
-          GetStrAndExcec(Node1, 'worker_deartment');
-        end;
-
       //загрузка Summary_calculation
       Node2 := MainNode.ChildNodes.FindNode('Summary_calculation');
       if Assigned(Node2) then
@@ -745,6 +784,134 @@ begin
           GetStrAndExcec(Node1, 'summary_calculation');
         end;
 
+      //загрузка Object_suppagreement
+      Node2 := MainNode.ChildNodes.FindNode('Object_suppagreement');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
+
+          GetStrAndExcec(Node1, 'supp_agreement', 'supp_agreement_id');
+        end;
+
+      //загрузка Travel
+      Node2 := MainNode.ChildNodes.FindNode('Travel');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
+
+          GetStrAndExcec(Node1, 'travel', 'TRAVEL_ID');
+        end;
+
+      //загрузка Travel_work
+      Node2 := MainNode.ChildNodes.FindNode('Travel_work');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
+
+          GetStrAndExcec(Node1, 'travel_work', 'TRAVEL_WORK_ID');
+        end;
+
+      //загрузка Worker_deartment
+      Node2 := MainNode.ChildNodes.FindNode('Worker_deartment');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
+
+          GetStrAndExcec(Node1, 'worker_deartment', 'WORKER_DEPARTMENT_ID');
+        end;
+
+      //загрузка fact_data
+      Node2 := MainNode.ChildNodes.FindNode('Fact_data');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_SM, IdConvert);
+
+          i := 0;
+          k := 0;
+          case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
+            1:
+            begin
+              i := C_ID_SMRAT;
+              k := C_MANID_NORM;
+            end;
+            2:
+            begin
+              i := C_ID_SMMAT;
+              k := C_MANID_MAT;
+            end;
+            3:
+            begin
+              i := C_ID_SMMEC;
+              k := C_MANID_MECH;
+            end;
+            4:
+            begin
+              i := C_ID_SMDEV;
+              k := C_MANID_DEV;
+            end;
+            5: i := C_ID_SMDUM;
+            6, 7, 8, 9: i := C_ID_SMTR;
+          end;
+
+          if i > 0  then
+            Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert);
+
+          if (k > 0) and
+             (Node1.ChildNodes.Nodes['SRC_OBJECT_ID'].NodeValue > С_MANIDDELIMETER) then
+            Node1.ChildNodes.Nodes['SRC_OBJECT_ID'].NodeValue :=
+              GetNewManId(Node1.ChildNodes.Nodes['SRC_OBJECT_ID'].NodeValue,
+                k, ManIdConvert, False);
+
+          GetStrAndExcec(Node1, 'fact_data', 'fact_data_id');
+        end;
+
+      //загрузка contract_pay
+      Node2 := MainNode.ChildNodes.FindNode('Contract_pay');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
+
+          GetStrAndExcec(Node1, 'contract_pay');
+        end;
+
+      //загрузка contract_price
+      Node2 := MainNode.ChildNodes.FindNode('Contract_price');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
+
+          GetStrAndExcec(Node1, 'contract_price');
+        end;
+
       //загрузка Сalc_setup
       Node2 := MainNode.ChildNodes.FindNode('Сalc_setup');
       if Assigned(Node2) then
@@ -752,15 +919,13 @@ begin
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
 
-          Node1.ChildNodes.Nodes['CALC_SETUP_ID'].NodeValue := NULL;
-
           Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
 
           Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
-          GetStrAndExcec(Node1, 'calc_setup');
+          GetStrAndExcec(Node1, 'calc_setup', 'CALC_SETUP_ID');
         end;
 
       DM.qrDifferent.Transaction.Commit;
@@ -795,25 +960,30 @@ var XML : IXMLDocument;
 
   procedure RowToNode(ANode: IXMLNode; AQ: TFDQuery);
   var i: Integer;
+      s: string;
   begin
     for i := 0 to AQ.Fields.Count - 1 do
     begin
       try
-        if not VarIsNull(AQ.Fields[i].Value) and
-           (AQ.Fields[i].DataType in [ftFloat, ftCurrency, ftBCD, ftFMTBcd,
-                                      ftExtended, ftSingle]) then
-          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] := AQ.Fields[i].AsFloat
-        else if not VarIsNull(AQ.Fields[i].Value) and
-                (AQ.Fields[i].DataType = ftDate) then
-          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
+        if not VarIsNull(AQ.Fields[i].Value) then
+        begin
+          if (AQ.Fields[i].DataType in
+            [ftFloat, ftCurrency, ftBCD, ftFMTBcd, ftExtended, ftSingle]) then
+            ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] := AQ.Fields[i].AsFloat
+          else if (AQ.Fields[i].DataType = ftDate) then
+            ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             FormatDateTime('yy/mm/dd', AQ.Fields[i].AsDateTime)
-        else if not VarIsNull(AQ.Fields[i].Value) and
-                (AQ.Fields[i].DataType = ftString) then
-          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
-            StripCharsInSet(AQ.Fields[i].AsString, [#0..#9,#11,#12,#14..#31,#127])
+          else if (AQ.Fields[i].DataType = ftString) then
+          begin
+            //строки экранируются, для различия между null и пустой строкой
+            s := StripCharsInSet(AQ.Fields[i].AsString, [#0..#9,#11,#12,#14..#31,#127]);
+            ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] := '"' + s + '"';
+          end
+          else
+            ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] := AQ.Fields[i].Value;
+        end
         else
-          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
-            AQ.Fields[i].Value;
+          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] := AQ.Fields[i].Value;
       except
         on e: Exception do
         begin
@@ -853,6 +1023,39 @@ begin
     begin
       raise Exception.Create('Объект не найден.');
       Exit;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from calc_setup where OBJ_ID = ' + AIdObject.ToString;
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Сalc_setup');
+      Node1.SetAttributeNS('Type', '', 'Настройка расчетов');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from supp_agreement where (OBJ_ID = ' +
+      IntToStr(AIdObject) + ') order by supp_agreement_id';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Object_suppagreement');
+      Node1.SetAttributeNS('Type', '', 'Доп. соглашения');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
     end;
 
     SmIdStr := '';
@@ -1043,13 +1246,43 @@ begin
 
     DM.qrDifferent.Active := False;
     DM.qrDifferent.SQL.Text :=
-      'Select * from supp_agreement where (OBJ_ID = ' +
-      IntToStr(AIdObject) + ') order by supp_agreement_id';
+      'Select * from summary_calculation where ' + TmpStr  + ' order by SM_ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
-      Node1 := CurNode.AddChild('Object_suppagreement');
-      Node1.SetAttributeNS('Type', '', 'Доп. соглашения');
+      Node1 := CurNode.AddChild('Summary_calculation');
+      Node1.SetAttributeNS('Type', '', 'Суммации по смете (акту)');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from contract_pay where OBJ_ID = ' + AIdObject.ToString;
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Contract_pay');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from contract_price where ' + TmpStr  + ' order by SM_ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Contract_price');
+      Node1.SetAttributeNS('Type', '', 'Расчет контрактной цены');
       while not DM.qrDifferent.Eof do
       begin
         Node2 := Node1.AddChild('Line');
@@ -1105,28 +1338,13 @@ begin
 
     DM.qrDifferent.Active := False;
     DM.qrDifferent.SQL.Text :=
-      'Select * from summary_calculation where ' + TmpStr ;
+      'Select * from fact_data where ' +
+      StringReplace(TmpStr, 'SM_ID', 'ID_ACT', [rfReplaceAll]) +
+      ' order by fact_data_id';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
-      Node1 := CurNode.AddChild('Summary_calculation');
-      Node1.SetAttributeNS('Type', '', 'Суммации по смете (акту)');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Line');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-      end;
-    end;
-
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text :=
-      'Select * from calc_setup where OBJ_ID = ' + AIdObject.ToString;
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Сalc_setup');
-      Node1.SetAttributeNS('Type', '', 'Настройка расчетов');
+      Node1 := CurNode.AddChild('Fact_data');
       while not DM.qrDifferent.Eof do
       begin
         Node2 := Node1.AddChild('Line');
@@ -1136,6 +1354,50 @@ begin
     end;
 
     //Раздел содержащий информацию о собственных справочных данных
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select clients.* from clients, objcards ' +
+      'where (clients.CLIENT_ID = objcards.CUST_ID) or ' +
+            '(clients.CLIENT_ID = objcards.GENERAL_ID)  ' +
+      'union ' +
+      'Select clients.* from clients, smetasourcedata ' +
+      'where (clients.CLIENT_ID = smetasourcedata.SUB_CLIENT_ID) and ' +
+            '(obj_id = ' + AIdObject.ToString + ') and (DELETED=0) ' +
+      'order by CLIENT_ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Clients');
+      Node1.SetAttributeNS('Type', '', 'Cправочник клиентов');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Client');
+        Node2.SetAttributeNS('NAME', '', DM.qrDifferent.FieldByName('NAME').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select foreman.* from foreman, smetasourcedata ' +
+      'where (foreman.foreman_id = smetasourcedata.FOREMAN_ID) and ' +
+            '(obj_id = ' + AIdObject.ToString + ') and (DELETED=0) ' +
+      'order by foreman.foreman_id';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Foreman');
+      Node1.SetAttributeNS('Type', '', 'Cправочник прорабов');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Item');
+        Node2.SetAttributeNS('NAME', '', DM.qrDifferent.FieldByName('foreman_name').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
     NormIdStr := '';
     DM.qrDifferent.Active := False;
     DM.qrDifferent.SQL.Text :=
@@ -1836,7 +2098,7 @@ end;
 // чтобы сохранились связи с записями из сметы. Копировать 1 в 1 из источника.
 function GetCopySmeta(const ASoursSmetaID: Integer; const AIsAct: Boolean = False): boolean;
 var IdConvert: TIDConvertArray;
-    i, j: Integer;
+    i, j, k: Integer;
     TmpId: Integer;
     SmIdStr: string;
     TmpStr: string;
@@ -1848,6 +2110,9 @@ begin
   try
     DM.qrDifferent1.Transaction.StartTransaction;
     try
+      DM.qrDifferent.SQL.Text := 'SET @DISABLE_TRIGGERS := 1;';
+      DM.qrDifferent.ExecSQL;
+
       DM.qrDifferent.Active := False;
       DM.qrDifferent.SQL.Text := 'SELECT * FROM smetasourcedata WHERE ' +
         '((SM_ID = ' + ASoursSmetaID.ToString + ') OR ' +
@@ -1856,6 +2121,7 @@ begin
           'smetasourcedata WHERE smetasourcedata.PARENT_ID = ' +
             ASoursSmetaID.ToString + '))) AND (DELETED=0))) ORDER BY SM_ID';
       DM.qrDifferent.Active := True;
+      DM.qrDifferent1.Params.Clear;
       if not DM.qrDifferent.IsEmpty then
         DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'smetasourcedata')
       else
@@ -2271,7 +2537,7 @@ begin
 
           if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
           begin
-            if AIsAct then
+            if not AIsAct then
             begin
               j := 0;
 
@@ -2302,23 +2568,20 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from travel where ' +
-        '(SOURCE_TYPE = 1) and (SM_ID in (' + SmIdStr + ')) order by travel_id';
+        '(SM_ID in (' + SmIdStr + ')) order by travel_id';
       DM.qrDifferent.Active := True;
 
       DM.qrDifferent1.Params.Clear;
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'travel');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'travel', 'TRAVEL_ID');
 
       while not DM.qrDifferent.Eof do
       begin
         for i := 0 to DM.qrDifferent.Fields.Count - 1 do
         begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'TRAVEL_ID' then
-          begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_TRAVEL, IdConvert);
             Continue;
-          end;
+
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
@@ -2334,23 +2597,20 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from travel_work where ' +
-        '(SOURCE_TYPE = 1) and (SM_ID in (' + SmIdStr + ')) order by travel_work_id';
+        '(SM_ID in (' + SmIdStr + ')) order by travel_work_id';
       DM.qrDifferent.Active := True;
 
       DM.qrDifferent1.Params.Clear;
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'travel_work');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'travel_work', 'TRAVEL_WORK_ID');
 
       while not DM.qrDifferent.Eof do
       begin
         for i := 0 to DM.qrDifferent.Fields.Count - 1 do
         begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'TRAVEL_WORK_ID' then
-          begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_TRWORK, IdConvert);
             Continue;
-          end;
+
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
@@ -2366,23 +2626,19 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from worker_deartment where ' +
-        '(SOURCE_TYPE = 1) and (SM_ID in (' + SmIdStr + ')) order by worker_department_id';
+        '(SM_ID in (' + SmIdStr + ')) order by worker_department_id';
       DM.qrDifferent.Active := True;
 
       DM.qrDifferent1.Params.Clear;
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'worker_deartment');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'worker_deartment', 'WORKER_DEPARTMENT_ID');
 
       while not DM.qrDifferent.Eof do
       begin
         for i := 0 to DM.qrDifferent.Fields.Count - 1 do
         begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'WORKER_DEPARTMENT_ID' then
-          begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_WORKDEP, IdConvert);
             Continue;
-          end;
 
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
           begin
@@ -2425,6 +2681,119 @@ begin
       end;
       DM.qrDifferent.Active := False;
 
+      DM.qrDifferent.SQL.Text :=
+        'Select * from fact_data where (ID_ACT in (' + SmIdStr + '))';
+      DM.qrDifferent.Active := True;
+
+      DM.qrDifferent1.Params.Clear;
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'fact_data', 'FACT_DATA_ID');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FACT_DATA_ID' then
+            Continue;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ACT' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TABLES' then
+            Continue;
+
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
+          begin
+            if not AIsAct then
+            begin
+              j := 0;
+
+              case DM.qrDifferent.Fields[i].Value of
+                1: j := C_ID_SMRAT;
+                2: j := C_ID_SMMAT;
+                3: j := C_ID_SMMEC;
+                4: j := C_ID_SMDEV;
+                5: j := C_ID_SMDUM;
+                6, 7, 8, 9: j := C_ID_SMTR;
+              end;
+
+              if j > 0  then
+                DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
+                  GetNewId(DM.qrDifferent.FieldByName('ID_TABLES').Value, j, IdConvert);
+            end
+            else
+              DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
+                DM.qrDifferent.FieldByName('ID_TABLES').Value;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from contract_price where ' +
+        ' (SM_ID in (' + SmIdStr + ')) order by SM_ID';
+      DM.qrDifferent.Active := True;
+
+      DM.qrDifferent1.Params.Clear;
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'contract_price');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
+            Continue;
+          end;
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from calc_setup where ' +
+        '(SM_ID in (' + SmIdStr + ')) order by SM_ID';
+      DM.qrDifferent.Active := True;
+
+      DM.qrDifferent1.Params.Clear;
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text :=
+          GetQueryStr(DM.qrDifferent, 'calc_setup', 'CALC_SETUP_ID');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CALC_SETUP_ID' then
+            Continue;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
+            Continue;
+          end;
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
       DM.qrDifferent1.Transaction.Commit;
       Result := True;
     except
@@ -2433,6 +2802,9 @@ begin
     end;
   finally
     DM.qrDifferent1.Transaction.Options.AutoCommit := AutoCommitValue;
+
+    DM.qrDifferent.SQL.Text := 'SET @DISABLE_TRIGGERS := NULL;';
+    DM.qrDifferent.ExecSQL;
   end;
 end;
 

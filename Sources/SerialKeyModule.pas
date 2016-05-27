@@ -7,6 +7,7 @@ uses
   System.AnsiStrings,
   System.Classes,
   Dialogs,
+  Forms,
   IdCoderMIME,
   IdGlobal,
   RC6,
@@ -410,8 +411,10 @@ begin
   RC6Encryptor := TRC6Encryptor.Create(AKey);
   try
     TmpStream1.LoadFromFile(AFileName);
+   // TmpStream1.SaveToFile(ExtractFileDir(Application.ExeName) + '\testFile1.dat');
+    TmpStream1.Position := 0;
     RC6Encryptor.StreamDecrypt(TmpStream1, TmpStream2, True);
-    TmpStream2.SaveToFile('d:\keykey3.dll');
+  //  TmpStream2.SaveToFile(ExtractFileDir(Application.ExeName) + '\testFile2.dat');
     TmpStream2.Position := 0;
     //Имя владельца
     SetLength(TmpBytes, 256);
@@ -500,6 +503,7 @@ begin
   try
     try
       GetLocalData(ExtractFileDrive(ParamStr(0)), LocalKey);
+     // showmessage(TEncoding.Default.GetString(LocalKey));
       GetLocalKey(LocalKey);
 
       GetSerialKeyInfo(AFileName, LocalKey, ASI, KeyDll);
@@ -519,7 +523,10 @@ begin
            MemoryFreeLibrary(pDll);
       end;
     except
-      ExceptFlag := True;
+      on e: exception do
+      begin
+        ExceptFlag := True;
+      end;
     end;
   finally
     FreeAndNil(KeyDll);
@@ -564,7 +571,8 @@ begin
            MemoryFreeLibrary(pDll);
       end;
     except
-      raise Exception.Create('Отсутствует действующия лицензия');
+      on e: exception do
+        raise Exception.Create('Отсутствует действующия лицензия (' + e.Message + ')');
     end;
   finally
     FreeAndNil(KeyDll);

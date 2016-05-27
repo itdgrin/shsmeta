@@ -102,11 +102,15 @@ const
   C_ID_DATA    = 9;  //9 - смета data_row
   C_ID_SMCOEF  = 10; //10 - смета calculation_coef
   //C_ID_ACT     = 11; //11 - акт  ------------устарело
-  C_ID_TRAVEL  = 12; //12 - Расчет командировочных  //Можно вернуть автоинкримент
-  C_ID_TRWORK  = 13; //13 - Расчет разъездных работ  //Можно вернуть автоинкримент
-  C_ID_WORKDEP = 14; //14 - Расчет перевозки рабочих  //Можно вернуть автоинкримент
-  C_ID_SUPPAG  = 15; //15 - Дополнительные соглашения  //Можно вернуть автоинкримент
+  //C_ID_TRAVEL  = 12; //12 - Расчет командировочных  //Можно вернуть автоинкримент
+  //C_ID_TRWORK  = 13; //13 - Расчет разъездных работ  //Можно вернуть автоинкримент
+  //C_ID_WORKDEP = 14; //14 - Расчет перевозки рабочих  //Можно вернуть автоинкримент
+  //C_ID_SUPPAG  = 15; //15 - Дополнительные соглашения  //Можно вернуть автоинкримент
   C_ID_DOC     = 16; //16 - Хранилище документов
+  C_ID_CLIENT  = 17; //17 - Справочник клиентов
+  С_ID_FOREMAN = 18; //18 - Справочник прорабов
+
+  C_MAX_ID_INDEX = 18;
 
   //типы ID для функции GetNewManualID
   C_MANID_UNIT       = 1;
@@ -117,6 +121,8 @@ const
   C_MANID_NORM_MAT   = 6;
   C_MANID_NORM_MECH  = 7;
   C_MANID_NORM_WORK  = 8;
+
+  C_MAX_MANID_INDEX = 8;
 
   CTabNameAndID: array [1..15, 0..1] of string =
     (('objcards', 'obj_id'),
@@ -148,8 +154,8 @@ const
   С_MANIDDELIMETER = 1000000000; //Разделитель ID для собственных данных в справочниках.
 
 type
-  TIDConvertArray = array [1..15, 0..1] of array of Integer;
-  TManIDConvertArray = array [1..8, 0..1] of array of Integer;
+  TIDConvertArray = array [1..C_MAX_ID_INDEX, 0..1] of array of Integer;
+  TManIDConvertArray = array [1..C_MAX_MANID_INDEX, 0..1] of array of Integer;
 //******************************************************************************
 
 //******************************************************************************

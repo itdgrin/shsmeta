@@ -312,8 +312,6 @@ end;
 
 procedure TfCalcWorkerDepartment.qrMainNewRecord(DataSet: TDataSet);
 begin
-  qrMain.FieldByName('worker_department_id').Value := FastSelectSQLOne('SELECT GetNewID(:0)',
-    VarArrayOf([C_ID_WORKDEP]));
   qrMain.FieldByName('OBJ_ID').Value := OBJ_ID;
   qrMain.FieldByName('SM_ID').Value := SM_ID;
   ReloadMain;

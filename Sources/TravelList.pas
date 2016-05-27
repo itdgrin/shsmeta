@@ -298,38 +298,14 @@ begin
 end;
 
 procedure TfTravelList.qrTravelNewRecord(DataSet: TDataSet);
-var
-  NewId: Integer;
 begin
-  DM.qrDifferent.Active := False;
-  DM.qrDifferent.SQL.Text := 'SELECT GetNewID(:IDType)';
-  if DataSet = qrTravel then
-    DM.qrDifferent.ParamByName('IDType').Value := C_ID_TRAVEL
-  else if DataSet = qrTravelWork then
-    DM.qrDifferent.ParamByName('IDType').Value := C_ID_TRWORK
-  else if DataSet = qrWorkerDepartment then
-    DM.qrDifferent.ParamByName('IDType').Value := C_ID_WORKDEP
-  else
-    raise Exception.Create('Неизвестный DataSet.');
-  DM.qrDifferent.Active := True;
-  NewId := 0;
-  if not DM.qrDifferent.Eof then
-    NewId := DM.qrDifferent.Fields[0].AsInteger;
-  DM.qrDifferent.Active := False;
-
-  if DataSet = qrTravel then
-    DataSet.FieldByName('travel_id').AsInteger := NewId
-  else if DataSet = qrTravelWork then
-    DataSet.FieldByName('travel_work_id').AsInteger := NewId
-  else if DataSet = qrWorkerDepartment then
-    DataSet.FieldByName('worker_department_id').AsInteger := NewId;
-
   DataSet.FieldByName('OnDate').AsDateTime := Now;
   if defIdEstimate <> 0 then
   begin
     DataSet.FieldByName('SM_ID').Value := defIdEstimate;
     DataSet.FieldByName('SOURCE_TYPE').Value := 1;
-    DataSet.FieldByName('NAME').Value := FastSelectSQLOne('SELECT NAME FROM smetasourcedata WHERE SM_ID=:0',
+    DataSet.FieldByName('NAME').Value :=
+      FastSelectSQLOne('SELECT NAME FROM smetasourcedata WHERE SM_ID=:0',
       VarArrayOf([defIdEstimate]));
   end;
 end;

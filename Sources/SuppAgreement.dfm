@@ -13,7 +13,6 @@ object fSuppAgreement: TfSuppAgreement
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
-  OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13

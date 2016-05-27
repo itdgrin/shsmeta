@@ -234,10 +234,10 @@ begin
     GetLocalData(ExtractFileDrive(Application.ExeName), LocalData);
     GetLocalDataFile(SNumber, LocalData, MemIn);
 
-    Data.Add('data:' + TIdEncoderMIME.EncodeBytes(TIdBytes(MemIn.Memory)));
+    Data.Add('data=' + TIdEncoderMIME.EncodeBytes(TIdBytes(MemIn.Memory)));
 
     MemIn.Clear;
-    HTTP.Get('http://85.143.218.164:3113/auth_after.dll', MemIn);
+    HTTP.Post('http://85.143.218.164:3113', Data, MemIn);
 
     LicensePath := ExtractFilePath(Application.ExeName) + C_LICENSEDIR;
     FileName := C_LICENSEFILE;
